@@ -1,0 +1,14 @@
+__pycache__
+*.pyc
+*.pyo
+
+*.sqlite3
+*.db
+
+.DS_Store
+.vscode
+
+react/.cache
+react/node_modules
+react/package-lock.json
+react/npm-debug.log
