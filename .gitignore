@@ -8,6 +8,7 @@ __pycache__
 .DS_Store
 .vscode
 
+django/static/
 react/.cache
 react/node_modules
 react/package-lock.json
