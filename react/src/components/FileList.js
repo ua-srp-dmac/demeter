@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { Table } from 'semantic-ui-react'
 import { Container, Header } from 'semantic-ui-react'
 import axios from '../axios';
-import { Redirect } from 'react-router-dom';
 
 
 export default class FileList extends Component {
@@ -19,16 +18,7 @@ export default class FileList extends Component {
   }
 
   async componentDidMount() {
-    axios.get('/api/auth/')
-      .then(result => {
-          this.setState({loggedIn: true});
-          this.getFiles()
-      })
-      .catch((error) => {
-        this.setState({loggedIn: false});
-          console.log(error)
-          console.log('not logged in')
-    });
+    this.getFiles();
   }
 
   getFiles() {
@@ -38,11 +28,10 @@ export default class FileList extends Component {
     axios.get('/api/defiles/', {})
     .then(result => {
         this.setState({error: null, loading: false, fileList: result.data });
-        // this.props.updateAuth(true);
-        console.log(result)
+        console.log(result);
     })
     .catch((error) => {
-        console.log(error)
+        console.log(error);
     });
 
   }
@@ -83,7 +72,7 @@ export default class FileList extends Component {
   render() {
     return (
       <>
-        { this.state.loggedIn && this.renderFileList() }
+        { this.renderFileList() }
       </>
     )
   } 

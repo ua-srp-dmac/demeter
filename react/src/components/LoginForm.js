@@ -2,8 +2,6 @@ import React, { Component } from 'react'
 import { Button, Form, Grid, Header, Image, Message, Segment } from 'semantic-ui-react'
 import { Container, Dimmer, Loader } from 'semantic-ui-react'
 import axios from '../axios';
-import { Redirect } from 'react-router-dom';
-
 
 export default class LoginForm extends Component {
   
@@ -19,22 +17,12 @@ export default class LoginForm extends Component {
     this.handleChange = this.handleChange.bind(this);
   }
 
-  async componentDidMount() {
-    axios.get('/api/auth/')
-      .then(result => {
-          this.setState({loggedIn: true});
-          console.log('logged in')
-      })
-      .catch((error) => {
-        this.setState({loggedIn: false});
-          console.log(error)
-          console.log('not logged in')
-    });
-  }
-
   login() {
 
-    this.setState({error: null, loading:true })
+    this.setState({
+      error: null,
+      loading:true
+    });
   
     axios.post('/api/delogin/', {
       username: this.state.username,
@@ -43,7 +31,7 @@ export default class LoginForm extends Component {
     .then(result => {
         this.setState({error: null, loading: false, loggedIn: true });
         this.props.updateAuth(true);
-        console.log('logged in')
+        console.log('Logged in.')
     })
     .catch((error) => {
         console.log(error)
@@ -96,21 +84,6 @@ export default class LoginForm extends Component {
     )
   }
 
-  renderRedirect() {
-
-    return (
-
-      <Redirect 
-        to={{
-          pathname: '/home',
-          // state: { netID: this.props.netID, name: this.props.name }
-        }}
-      />
-
-    );
-
-  }
-
   renderLoading() {
     return (
       <Dimmer active>
@@ -123,7 +96,6 @@ export default class LoginForm extends Component {
     return (
       <>
         { this.state.loading && this.renderLoading() }
-        {/* { this.state.loggedIn && this.renderRedirect() } */}
         { !this.state.loggedIn && this.renderLoginForm() }
       </>
     )
