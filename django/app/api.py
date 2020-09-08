@@ -85,7 +85,7 @@ def de_login(request):
                     if (acc.DEToken and (acc.DETokenDate > timezone.now() )):
                         user = User.objects.filter(username=username).first()
                         authenticate(request, username=user.username)
-                        login(request, user)
+                        login(request, user,  backend='app.auth_backend.PasswordlessAuthBackend')
                         return HttpResponse(status=200)
                     
                     else:
@@ -100,7 +100,7 @@ def de_login(request):
                     
                 acc.save()
                 authenticate(request, username=user.username)
-                login(request, user)
+                login(request, user, backend='app.auth_backend.PasswordlessAuthBackend')
                 return HttpResponse(status=200)
 
             except Exception as e:
@@ -125,7 +125,7 @@ def de_login(request):
                 acc.save()
                 user.save()
                 authenticate(request, username=user.username)
-                login(request, user)
+                login(request, user,  backend='app.auth_backend.PasswordlessAuthBackend')
                 return HttpResponse(status=200)
             except Exception as e:
                 print("c")

@@ -52,6 +52,7 @@ MIDDLEWARE = [
 ]
 
 AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
     'app.auth_backend.PasswordlessAuthBackend',
 )
 
