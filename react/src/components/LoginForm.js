@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Button, Form, Grid, Header, Image, Message, Segment } from 'semantic-ui-react'
-import { Container } from 'semantic-ui-react'
+import { Container, Dimmer, Loader } from 'semantic-ui-react'
 import axios from '../axios';
 import { Redirect } from 'react-router-dom';
 
@@ -57,7 +57,7 @@ export default class LoginForm extends Component {
 
   renderLoginForm() {
     return (
-      <Grid textAlign='center' style={{ height: '100vh' }} verticalAlign='middle'>
+      <Grid textAlign='center' style={{ height: '80vh' }} verticalAlign='middle'>
       <Grid.Column style={{ maxWidth: 450 }}>
         <Header as='h2' color='teal' textAlign='center'>
           Log-in with your CyVerse account
@@ -110,11 +110,20 @@ export default class LoginForm extends Component {
     );
 
   }
+
+  renderLoading() {
+    return (
+      <Dimmer active>
+        <Loader>Logging In</Loader>
+      </Dimmer>
+    )
+  }
   
   render() {
     return (
       <>
-        { this.state.loggedIn && this.renderRedirect() }
+        { this.state.loading && this.renderLoading() }
+        {/* { this.state.loggedIn && this.renderRedirect() } */}
         { !this.state.loggedIn && this.renderLoginForm() }
       </>
     )

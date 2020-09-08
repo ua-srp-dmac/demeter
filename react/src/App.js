@@ -4,6 +4,7 @@ import { Container, Menu } from 'semantic-ui-react';
 
 import axios from './axios';
 import Routes from "./Routes";
+import LoginForm from "./components/LoginForm";
 
 
 class App extends Component {
@@ -67,7 +68,8 @@ class App extends Component {
           </Container>
         </Menu>
         <Container className="appBody">
-          <Routes childProps={{loggedIn: this.state.loggedIn, updateAuth:this.updateAuth}} />
+          { this.state.loggedIn && <Routes childProps={{loggedIn: this.state.loggedIn, updateAuth:this.updateAuth}} />}
+          { !this.state.loggedIn && <LoginForm updateAuth={this.updateAuth}></LoginForm>}
         </Container>
         </header>
       </div>

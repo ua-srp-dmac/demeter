@@ -8,8 +8,8 @@ import AppliedRoute from "./components/AppliedRoute";
 export default ({ childProps }) =>
     <BrowserRouter>
         <Switch>
-            <AppliedRoute path="/" exact component={LoginForm} props={childProps} />
-            <AppliedRoute path="/home" exact component={FileList} props={childProps} />
+            {/* <AppliedRoute path="/" exact component={LoginForm} props={childProps} /> */}
+            <AppliedRoute path="/" exact component={FileList} props={childProps} />
             {/* <AppliedRoute path="/home" exact component={Home} props={childProps} /> */}
             { /* Finally, catch all unmatched routes */ }
             {/* <Route component={NotFound} /> */}
