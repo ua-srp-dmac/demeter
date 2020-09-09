@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Table } from 'semantic-ui-react'
-import { Container, Header, Loader, Icon } from 'semantic-ui-react'
+import { Container, Header, Loader, Icon, Dropdown, Button } from 'semantic-ui-react'
 import axios from '../axios';
 
 
@@ -12,10 +12,13 @@ export default class FileList extends Component {
     this.state = {
       fileList: null,
       loading: true,
+      // selectedGenomes: {}
     };
 
     this.getFiles = this.getFiles.bind(this)
-  }
+    this.handleGenomeChange = this.handleGenomeChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  };
 
   async componentDidMount() {
     this.getFiles();
@@ -29,11 +32,35 @@ export default class FileList extends Component {
     .then(result => {
         this.setState({error: null, loading: false, fileList: result.data });
         console.log(result);
-    })
+    }) 
     .catch((error) => {
         console.log(error);
     });
+  }
 
+  handleGenomeChange (e, data, i) {
+    this.setState({
+      selectedGenomes: {
+        ...this.state.selectedGenomes,
+        [i]: data.value
+      }
+    });
+  }
+
+  handleSubmit(i) {
+
+    var request = {
+      genome: this.state.selectedGenomes[i],
+      fastq: this.state.fileList[i].path
+    }
+
+    axios.post('/api/submit-analysis/', request)
+    .then(result => {
+        console.log(result);
+    }) 
+    .catch((error) => {
+        console.log(error);
+    });
   }
 
   renderLoading() {
@@ -46,6 +73,11 @@ export default class FileList extends Component {
   }
 
   renderFileList() {
+    const genomeOptions = [
+      { key: 'mouse' , text: 'mouse' , value: 'mouse' },
+      { key: 'human' , text: 'human' , value: 'human' },
+      { key: 'rat' , text: 'rat' , value: 'rat' },
+    ];
     return (
       <>
       <Container>
@@ -58,16 +90,28 @@ export default class FileList extends Component {
                     <Table.HeaderCell>Name</Table.HeaderCell>
                     <Table.HeaderCell>Size</Table.HeaderCell>
                     <Table.HeaderCell>Last Modified</Table.HeaderCell>
+                    <Table.HeaderCell></Table.HeaderCell>
+                    <Table.HeaderCell></Table.HeaderCell>
                 </Table.Row>
                 </Table.Header>
 
                 <Table.Body>
-                {this.state.fileList.map(function(file, i){
+                {this.state.fileList.map((file, i) => {
                     return (
                         <Table.Row obj={file} key={i}>
                             <Table.Cell>{file.name}</Table.Cell>
                             <Table.Cell>{file.size}</Table.Cell>
                             <Table.Cell>{file.last_updated}</Table.Cell>
+                            <Table.Cell>
+                              <Dropdown placeholder='Genome'
+                                        selection
+                                        options={genomeOptions}
+                                        onChange={(e, data) => this.handleGenomeChange(e, data, i)}>      
+                              </Dropdown>
+                            </Table.Cell>
+                            <Table.Cell>
+                              <Button onClick={() => this.handleSubmit(i)}>Submit</Button>
+                            </Table.Cell>
                         </Table.Row>
                     )
                 })}
