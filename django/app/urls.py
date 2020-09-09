@@ -16,13 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from .api import de_login, signout, is_user_logged_in, de_file_list
+from .api import app_login, app_logout, is_user_logged_in, file_list
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/delogin/', de_login, name='app_de_login'),
-    path('api/logout/', signout, name='signout'),
+    path('api/login/', app_login, name='app_login'),
+    path('api/logout/', app_logout, name='app_logout'),
     path('api/auth/', is_user_logged_in, name='is_user_logged_in'),
-    path('api/defiles/', de_file_list, name='de_file_list'),
-    # path(r'login/?', views.login, name='login'),
+    path('api/files/', file_list, name='file_list'),
 ]

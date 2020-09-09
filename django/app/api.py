@@ -40,10 +40,10 @@ def user_de_info_set(request):
     return HttpResponse(status=403)
 
 @csrf_exempt
-def de_login(request):
+def app_login(request):
     """
-    Logs into the DE via the Terrain API, stores that Token in the
-    Django Model associated with the current user 
+    Logs into the CyVerse via Terrain, and stores the API token in the
+    CyVerseAccount model for the logged in User.
 
     params:
     username -> string
@@ -56,95 +56,48 @@ def de_login(request):
 
         username = data['username']
         password = data['password']
-
-        if User.objects.filter(username=username).exists():
-            try:
+        
+        try:
+            user = User.objects.get(username=username)
+        except:
+            return HttpResponse(status=400)
                 
+        try:
+            r = requests.get("https://de.cyverse.org/terrain/token", auth=(username, password))
+            r.raise_for_status()
+            token = r.json()['access_token']
+            time = int(r.json()['expires_in'])
+        except Exception as e:
+            print(type(e))
+            print(str(e))
+            return HttpResponse(status=400)
 
-                r = requests.get("https://de.cyverse.org/terrain/token", auth=(username, password))
-                r.raise_for_status()
-                token = r.json()['access_token']
-                time = int(r.json()['expires_in'])
+        ## Authenticated by cyverse after this point
+        try: 
+            account = CyVerseAccount.objects.get(user=user)
+        except:
+            account = CyVerseAccount.objects.create(user=user)
 
-                ## Authenticated by cyverse after this point
-
-                accs = CyVerseAccount.objects.filter(user__username=username)
-
-                if (len(accs)) >= 1:
-
-                    acc = accs.first()
-
-                    if (acc.api_token and (acc.api_token_expiration > timezone.now() )):
-                        user = User.objects.filter(username=username).first()
-                        # authenticate(request, username=user.username)
-                        login(request, user,  backend='app.auth_backend.PasswordlessAuthBackend')
-                        return HttpResponse(status=200)
-                    
-                    else:
-                        print("deleting old token")
-                        acc.delete()
-
-                user = User.objects.filter(username=username).first()
-
-                acc = CyVerseAccount(user=user)
-                acc.api_token = token
-                acc.api_token_expiration = timezone.now() + timedelta(seconds=time) 
-                    
-                acc.save()
-                # authenticate(request, username= user.username)
-                login(request, user, backend='app.auth_backend.PasswordlessAuthBackend')
-                return HttpResponse(status=200)
-
-            except Exception as e:
-                print(type(e))
-                print(str(e))
-                return HttpResponse(status=400)
-                
-        else:
-            try:
-                print(username)
-                r = requests.get("https://de.cyverse.org/terrain/token", auth=(username, password))
-                r.raise_for_status()
-                token = r.json()['access_token']
-                time = int(r.json()['expires_in'])
-
-                # Authenticated by cyverse after this point
-
-                user = User.objects.create_user(username=username, email=username+'@beatles.com')
-                acc = CyVerseAccount(user=user)
-                acc.api_token = token
-                acc.api_token_expiration = timezone.now() + timedelta(seconds=time) 
-                acc.save()
-                user.save()
-                # authenticate(request, username=user.username)
-                login(request, user,  backend='app.auth_backend.PasswordlessAuthBackend')
-                return HttpResponse(status=200)
-            except Exception as e:
-                print("c")
-                traceback.print_exc()
-                print(type(e))
-                print(str(e))
-                return HttpResponse(status=400)
-    print("f")
+        account.api_token = token
+        account.api_token_expiration = timezone.now() + timedelta(seconds=time) 
+        account.save()
+            
+        login(request, user, backend='app.auth_backend.PasswordlessAuthBackend')   
+        return HttpResponse(status=200)
+        
     return HttpResponse(status=400)
 
 
-def signout(request):
+def app_logout(request):
     """
-    Logs into the DE via the Terrain API, stores that Token in the
-    Django Model associated with the current user 
-    
-    
-    params:
-    username -> string
-    password -> string
+    Logs out of Django.
     """
 
     logout(request)
     return HttpResponse(status=200)
 
 
-def de_file_list(request):
+def file_list(request):
     """ returns the files and folders at the specified path,
     has additional arguments to modify how data is presented (for treeview)
 

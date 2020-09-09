@@ -24,7 +24,7 @@ export default class LoginForm extends Component {
       loading:true
     });
   
-    axios.post('/api/delogin/', {
+    axios.post('/api/login/', {
       username: this.state.username,
       password: this.state.password,
     })

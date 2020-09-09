@@ -8,9 +8,9 @@ class CyVerseAccount(models.Model):
     api_token_expiration = models.DateTimeField(null=True, blank=True)
 
     # Relationship Fields
-    user = models.ForeignKey(
+    user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE, related_name="cyverse_accounts", 
+        on_delete=models.CASCADE, related_name="cyverse_account", 
     )
 
     class Meta:

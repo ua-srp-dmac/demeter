@@ -25,7 +25,7 @@ export default class FileList extends Component {
 
     this.setState({error: null, loading:true })
   
-    axios.get('/api/defiles/', {})
+    axios.get('/api/files/', {})
     .then(result => {
         this.setState({error: null, loading: false, fileList: result.data });
         console.log(result);
