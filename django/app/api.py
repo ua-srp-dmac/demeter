@@ -98,16 +98,12 @@ def app_logout(request):
 
 
 def file_list(request):
-    """ returns the files and folders at the specified path,
-    has additional arguments to modify how data is presented (for treeview)
-
-    params:
-    path -> path to get files and folders at
-    tree -> boolean to return in tree form
-    listchildren -> boolean to only list the children in an array instead of an object
+    """ Returns the fastq files in the user's home directory (for now).
+    TODO: Dynamically show files specific to the user's Group affiliations.
     """
 
     if request.user.is_authenticated:
+
         username = request.user.username
         path='/iplant/home/' + username
 
@@ -118,11 +114,11 @@ def file_list(request):
             "entity-type": "file",
             "info-type": "fastq"
         }
+
         try:
-            acc = CyVerseAccount.objects.get(user__username=username)
-            print(acc.api_token)
+            account = CyVerseAccount.objects.get(user__username=username)
             url = "https://de.cyverse.org/terrain/secured/filesystem/paged-directory"
-            auth_headers = {"Authorization": "Bearer " + acc.api_token}
+            auth_headers = {"Authorization": "Bearer " + account.api_token}
             r = requests.get(url, headers=auth_headers, params=query_params)
             r.raise_for_status()
 
@@ -131,7 +127,6 @@ def file_list(request):
             for n in r.json()['files']:
                 
                 updated = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(n['date-modified']/1000.0))
-
                 size = format_size(n['file-size'])
 
                 fileList.append({
@@ -141,16 +136,10 @@ def file_list(request):
                     "type": "file"
                 })
 
-            response = {
-                'path': path,
-                'fileList' : fileList
-            }
-
             return JsonResponse(fileList, safe=False)
 
         except Exception as e:
             print (str(e))
-            print ("There was an exception")
             pass
 
     return HttpResponse(status=400)
