@@ -12,34 +12,27 @@ from django.utils import timezone
 
 from datetime import timedelta
 
-from .models import DEAccount
+from .models import CyVerseAccount
+from .helpers import format_size
 
-def sizeof_fmt(num, suffix='B'):
-    for unit in ['','K','M','G','T','P','E','Z']:
-        if abs(num) < 1024.0:
-            return "%3.1f%s%s" % (num, unit, suffix)
-        num /= 1024.0
-    return "%.1f %s%s" % (num, 'Yi', suffix)
 
 def is_user_logged_in(request):
-    """ returns if the user is logged into the django system, NOT the DE system"""
-    print(request.user)
+    """ Checks if user is authenticated through Django.
+    """
     if request.user.is_authenticated:
         return HttpResponse(status=200)
 
     return HttpResponse(status=403)
 
 def user_de_info_set(request):
-    """ returns if the user has their token set for DE usage 
-    
+    """ Checks if user has a valid Terrain API Token.
     """
-
     username = None
     if request.user.is_authenticated:
         username = request.user.username
         try:
-            acc = DEAccount.objects.get(djangouser__username=username)
-            if (acc.DEToken and (acc.DETokenDate > timezone.now() )):
+            acc = CyVerseAccount.objects.get(user__username=username)
+            if (acc.api_token and (acc.api_token_expiration > timezone.now() )):
                 return HttpResponse(status=200)
         except:
             pass
@@ -51,8 +44,7 @@ def de_login(request):
     """
     Logs into the DE via the Terrain API, stores that Token in the
     Django Model associated with the current user 
-    
-    
+
     params:
     username -> string
     password -> string
@@ -76,15 +68,15 @@ def de_login(request):
 
                 ## Authenticated by cyverse after this point
 
-                accs = DEAccount.objects.filter(djangouser__username=username)
+                accs = CyVerseAccount.objects.filter(user__username=username)
 
                 if (len(accs)) >= 1:
 
                     acc = accs.first()
 
-                    if (acc.DEToken and (acc.DETokenDate > timezone.now() )):
+                    if (acc.api_token and (acc.api_token_expiration > timezone.now() )):
                         user = User.objects.filter(username=username).first()
-                        authenticate(request, username=user.username)
+                        # authenticate(request, username=user.username)
                         login(request, user,  backend='app.auth_backend.PasswordlessAuthBackend')
                         return HttpResponse(status=200)
                     
@@ -94,12 +86,12 @@ def de_login(request):
 
                 user = User.objects.filter(username=username).first()
 
-                acc = DEAccount(djangouser=user)
-                acc.DEToken = token
-                acc.DETokenDate = timezone.now() + timedelta(seconds=time) 
+                acc = CyVerseAccount(user=user)
+                acc.api_token = token
+                acc.api_token_expiration = timezone.now() + timedelta(seconds=time) 
                     
                 acc.save()
-                authenticate(request, username=user.username)
+                # authenticate(request, username= user.username)
                 login(request, user, backend='app.auth_backend.PasswordlessAuthBackend')
                 return HttpResponse(status=200)
 
@@ -119,12 +111,12 @@ def de_login(request):
                 # Authenticated by cyverse after this point
 
                 user = User.objects.create_user(username=username, email=username+'@beatles.com')
-                acc = DEAccount(djangouser=user)
-                acc.DEToken = token
-                acc.DETokenDate = timezone.now() + timedelta(seconds=time) 
+                acc = CyVerseAccount(user=user)
+                acc.api_token = token
+                acc.api_token_expiration = timezone.now() + timedelta(seconds=time) 
                 acc.save()
                 user.save()
-                authenticate(request, username=user.username)
+                # authenticate(request, username=user.username)
                 login(request, user,  backend='app.auth_backend.PasswordlessAuthBackend')
                 return HttpResponse(status=200)
             except Exception as e:
@@ -174,10 +166,10 @@ def de_file_list(request):
             "info-type": "fastq"
         }
         try:
-            acc = DEAccount.objects.get(djangouser__username=username)
-            print(acc.DEToken)
+            acc = CyVerseAccount.objects.get(user__username=username)
+            print(acc.api_token)
             url = "https://de.cyverse.org/terrain/secured/filesystem/paged-directory"
-            auth_headers = {"Authorization": "Bearer " + acc.DEToken}
+            auth_headers = {"Authorization": "Bearer " + acc.api_token}
             r = requests.get(url, headers=auth_headers, params=query_params)
             r.raise_for_status()
 
@@ -187,7 +179,7 @@ def de_file_list(request):
                 
                 updated = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(n['date-modified']/1000.0))
 
-                size = sizeof_fmt(n['file-size'])
+                size = format_size(n['file-size'])
 
                 fileList.append({
                     "name": n['label'],

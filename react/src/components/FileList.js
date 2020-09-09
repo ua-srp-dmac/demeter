@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Table } from 'semantic-ui-react'
-import { Container, Header } from 'semantic-ui-react'
+import { Container, Header, Loader, Icon } from 'semantic-ui-react'
 import axios from '../axios';
 
 
@@ -11,7 +11,7 @@ export default class FileList extends Component {
     
     this.state = {
       fileList: null,
-      loading: null,
+      loading: true,
     };
 
     this.getFiles = this.getFiles.bind(this)
@@ -36,11 +36,21 @@ export default class FileList extends Component {
 
   }
 
+  renderLoading() {
+    return (
+      <Container>
+        <Header as='h1'>Your Files</Header>
+        <Loader active inline='centered'>Loading</Loader>
+      </Container>
+    )
+  }
+
   renderFileList() {
     return (
       <>
       <Container>
         <Header as='h1'>Your Files</Header>
+        
         { this.state.fileList &&
             <Table basic='very'>
                 <Table.Header>
@@ -72,7 +82,8 @@ export default class FileList extends Component {
   render() {
     return (
       <>
-        { this.renderFileList() }
+        { !this.state.loading && this.renderFileList() }
+        { this.state.loading && this.renderLoading() }
       </>
     )
   } 

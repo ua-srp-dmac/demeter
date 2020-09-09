@@ -17,17 +17,18 @@ class App extends Component {
     
     this.state = {
       loggedIn: null,
+      loading: true,
     };
   }
 
   async componentDidMount() {
     axios.get('/api/auth/')
       .then(result => {
-        this.setState({loggedIn: true});
+        this.setState({loggedIn: true, loading:false});
         console.log('logged in')
       })
       .catch((error) => {
-        this.setState({loggedIn: false});
+        this.setState({loggedIn: false, loading:false});
           console.log(error)
           console.log('not logged in')
     });
@@ -68,7 +69,7 @@ class App extends Component {
         </Menu>
         <Container className="appBody">
           { this.state.loggedIn && <Routes childProps={{loggedIn: this.state.loggedIn}} />}
-          { !this.state.loggedIn && <LoginForm updateAuth={this.updateAuth}></LoginForm>}
+          { !this.state.loggedIn && !this.state.loading && <LoginForm updateAuth={this.updateAuth}></LoginForm>}
         </Container>
         </header>
       </div>
