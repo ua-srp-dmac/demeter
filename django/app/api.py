@@ -17,25 +17,20 @@ from .helpers import format_size
 
 
 def is_user_logged_in(request):
-    """ Checks if user is authenticated through Django.
+    """ Checks if user is logged into Django AND has a valid Terrain API Token.
     """
-    if request.user.is_authenticated:
-        return HttpResponse(status=200)
 
-    return HttpResponse(status=403)
-
-def user_de_info_set(request):
-    """ Checks if user has a valid Terrain API Token.
-    """
-    username = None
+    # check user is logged into Django
     if request.user.is_authenticated:
-        username = request.user.username
         try:
-            acc = CyVerseAccount.objects.get(user__username=username)
-            if (acc.api_token and (acc.api_token_expiration > timezone.now() )):
+            # check that user has non-expired Terrain API token, else log out.
+            account = CyVerseAccount.objects.get(user=request.user)
+            if (account.api_token and (account.api_token_expiration > timezone.now() )):
                 return HttpResponse(status=200)
+            else:
+                logout(request)
         except:
-            pass
+            logout(request)
 
     return HttpResponse(status=403)
 
