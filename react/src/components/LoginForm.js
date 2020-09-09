@@ -11,6 +11,8 @@ export default class LoginForm extends Component {
     this.state = {
       username: '',
       password: '',
+      loading: false,
+      error: null,
     };
 
     this.login = this.login.bind(this)
@@ -29,12 +31,11 @@ export default class LoginForm extends Component {
       password: this.state.password,
     })
     .then(result => {
-        this.setState({error: null, loading: false, loggedIn: true });
+        this.setState({ error: null, loading: false, loggedIn: true });
         this.props.updateAuth(true);
-        console.log('Logged in.')
     })
     .catch((error) => {
-        console.log(error)
+        this.setState({error: error.response.data, loading: false });
     });
 
   }
@@ -44,6 +45,10 @@ export default class LoginForm extends Component {
   }
 
   renderLoginForm() {
+
+    const {username, password, loading} = this.state;
+    const submitEnabled = (username.length > 0 && password.length > 0 && !loading)
+
     return (
       <Grid textAlign='center' style={{ height: '80vh' }} verticalAlign='middle'>
       <Grid.Column style={{ maxWidth: 450 }}>
@@ -71,14 +76,16 @@ export default class LoginForm extends Component {
               name="password"
               value={this.state.password}
             />
-            <Button color='teal' fluid size='large' type="submit">
+            <Button color='teal' fluid size='large' type="submit" disabled={!submitEnabled}>
               Login
             </Button>
           </Segment>
         </Form>
-        {/* <Message>
-          Need an account? <a href='#'>Request one here.</a>
-        </Message> */}
+        { this.state.error && 
+          <Message>
+            { this.state.error}
+          </Message>
+        }
       </Grid.Column>
     </Grid>
     )

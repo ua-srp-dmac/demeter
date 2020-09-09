@@ -1,11 +1,9 @@
 import json
 import requests
-import logging
-import traceback
 import time
 
 from django.http import HttpResponse, JsonResponse
-from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
@@ -25,7 +23,7 @@ def is_user_logged_in(request):
         try:
             # check that user has non-expired Terrain API token, else log out.
             account = CyVerseAccount.objects.get(user=request.user)
-            if (account.api_token and (account.api_token_expiration > timezone.now() )):
+            if account.api_token and (account.api_token_expiration > timezone.now()):
                 return HttpResponse(status=200)
             else:
                 logout(request)
@@ -55,7 +53,7 @@ def app_login(request):
         try:
             user = User.objects.get(username=username)
         except:
-            return HttpResponse(status=400)
+            return HttpResponse('No account with this username was found.', status=400)
                 
         try:
             r = requests.get("https://de.cyverse.org/terrain/token", auth=(username, password))
@@ -65,7 +63,7 @@ def app_login(request):
         except Exception as e:
             print(type(e))
             print(str(e))
-            return HttpResponse(status=400)
+            return HttpResponse('Error logging into CyVerse. Make sure you are using your CyVerse credentials.', status=400)
 
         ## Authenticated by cyverse after this point
         try: 
