@@ -17,8 +17,10 @@ from django.contrib import admin
 from django.urls import path
 
 from .api import app_login, app_logout, is_user_logged_in, file_list, submit_analysis
+from .views import FrontendAppView
 
 urlpatterns = [
+    path('', FrontendAppView.as_view()),
     path('admin/', admin.site.urls),
 
     path('api/login/', app_login, name='app_login'),
