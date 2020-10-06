@@ -61,10 +61,10 @@ class App extends Component {
           <Menu fixed='top' inverted>
           <Container>
             <Menu.Item as='a' header>
-              DMAC File Status
+              <h1>demeter</h1>
             </Menu.Item>
-            <Menu.Item as='a'>Home</Menu.Item>
-            {this.state.loggedIn && <Menu.Item as='a' onClick={this.logout}>Logout</Menu.Item>}
+            <Menu.Item as='a'><h4>Home</h4></Menu.Item>
+            {this.state.loggedIn && <Menu.Item as='a' onClick={this.logout}><h4>Logout</h4></Menu.Item>}
           </Container>
         </Menu>
         <Container className="appBody">

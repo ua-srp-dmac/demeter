@@ -16,7 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from .api import app_login, app_logout, is_user_logged_in, file_list, submit_analysis
+from .api import app_login, app_logout, is_user_logged_in, file_list
+from .api import bowtie2_analysis, analysis_list
 from .views import FrontendAppView
 
 urlpatterns = [
@@ -27,5 +28,6 @@ urlpatterns = [
     path('api/logout/', app_logout, name='app_logout'),
     path('api/auth/', is_user_logged_in, name='is_user_logged_in'),
     path('api/files/', file_list, name='file_list'),
-    path('api/submit-analysis/', submit_analysis, name='submit_analysis'),
+    path('api/analyses/', analysis_list, name='analysis_list'),
+    path('api/bowtie2_analysis/', bowtie2_analysis, name='bowtie2_analysis'),
 ]
