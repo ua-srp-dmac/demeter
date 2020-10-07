@@ -13,7 +13,8 @@ export default class FileList extends Component {
       fileList: null,
       loading: true,
       selectionStatus: {},
-      selectedFiles: []
+      selectedFiles: [],
+      analysis_type: null
     };
 
     this.getFiles = this.getFiles.bind(this)
@@ -102,9 +103,25 @@ export default class FileList extends Component {
       selectedFiles: files
     }
 
-    axios.post('/api/bowtie2_analysis/', request)
+    var endpoint;
+
+    if (this.state.analysis_type === 'DNAseq') {
+      endpoint = '/api/bowtie2_analysis/'
+    } else if (this.state.analysis_type === 'RNAseq') {
+      endpoint = '/api/star_analysis/'
+    } else {
+      return;
+    }
+
+    axios.post(endpoint, request)
     .then(result => {
-        console.log(result);
+      this.getFiles();
+      this.getAnalyses();
+      this.setState({
+        selectionStatus: {},
+        selectedFiles: [],
+        analysis_type: null
+      });
     }) 
     .catch((error) => {
         console.log(error);
@@ -137,10 +154,10 @@ export default class FileList extends Component {
       <>
       <Container>
         <Header as='h1'>Files </Header>
-        <p>Select the files you would like to process, their genome types, and the type of analysis you would like to run.</p>
+        <p className="p-t-15">Select the files you would like to process, their genome types, and the type of analysis you would like to run.</p>
         { this.state.fileList &&
           <>
-            <Table basic='very'>
+            <Table basic='very' className="p-t-15">
                 <Table.Header>
                 <Table.Row>
                     <Table.HeaderCell></Table.HeaderCell>
@@ -148,7 +165,6 @@ export default class FileList extends Component {
                     <Table.HeaderCell>Size</Table.HeaderCell>
                     <Table.HeaderCell>Last Modified</Table.HeaderCell>
                     <Table.HeaderCell></Table.HeaderCell>
-                    {/* <Table.HeaderCell></Table.HeaderCell> */}
                 </Table.Row>
                 </Table.Header>
 
@@ -174,9 +190,6 @@ export default class FileList extends Component {
                                 <></>
                               }
                             </Table.Cell>
-                            {/* <Table.Cell>
-                              <Button onClick={() => this.handleSubmit(i)}>Submit</Button>
-                            </Table.Cell> */}
                         </Table.Row>
                     )
                 })}
@@ -191,15 +204,17 @@ export default class FileList extends Component {
           </>
         }
 
-        <Header as='h1'>Analyses</Header>
+        <div class="ui divider p-t-15"></div>
+
+        <Header as='h1' class="p-t-15">Analyses</Header>
         { this.state.analyses &&
             <Table basic='very'>
                 <Table.Header>
                 <Table.Row>
-                    <Table.HeaderCell>Type</Table.HeaderCell>
-                    <Table.HeaderCell>Start</Table.HeaderCell>
+                    <Table.HeaderCell>Name</Table.HeaderCell>
+                    <Table.HeaderCell>Start Date</Table.HeaderCell>
                     <Table.HeaderCell>Status</Table.HeaderCell>
-                    <Table.HeaderCell>End</Table.HeaderCell>
+                    <Table.HeaderCell>End Date</Table.HeaderCell>
                 </Table.Row>
                 </Table.Header>
 
@@ -207,7 +222,7 @@ export default class FileList extends Component {
                 {this.state.analyses.map((item, i) => {
                     return (
                         <Table.Row obj={item} key={i}>
-                            <Table.Cell>{item.app_name}</Table.Cell>
+                            <Table.Cell>{item.name}</Table.Cell>
                             <Table.Cell>{item.start_date}</Table.Cell>
                             <Table.Cell>{item.status}</Table.Cell>
                             <Table.Cell>{item.end_date}</Table.Cell>
