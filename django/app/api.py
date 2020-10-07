@@ -141,7 +141,8 @@ def file_list(request):
                     "last_updated": updated,
                     "size": size,
                     "type": "file",
-                    "path": item['path']
+                    "path": item['path'],
+                    "id": item['id']
                 })
 
             return JsonResponse(fileList, safe=False)
@@ -351,6 +352,9 @@ def star_analysis(request):
                 pass
 
     return HttpResponse(status=200)
+
+
+# POST /terrain/secured/filesystem/{data-id}/metadata
 
 
 

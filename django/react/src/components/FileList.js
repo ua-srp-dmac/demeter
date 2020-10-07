@@ -13,6 +13,7 @@ export default class FileList extends Component {
       fileList: null,
       loading: true,
       selectionStatus: {},
+      selectedGenomes: {},
       selectedFiles: [],
       analysis_type: null
     };
@@ -21,7 +22,6 @@ export default class FileList extends Component {
     this.handleGenomeChange = this.handleGenomeChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleCheck = this.handleCheck.bind(this);
-
 
   };
 
@@ -89,6 +89,8 @@ export default class FileList extends Component {
 
   handleSubmit() {
 
+    this.setState({submitting:true });
+    
     var files = []
 
     for (var i = 0; i < this.state.selectedFiles.length; i++) {
@@ -115,13 +117,14 @@ export default class FileList extends Component {
 
     axios.post(endpoint, request)
     .then(result => {
-      this.getFiles();
-      this.getAnalyses();
       this.setState({
         selectionStatus: {},
         selectedFiles: [],
-        analysis_type: null
+        analysis_type: null,
+        submitting: false
       });
+      this.getFiles();
+      this.getAnalyses();
     }) 
     .catch((error) => {
         console.log(error);
@@ -150,7 +153,26 @@ export default class FileList extends Component {
       // { key: 'rat' , text: 'rat' , value: 'rat' },
     ];
 
+    const {selectedFiles, selectedGenomes, analysis_type} = this.state;
+
+    var formComplete = true;
+
+    if (!selectedFiles.length || !analysis_type) {
+      formComplete = false;
+    }
+
+    selectedFiles.forEach( function(file) {
+      if (!selectedGenomes[file]) {
+        formComplete = false;
+      }
+    })
+
+    var submitEnabled = formComplete;
+
+    console.log(submitEnabled)
+
     return (
+
       <>
       <Container>
         <Header as='h1'>Files </Header>
@@ -200,7 +222,17 @@ export default class FileList extends Component {
                       options={analysisOptions}
                       onChange={(e, data) => this.setState({analysis_type: data.value})}>      
             </Dropdown>
-            <Button onClick={() => this.handleSubmit()}>Launch Analysis</Button>
+            {this.state.submitting ? 
+                <span className="m-l-10">
+                  <Button primary loading disabled>Launch Analysis</Button>
+                </span>  
+                :
+                <span className="m-l-10">
+                  <Button disabled={!submitEnabled} primary onClick={() => this.handleSubmit()}>Launch Analysis</Button>
+                </span>
+                
+            }
+            
           </>
         }
 
@@ -224,7 +256,24 @@ export default class FileList extends Component {
                         <Table.Row obj={item} key={i}>
                             <Table.Cell>{item.name}</Table.Cell>
                             <Table.Cell>{item.start_date}</Table.Cell>
-                            <Table.Cell>{item.status}</Table.Cell>
+                            <Table.Cell>
+                              { (item.status === 'Submitted') && 
+                                <><span className="text-orange">{item.status}</span></>
+                              }
+                              { (item.status === 'Running') && 
+                                <><span className="text-green">{item.status}</span></>
+                              }
+                              { (item.status === 'Failed') && 
+                                <><span className="text-red">{item.status}</span></>
+                              }
+                              { (item.status === 'Completed') && 
+                                <><span className="text-blue">{item.status}</span></>
+                              }
+                              { (item.status === 'Canceled') && 
+                                <span className="text-grey">{item.status}</span>
+                              }
+                            
+                            </Table.Cell>
                             <Table.Cell>{item.end_date}</Table.Cell>
                         </Table.Row>
                     )
