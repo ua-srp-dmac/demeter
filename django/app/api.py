@@ -157,68 +157,69 @@ def bowtie2_analysis(request):
     """ Submits an analysis to the DE.
     """
 
-    if request.method == "POST":
+    if request.method == "POST" and request.user.is_authenticated:
+        
+        app_id = '4f9b03f0-f2d3-11ea-9df7-008cfa5ae621'
+        system_id = 'de'
+
+        username = request.user.username
+        home_directory = '/iplant/home/' + username + '/'
 
         form_data = json.loads(request.body.decode())
 
-        genome = form_data['genome']
-        fastq = form_data['fastq']
-        system_id = 'de'
+        for item in form_data['selectedFiles']:
 
-        file_name = fastq.split('.')
-        print(file_name)
+            genome = item['genome']
+            fastq = item['path']
+            
 
-        # specific to bowtie2 
-        app_id = '4f9b03f0-f2d3-11ea-9df7-008cfa5ae621'
-        username = request.user.username
+            file_name = fastq.split(home_directory)[1].split('.')[0]
+            
+            print(file_name)
 
-        # config contains app parameters
-        human_config = {
-           "4f9b8fa0-f2d3-11ea-9df7-008cfa5ae621_4f9ce63e-f2d3-11ea-9df7-008cfa5ae621": "/iplant/home/michellito/genomes/hg38/Sequence/Bowtie2Index",
-           "4f9b8fa0-f2d3-11ea-9df7-008cfa5ae621_4f9d9660-f2d3-11ea-9df7-008cfa5ae621": "genome",
-           "4f9b8fa0-f2d3-11ea-9df7-008cfa5ae621_4f9deef8-f2d3-11ea-9df7-008cfa5ae621": fastq,
-        }
+            # config contains app parameters
+            human_config = {
+               "4f9b8fa0-f2d3-11ea-9df7-008cfa5ae621_4f9ce63e-f2d3-11ea-9df7-008cfa5ae621": "/iplant/home/michellito/genomes/hg38/Sequence/Bowtie2Index",
+               "4f9b8fa0-f2d3-11ea-9df7-008cfa5ae621_4f9d9660-f2d3-11ea-9df7-008cfa5ae621": "genome",
+               "4f9b8fa0-f2d3-11ea-9df7-008cfa5ae621_4f9deef8-f2d3-11ea-9df7-008cfa5ae621": fastq,
+            }
 
-        mouse_config = {
-           "4f9b8fa0-f2d3-11ea-9df7-008cfa5ae621_4f9ce63e-f2d3-11ea-9df7-008cfa5ae621": "/iplant/home/michellito/genomes/bowtie2_mm10",
-           "4f9b8fa0-f2d3-11ea-9df7-008cfa5ae621_4f9d9660-f2d3-11ea-9df7-008cfa5ae621": "mm10",
-           "4f9b8fa0-f2d3-11ea-9df7-008cfa5ae621_4f9deef8-f2d3-11ea-9df7-008cfa5ae621": fastq,
-        }
+            mouse_config = {
+               "4f9b8fa0-f2d3-11ea-9df7-008cfa5ae621_4f9ce63e-f2d3-11ea-9df7-008cfa5ae621": "/iplant/home/michellito/genomes/bowtie2_mm10",
+               "4f9b8fa0-f2d3-11ea-9df7-008cfa5ae621_4f9d9660-f2d3-11ea-9df7-008cfa5ae621": "mm10",
+               "4f9b8fa0-f2d3-11ea-9df7-008cfa5ae621_4f9deef8-f2d3-11ea-9df7-008cfa5ae621": fastq,
+            }
 
-        time = timezone.now()
-        print(str(time))
+            time = timezone.now()
 
-        request_body = {
-            "name": "bowtie2_" + str(time),
-            "app_id": app_id,
-            "system_id": system_id,
-            "debug": False,
-            "output_dir": "/iplant/home/" + username + "/analyses",
-            "notify": True
-        }
+            request_body = {
+                "name": file_name + "_DNAseq_" + str(time),
+                "app_id": app_id,
+                "system_id": system_id,
+                "debug": False,
+                "output_dir": "/iplant/home/" + username + "/analyses",
+                "notify": True
+            }
 
-        if genome == 'mouse':
-            request_body['config'] = mouse_config
-        elif genome == 'human':
-            request_body['config'] = human_config
+            if genome == 'mouse':
+                request_body['config'] = mouse_config
+            elif genome == 'human':
+                request_body['config'] = human_config
 
-        username = None
-        # if request.user.is_authenticated:
-        #     username = request.user.username
-        #     try:
-        #         print('submitting to cyverse!')
-        #         acc = CyVerseAccount.objects.get(user__username=username)
-        #         auth_headers = {"Authorization": "Bearer " + acc.api_token}
-        #         r = requests.post("https://de.cyverse.org/terrain/analyses", headers=auth_headers, json=request_body)
-        #         print (r.content)
-        #         r.raise_for_status()
-        #         return JsonResponse(r.json())
+            try:
+                print('submitting to cyverse!')
+                acc = CyVerseAccount.objects.get(user__username=username)
+                auth_headers = {"Authorization": "Bearer " + acc.api_token}
+                r = requests.post("https://de.cyverse.org/terrain/analyses", headers=auth_headers, json=request_body)
+                print (r.content)
+                r.raise_for_status()
+                # return JsonResponse(r.json())
 
-        #     except:
-        #         print ("testing here")
-        #         pass
+            except:
+                print ("testing here")
+                pass
 
-    return HttpResponse(status=400)
+    return HttpResponse(status=200)
 
 
 def analysis_list(request):

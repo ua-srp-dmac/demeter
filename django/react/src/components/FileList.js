@@ -86,11 +86,20 @@ export default class FileList extends Component {
     }, console.log(this.state.selectedGenomes));
   }
 
-  handleSubmit(file_path) {
+  handleSubmit() {
+
+    var files = []
+
+    for (var i = 0; i < this.state.selectedFiles.length; i++) {
+      var file = this.state.selectedFiles[i];
+      files.push({ path: file, genome: this.state.selectedGenomes[file] })
+    }
+
+    console.log(files);
+    console.log(this.state.analysis_type)
 
     var request = {
-      genome: this.state.selectedGenomes[file_path],
-      // fastq: this.state.fileList[i].path
+      selectedFiles: files
     }
 
     axios.post('/api/bowtie2_analysis/', request)
@@ -117,12 +126,20 @@ export default class FileList extends Component {
       { key: 'human' , text: 'human' , value: 'human' },
       // { key: 'rat' , text: 'rat' , value: 'rat' },
     ];
+
+    const analysisOptions = [
+      { key: 'DNAseq' , text: 'DNAseq' , value: 'DNAseq' },
+      { key: 'RNAseq' , text: 'RNAseq' , value: 'RNAseq' },
+      // { key: 'rat' , text: 'rat' , value: 'rat' },
+    ];
+
     return (
       <>
       <Container>
         <Header as='h1'>Files </Header>
         <p>Select the files you would like to process, their genome types, and the type of analysis you would like to run.</p>
         { this.state.fileList &&
+          <>
             <Table basic='very'>
                 <Table.Header>
                 <Table.Row>
@@ -165,6 +182,13 @@ export default class FileList extends Component {
                 })}
                 </Table.Body>
             </Table>
+            <Dropdown placeholder='Select Analysis Type'
+                      selection
+                      options={analysisOptions}
+                      onChange={(e, data) => this.setState({analysis_type: data.value})}>      
+            </Dropdown>
+            <Button onClick={() => this.handleSubmit()}>Launch Analysis</Button>
+          </>
         }
 
         <Header as='h1'>Analyses</Header>
@@ -172,7 +196,6 @@ export default class FileList extends Component {
             <Table basic='very'>
                 <Table.Header>
                 <Table.Row>
-                    <Table.HeaderCell></Table.HeaderCell>
                     <Table.HeaderCell>Type</Table.HeaderCell>
                     <Table.HeaderCell>Start</Table.HeaderCell>
                     <Table.HeaderCell>Status</Table.HeaderCell>
@@ -184,9 +207,6 @@ export default class FileList extends Component {
                 {this.state.analyses.map((item, i) => {
                     return (
                         <Table.Row obj={item} key={i}>
-                            <Table.Cell>
-                              <Checkbox hand/>
-                            </Table.Cell>
                             <Table.Cell>{item.app_name}</Table.Cell>
                             <Table.Cell>{item.start_date}</Table.Cell>
                             <Table.Cell>{item.status}</Table.Cell>
