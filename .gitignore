@@ -9,7 +9,8 @@ __pycache__
 .vscode
 
 django/static/
-react/.cache
-react/node_modules
-react/package-lock.json
-react/npm-debug.log
+django/react/.cache
+django/react/node_modules
+django/react/package-lock.json
+django/react/npm-debug.log
+django/react/build
