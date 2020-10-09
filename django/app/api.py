@@ -303,6 +303,7 @@ def star_analysis(request):
 
             genome = item['genome']
             fastq = item['path']
+            sjdbOverhang = item['sjdbOverhang']
             
             file_name = fastq.split(home_directory)[1].split('.')[0]
         
@@ -312,6 +313,8 @@ def star_analysis(request):
                "fce80642-0837-11eb-9cfa-008cfa5ae621_1475e8b8-0362-11eb-98aa-008cfa5ae621": "/iplant/home/michellito/genomes/hg38/Sequence/STAR",
                # fastq file
                "fce80642-0837-11eb-9cfa-008cfa5ae621_14784ac2-0362-11eb-98aa-008cfa5ae621": fastq,
+               # sjdbOverhang
+               "fce80642-0837-11eb-9cfa-008cfa5ae621_8b35148e-0a5f-11eb-9602-008cfa5ae621": sjdbOverhang
             }
 
             # mouse_config = {
@@ -319,6 +322,8 @@ def star_analysis(request):
             #    "fce80642-0837-11eb-9cfa-008cfa5ae621_1475e8b8-0362-11eb-98aa-008cfa5ae621": "/iplant/home/michellito/genomes/bowtie2_mm10",
             #    # fastq file
             #    "fce80642-0837-11eb-9cfa-008cfa5ae621_14784ac2-0362-11eb-98aa-008cfa5ae621": fastq,
+                # sjdbOverhang
+            #    "fce80642-0837-11eb-9cfa-008cfa5ae621_8b35148e-0a5f-11eb-9602-008cfa5ae621": sjdbOverhang
             # }
 
             time = timezone.now()

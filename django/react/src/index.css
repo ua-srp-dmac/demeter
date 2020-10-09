@@ -21,8 +21,16 @@ code {
   padding-top: 15px;
 }
 
+.m-t-15 {
+  margin-top: 15px;
+}
+
 .m-l-10 {
   margin-left: 10px;
+}
+
+.m-r-10 {
+  margin-right: 10px;
 }
 
 .text-white {

@@ -14,12 +14,15 @@ export default class FileList extends Component {
       loading: true,
       selectionStatus: {},
       selectedGenomes: {},
+      selectedReadLengths: {},
       selectedFiles: [],
-      analysis_type: null
+      analysisType: null,
+      readLength: null,
     };
 
     this.getFiles = this.getFiles.bind(this)
     this.handleGenomeChange = this.handleGenomeChange.bind(this);
+    this.handleReadLengthChange = this.handleReadLengthChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleCheck = this.handleCheck.bind(this);
 
@@ -37,7 +40,6 @@ export default class FileList extends Component {
     axios.get('/api/files/', {})
     .then(result => {
         this.setState({error: null, loading: false, fileList: result.data });
-        // console.log(result);
     }) 
     .catch((error) => {
         console.log(error);
@@ -51,7 +53,6 @@ export default class FileList extends Component {
     axios.get('/api/analyses/', {})
     .then(result => {
         this.setState({error: null, loading: false, analyses: result.data });
-        console.log(result);
     }) 
     .catch((error) => {
         console.log(error);
@@ -74,7 +75,7 @@ export default class FileList extends Component {
         ...this.state.selectionStatus,
         [file_path]: data.checked
       }, 
-    }, console.log(this.state.selectedFiles)) //set the new state
+    });
 
   }
 
@@ -84,7 +85,16 @@ export default class FileList extends Component {
         ...this.state.selectedGenomes,
         [file_path]: data.value
       }, 
-    }, console.log(this.state.selectedGenomes));
+    });
+  }
+
+  handleReadLengthChange (e, data, file_path) {
+    this.setState({
+      selectedReadLengths: {
+        ...this.state.selectedReadLengths,
+        [file_path]: data.value
+      }, 
+    });
   }
 
   handleSubmit() {
@@ -95,11 +105,14 @@ export default class FileList extends Component {
 
     for (var i = 0; i < this.state.selectedFiles.length; i++) {
       var file = this.state.selectedFiles[i];
-      files.push({ path: file, genome: this.state.selectedGenomes[file] })
+      var file_obj = { path: file, genome: this.state.selectedGenomes[file] }
+      if (this.state.analysisType === 'RNAseq') {
+        file_obj.sjdbOverhang = this.state.selectedReadLengths[file]
+      }
+      files.push(file_obj);
     }
 
     console.log(files);
-    console.log(this.state.analysis_type)
 
     var request = {
       selectedFiles: files
@@ -107,9 +120,9 @@ export default class FileList extends Component {
 
     var endpoint;
 
-    if (this.state.analysis_type === 'DNAseq') {
+    if (this.state.analysisType === 'DNAseq') {
       endpoint = '/api/bowtie2_analysis/'
-    } else if (this.state.analysis_type === 'RNAseq') {
+    } else if (this.state.analysisType === 'RNAseq') {
       endpoint = '/api/star_analysis/'
     } else {
       return;
@@ -120,7 +133,7 @@ export default class FileList extends Component {
       this.setState({
         selectionStatus: {},
         selectedFiles: [],
-        analysis_type: null,
+        analysisType: null,
         submitting: false
       });
       this.getFiles();
@@ -150,14 +163,20 @@ export default class FileList extends Component {
     const analysisOptions = [
       { key: 'DNAseq' , text: 'DNAseq' , value: 'DNAseq' },
       { key: 'RNAseq' , text: 'RNAseq' , value: 'RNAseq' },
-      // { key: 'rat' , text: 'rat' , value: 'rat' },
     ];
 
-    const {selectedFiles, selectedGenomes, analysis_type} = this.state;
+    const readLengthOptions = [
+      { key: '50bp' , text: '50bp' , value: '49' },
+      { key: '75bp' , text: '75bp' , value: '74' },
+      { key: '100bp' , text: '100bp' , value: '99' },
+      { key: '150bp' , text: '150bp' , value: '149' },
+    ];
+
+    const {selectedFiles, selectedGenomes, selectedReadLengths, analysisType} = this.state;
 
     var formComplete = true;
 
-    if (!selectedFiles.length || !analysis_type) {
+    if (!selectedFiles.length || !analysisType) {
       formComplete = false;
     }
 
@@ -165,20 +184,31 @@ export default class FileList extends Component {
       if (!selectedGenomes[file]) {
         formComplete = false;
       }
+      if (analysisType === 'RNAseq' && !selectedReadLengths[file]) {
+        formComplete = false;
+      }
     })
 
     var submitEnabled = formComplete;
-
-    console.log(submitEnabled)
 
     return (
 
       <>
       <Container>
         <Header as='h1'>Files </Header>
-        <p className="p-t-15">Select the files you would like to process, their genome types, and the type of analysis you would like to run.</p>
+        
+        
         { this.state.fileList &&
           <>
+            <p className="p-t-15">1. Select the type of analysis you would like to run.</p>
+            <Dropdown placeholder='Select Analysis Type'
+                      selection
+                      options={analysisOptions}
+                      onChange={(e, data) => this.setState({analysisType: data.value})}>      
+            </Dropdown>
+            <p className="p-t-15">
+              2. Select the files you would like to process and specify their genome types{this.state.analysisType === 'RNAseq' && <span> and read lengths</span>}.
+            </p>
             <Table basic='very' className="p-t-15">
                 <Table.Header>
                 <Table.Row>
@@ -203,13 +233,24 @@ export default class FileList extends Component {
                             <Table.Cell>{file.size}</Table.Cell>
                             <Table.Cell>{file.last_updated}</Table.Cell>
                             <Table.Cell>
-                              { this.state.selectionStatus[file.path] ?
+                              { this.state.selectionStatus[file.path] &&
+                                <>
                                 <Dropdown placeholder='Genome'
+                                        className="m-r-10"
+                                        value={this.state.selectedGenomes[file.path]}
                                         selection
                                         options={genomeOptions}
                                         onChange={(e, data) => this.handleGenomeChange(e, data, file.path)}>      
-                                </Dropdown> :
-                                <></>
+                                </Dropdown> 
+                                { this.state.analysisType === 'RNAseq' &&
+                                  <Dropdown placeholder='Select Read Length'
+                                            value={this.state.selectedReadLengths[file.path]}
+                                            selection
+                                            options={readLengthOptions}
+                                            onChange={(e, data) => this.handleReadLengthChange(e, data, file.path)}>      
+                                  </Dropdown>
+                                }
+                                </>
                               }
                             </Table.Cell>
                         </Table.Row>
@@ -217,17 +258,14 @@ export default class FileList extends Component {
                 })}
                 </Table.Body>
             </Table>
-            <Dropdown placeholder='Select Analysis Type'
-                      selection
-                      options={analysisOptions}
-                      onChange={(e, data) => this.setState({analysis_type: data.value})}>      
-            </Dropdown>
+          
+            
             {this.state.submitting ? 
-                <span className="m-l-10">
+                <span className="p-t-15">
                   <Button primary loading disabled>Launch Analysis</Button>
                 </span>  
                 :
-                <span className="m-l-10">
+                <span className="p-t-15">
                   <Button disabled={!submitEnabled} primary onClick={() => this.handleSubmit()}>Launch Analysis</Button>
                 </span>
                 
