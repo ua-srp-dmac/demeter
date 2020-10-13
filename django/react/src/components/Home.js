@@ -13,16 +13,20 @@ export default class Home extends Component {
 
     const panes = [
       {
-        menuItem: { key: 'files', icon: 'users', content: 'Files' },
-        render: () => <FileList></FileList>
+        menuItem: (
+          <Menu.Item key='files'>
+            <h2>Files</h2>
+          </Menu.Item>
+        ),
+        render: () => <div className="p-t-25"><FileList></FileList></div>
       },
       {
         menuItem: (
           <Menu.Item key='analyses'>
-            Analyses<Label>15</Label>
+            <h2>Analyses</h2>
           </Menu.Item>
         ),
-        render: () => <AnalysisList></AnalysisList>,
+        render: () => <div className="p-t-25"><AnalysisList></AnalysisList></div>,
       },
     ]
 

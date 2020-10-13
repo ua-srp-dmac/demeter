@@ -131,7 +131,8 @@ export default class FileList extends Component {
 
   renderLoading() {
     return (
-      <Container>        <Loader active inline='centered'>Loading</Loader>
+      <Container>
+        <Loader active inline='centered'>Loading</Loader>
       </Container>
     )
   }
@@ -178,9 +179,7 @@ export default class FileList extends Component {
 
       <>
       <Container>
-        <Header as='h1'>Files </Header>
-        
-        
+                
         { this.state.fileList &&
           <>
             <p className="p-t-15">1. Select the type of analysis you would like to run.</p>

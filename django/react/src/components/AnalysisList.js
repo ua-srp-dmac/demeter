@@ -48,7 +48,6 @@ export default class FileList extends Component {
 
       <>
       <Container>
-        <Header as='h1' class="p-t-15">Analyses</Header>
         { this.state.analyses &&
             <Table basic='very' className="accordian">
                 <Table.Header>

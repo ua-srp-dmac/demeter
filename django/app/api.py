@@ -314,8 +314,11 @@ def star_analysis(request):
                # fastq file
                "fce80642-0837-11eb-9cfa-008cfa5ae621_14784ac2-0362-11eb-98aa-008cfa5ae621": fastq,
                # sjdbOverhang
-               "fce80642-0837-11eb-9cfa-008cfa5ae621_8b35148e-0a5f-11eb-9602-008cfa5ae621": sjdbOverhang
+               "fce80642-0837-11eb-9cfa-008cfa5ae621_8b35148e-0a5f-11eb-9602-008cfa5ae621": sjdbOverhang,
             }
+
+            if 'fastq.gz' in fastq:
+                human_config["fce80642-0837-11eb-9cfa-008cfa5ae621_7080506c-0d80-11eb-b774-008cfa5ae621"] = 'gunzip -c'
 
             # mouse_config = {
             #    # index folder
