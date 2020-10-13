@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Table } from 'semantic-ui-react'
 import { Container, Header, Loader, Icon, Dropdown, Button, Checkbox } from 'semantic-ui-react'
 import axios from '../axios';
-
+import AnalysisList from './AnalysisList';
 
 export default class FileList extends Component {
   
@@ -30,7 +30,6 @@ export default class FileList extends Component {
 
   async componentDidMount() {
     this.getFiles();
-    this.getAnalyses();
   }
 
   getFiles() {
@@ -40,19 +39,6 @@ export default class FileList extends Component {
     axios.get('/api/files/', {})
     .then(result => {
         this.setState({error: null, loading: false, fileList: result.data });
-    }) 
-    .catch((error) => {
-        console.log(error);
-    });
-  }
-
-  getAnalyses() {
-
-    this.setState({error: null, loading:true })
-  
-    axios.get('/api/analyses/', {})
-    .then(result => {
-        this.setState({error: null, loading: false, analyses: result.data });
     }) 
     .catch((error) => {
         console.log(error);
@@ -137,7 +123,6 @@ export default class FileList extends Component {
         submitting: false
       });
       this.getFiles();
-      this.getAnalyses();
     }) 
     .catch((error) => {
         console.log(error);
@@ -146,9 +131,7 @@ export default class FileList extends Component {
 
   renderLoading() {
     return (
-      <Container>
-        <Header as='h1'>Your Files</Header>
-        <Loader active inline='centered'>Loading</Loader>
+      <Container>        <Loader active inline='centered'>Loading</Loader>
       </Container>
     )
   }
@@ -274,51 +257,6 @@ export default class FileList extends Component {
           </>
         }
 
-        <div class="ui divider p-t-15"></div>
-
-        <Header as='h1' class="p-t-15">Analyses</Header>
-        { this.state.analyses &&
-            <Table basic='very'>
-                <Table.Header>
-                <Table.Row>
-                    <Table.HeaderCell>Name</Table.HeaderCell>
-                    <Table.HeaderCell>Start Date</Table.HeaderCell>
-                    <Table.HeaderCell>Status</Table.HeaderCell>
-                    <Table.HeaderCell>End Date</Table.HeaderCell>
-                </Table.Row>
-                </Table.Header>
-
-                <Table.Body>
-                {this.state.analyses.map((item, i) => {
-                    return (
-                        <Table.Row obj={item} key={i}>
-                            <Table.Cell>{item.name}</Table.Cell>
-                            <Table.Cell>{item.start_date}</Table.Cell>
-                            <Table.Cell>
-                              { (item.status === 'Submitted') && 
-                                <><span className="text-orange">{item.status}</span></>
-                              }
-                              { (item.status === 'Running') && 
-                                <><span className="text-green">{item.status}</span></>
-                              }
-                              { (item.status === 'Failed') && 
-                                <><span className="text-red">{item.status}</span></>
-                              }
-                              { (item.status === 'Completed') && 
-                                <><span className="text-blue">{item.status}</span></>
-                              }
-                              { (item.status === 'Canceled') && 
-                                <span className="text-grey">{item.status}</span>
-                              }
-                            
-                            </Table.Cell>
-                            <Table.Cell>{item.end_date}</Table.Cell>
-                        </Table.Row>
-                    )
-                })}
-                </Table.Body>
-            </Table>
-        }
         </Container>
       </>
     )
