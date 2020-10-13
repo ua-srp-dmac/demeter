@@ -116,13 +116,14 @@ export default class FileList extends Component {
 
     axios.post(endpoint, request)
     .then(result => {
+      this.props.notify('Your analysis was submitted.');
       this.setState({
         selectionStatus: {},
         selectedFiles: [],
         analysisType: null,
         submitting: false
       });
-      this.getFiles();
+      this.props.updateTab(1);
     }) 
     .catch((error) => {
         console.log(error);
@@ -243,15 +244,17 @@ export default class FileList extends Component {
           
             
             {this.state.submitting ? 
-                <span className="p-t-15">
+                <div className="m-t-25">
                   <Button primary loading disabled>Launch Analysis</Button>
-                </span>  
+                </div>  
                 :
-                <span className="p-t-15">
+                <div className="m-t-25">
                   <Button disabled={!submitEnabled} primary onClick={() => this.handleSubmit()}>Launch Analysis</Button>
-                </span>
+                </div>
                 
             }
+
+            
             
           </>
         }
