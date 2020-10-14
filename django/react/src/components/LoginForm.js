@@ -51,8 +51,11 @@ export default class LoginForm extends Component {
 
     return (
       <Grid textAlign='center' style={{ height: '80vh' }} verticalAlign='middle'>
-      <Grid.Column style={{ maxWidth: 450 }}>
+      <Grid.Column style={{ maxWidth: 475 }}>
         <Header as='h2' color='teal' textAlign='center'>
+          Welcome to UArizona Superfund DMAC
+        </Header>
+        <Header as='h3' color='grey' textAlign='center'>
           Log-in with your CyVerse account
         </Header>
         <Form size='large' onSubmit={this.login}>

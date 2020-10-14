@@ -84,7 +84,9 @@ export default class FileList extends Component {
                               }
                             
                             </Table.Cell>
-                            <Table.Cell>{item.end_date}</Table.Cell>
+                            <Table.Cell>
+                              {item.end_date === '1970-01-01 00:00:00' ? <>-----</> : item.end_date }
+                            </Table.Cell>
                         </Table.Row>
 
                     )
