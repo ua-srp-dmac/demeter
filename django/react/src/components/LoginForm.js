@@ -50,7 +50,7 @@ export default class LoginForm extends Component {
     const submitEnabled = (username.length > 0 && password.length > 0 && !loading)
 
     return (
-      <Grid textAlign='center' style={{ height: '80vh' }} verticalAlign='middle'>
+      <Grid textAlign='center' style={{ height: '50vh' }} verticalAlign='middle'>
       <Grid.Column style={{ maxWidth: 475 }}>
         <Header as='h2' color='teal' textAlign='center'>
           Welcome to UArizona Superfund DMAC
