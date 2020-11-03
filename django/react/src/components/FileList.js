@@ -15,6 +15,7 @@ export default class FileList extends Component {
       selectionStatus: {},
       selectedGenomes: {},
       selectedReadLengths: {},
+      selectedGroups: {},
       selectedFiles: [],
       analysisType: null,
       readLength: null,
@@ -23,6 +24,7 @@ export default class FileList extends Component {
     this.getFiles = this.getFiles.bind(this)
     this.handleGenomeChange = this.handleGenomeChange.bind(this);
     this.handleReadLengthChange = this.handleReadLengthChange.bind(this);
+    this.handleGroupChange = this.handleGroupChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleCheck = this.handleCheck.bind(this);
 
@@ -83,6 +85,15 @@ export default class FileList extends Component {
     });
   }
 
+  handleGroupChange (e, data, file_path) {
+    this.setState({
+      selectedGroups: {
+        ...this.state.selectedGroups,
+        [file_path]: data.value
+      }, 
+    });
+  }
+
   handleSubmit() {
 
     this.setState({submitting:true });
@@ -91,7 +102,7 @@ export default class FileList extends Component {
 
     for (var i = 0; i < this.state.selectedFiles.length; i++) {
       var file = this.state.selectedFiles[i];
-      var file_obj = { path: file, genome: this.state.selectedGenomes[file] }
+      var file_obj = { path: file, genome: this.state.selectedGenomes[file], group: this.state.selectedGroups[file]}
       if (this.state.analysisType === 'RNAseq') {
         file_obj.sjdbOverhang = this.state.selectedReadLengths[file]
       }
@@ -116,7 +127,7 @@ export default class FileList extends Component {
 
     axios.post(endpoint, request)
     .then(result => {
-      this.props.notify('Your analysis was submitted.');
+      this.props.notifySuccess('Your analysis was submitted.');
       this.setState({
         selectionStatus: {},
         selectedFiles: [],
@@ -126,7 +137,10 @@ export default class FileList extends Component {
       this.props.updateTab(1);
     }) 
     .catch((error) => {
-        console.log(error);
+      this.props.notifyError('There was an error submitting your analysis.');
+      this.setState({
+        submitting: false
+      });
     });
   }
 
@@ -149,6 +163,24 @@ export default class FileList extends Component {
       { key: 'DNAseq' , text: 'DNAseq' , value: 'DNAseq' },
       { key: 'RNAseq' , text: 'RNAseq' , value: 'RNAseq' },
     ];
+
+    const readTypeOptions = [
+      // { key: 'Paired' , text: 'Paired' , value: 'Paired' },
+      { key: 'Unpaired' , text: 'Unpaired' , value: 'Unpaired' },
+    ];
+
+    const groupOptions = [
+      { key: 'Group 1' , text: 'Group 1' , value: 1 },
+      { key: 'Group 2' , text: 'Group 2' , value: 2 },
+      { key: 'Group 3' , text: 'Group 3' , value: 3 },
+      { key: 'Group 4' , text: 'Group 4' , value: 4 },
+      { key: 'Group 5' , text: 'Group 5' , value: 5 },
+      { key: 'Group 6' , text: 'Group 6' , value: 6 },
+      { key: 'Group 7' , text: 'Group 7' , value: 7 },
+      { key: 'Group 8' , text: 'Group 8' , value: 8 },
+      { key: 'Group 9' , text: 'Group 9' , value: 9 },
+      { key: 'Group 10' , text: 'Group 10' , value: 10 },
+    ]
 
     const readLengthOptions = [
       { key: '50bp' , text: '50bp' , value: '49' },
@@ -189,8 +221,14 @@ export default class FileList extends Component {
                       options={analysisOptions}
                       onChange={(e, data) => this.setState({analysisType: data.value})}>      
             </Dropdown>
+            <p className="p-t-15">2. Select the read type.</p>
+            <Dropdown placeholder='Select Read Type'
+                      selection
+                      options={readTypeOptions}
+                      onChange={(e, data) => this.setState({readType: data.value})}>      
+            </Dropdown>
             <p className="p-t-15">
-              2. Select the files you would like to process and specify their genome types{this.state.analysisType === 'RNAseq' && <span> and read lengths</span>}.
+              3. Select the files you would like to process and specify their genome types{this.state.analysisType === 'RNAseq' && <span> and read lengths</span>}.
             </p>
             <Table basic='very' className="p-t-15">
                 <Table.Header>
@@ -199,6 +237,8 @@ export default class FileList extends Component {
                     <Table.HeaderCell>Name</Table.HeaderCell>
                     <Table.HeaderCell>Size</Table.HeaderCell>
                     <Table.HeaderCell>Last Modified</Table.HeaderCell>
+                    <Table.HeaderCell></Table.HeaderCell>
+                    { this.state.analysisType === 'RNAseq' && <Table.HeaderCell></Table.HeaderCell>}
                     <Table.HeaderCell></Table.HeaderCell>
                 </Table.Row>
                 </Table.Header>
@@ -218,21 +258,42 @@ export default class FileList extends Component {
                             <Table.Cell>
                               { this.state.selectionStatus[file.path] &&
                                 <>
-                                <Dropdown placeholder='Genome'
-                                        className="m-r-10"
+                                <Dropdown placeholder='Select Genome'
                                         value={this.state.selectedGenomes[file.path]}
                                         selection
                                         options={genomeOptions}
                                         onChange={(e, data) => this.handleGenomeChange(e, data, file.path)}>      
                                 </Dropdown> 
-                                { this.state.analysisType === 'RNAseq' &&
+                        
+                                </>
+                              }
+                            </Table.Cell>
+                            { this.state.analysisType === 'RNAseq' &&
+                            <Table.Cell>
+                              { this.state.selectionStatus[file.path] &&
+                                <>
+
+                                
                                   <Dropdown placeholder='Select Read Length'
+
                                             value={this.state.selectedReadLengths[file.path]}
                                             selection
                                             options={readLengthOptions}
                                             onChange={(e, data) => this.handleReadLengthChange(e, data, file.path)}>      
                                   </Dropdown>
-                                }
+                                
+                                </>
+                              }
+                            </Table.Cell>}
+                            <Table.Cell>
+                              { this.state.selectionStatus[file.path] &&
+                                <>
+                                <Dropdown placeholder='Select Group'
+                                          value={this.state.selectedGroups[file.path]}
+                                          selection
+                                          options={groupOptions}
+                                          onChange={(e, data) => this.handleGroupChange(e, data, file.path)}>      
+                                </Dropdown>
                                 </>
                               }
                             </Table.Cell>

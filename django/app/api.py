@@ -289,7 +289,6 @@ def star_analysis(request):
 
     if request.method == "POST" and request.user.is_authenticated:
         
-        
         # RNAseq pipeline app ID
         app_id = 'd6dc40a8-0837-11eb-9cfa-008cfa5ae621'
         system_id = 'de'
@@ -298,35 +297,45 @@ def star_analysis(request):
         home_directory = '/iplant/home/' + username + '/'
 
         form_data = json.loads(request.body.decode())
+        selected_files = form_data['selectedFiles']
 
-        for item in form_data['selectedFiles']:
+        for group in range(1,10):
 
-            genome = item['genome']
-            fastq = item['path']
-            sjdbOverhang = item['sjdbOverhang']
-            
-            file_name = fastq.split(home_directory)[1].split('.')[0]
+            group_files = [x for x in selected_files if x['group'] == group]
+            if not group_files:
+                continue
+
+            fastq = []
+
+            for item in group_files:
+                fastq.append(item['path'])
+
+            genome = group_files[0]['genome']
+            sjdbOverhang = group_files[0]['sjdbOverhang']
+            file_name = group_files[0]['path'].split(home_directory)[1].split('.')[0]
         
             # app parameters
             human_config = {
                # index folder
-               "fce80642-0837-11eb-9cfa-008cfa5ae621_1475e8b8-0362-11eb-98aa-008cfa5ae621": "/iplant/home/michellito/genomes/hg38/Sequence/STAR",
-               # fastq file
-               "fce80642-0837-11eb-9cfa-008cfa5ae621_14784ac2-0362-11eb-98aa-008cfa5ae621": fastq,
+               "286b30e0-1df1-11eb-b141-008cfa5ae621_90b9c7fe-1493-11eb-82d6-008cfa5ae621": "/iplant/home/michellito/genomes/hg38/Sequence/STAR",
+               # fastq files
+               "286b30e0-1df1-11eb-b141-008cfa5ae621_90bb0c4a-1493-11eb-82d6-008cfa5ae621": fastq,
                # sjdbOverhang
-               "fce80642-0837-11eb-9cfa-008cfa5ae621_8b35148e-0a5f-11eb-9602-008cfa5ae621": sjdbOverhang,
+               "286b30e0-1df1-11eb-b141-008cfa5ae621_90bc2558-1493-11eb-82d6-008cfa5ae621": sjdbOverhang,
             }
 
-            if 'fastq.gz' in fastq:
-                human_config["fce80642-0837-11eb-9cfa-008cfa5ae621_7080506c-0d80-11eb-b774-008cfa5ae621"] = 'gunzip -c'
+            # paired files: 286b30e0-1df1-11eb-b141-008cfa5ae621_1c79dae0-1494-11eb-9c84-008cfa5ae621
+
+            if 'fastq.gz' in fastq[0]:
+                human_config["286b30e0-1df1-11eb-b141-008cfa5ae621_90bf01a6-1493-11eb-82d6-008cfa5ae621"] = 'gunzip -c'
 
             # mouse_config = {
             #    # index folder
-            #    "fce80642-0837-11eb-9cfa-008cfa5ae621_1475e8b8-0362-11eb-98aa-008cfa5ae621": "/iplant/home/michellito/genomes/bowtie2_mm10",
-            #    # fastq file
-            #    "fce80642-0837-11eb-9cfa-008cfa5ae621_14784ac2-0362-11eb-98aa-008cfa5ae621": fastq,
+            #    "286b30e0-1df1-11eb-b141-008cfa5ae621_90b9c7fe-1493-11eb-82d6-008cfa5ae621": "/iplant/home/michellito/genomes/bowtie2_mm10",
+            #    # fastq files
+            #    "286b30e0-1df1-11eb-b141-008cfa5ae621_90bb0c4a-1493-11eb-82d6-008cfa5ae621": fastq,
                 # sjdbOverhang
-            #    "fce80642-0837-11eb-9cfa-008cfa5ae621_8b35148e-0a5f-11eb-9602-008cfa5ae621": sjdbOverhang
+            #    "286b30e0-1df1-11eb-b141-008cfa5ae621_90bc2558-1493-11eb-82d6-008cfa5ae621": sjdbOverhang
             # }
 
             time = timezone.now()
@@ -346,6 +355,8 @@ def star_analysis(request):
             #     request_body['config'] = human_config
             request_body['config'] = human_config
 
+            print(request_body)
+
             try:
                 print('submitting to cyverse!')
                 acc = CyVerseAccount.objects.get(user__username=username)
@@ -356,8 +367,7 @@ def star_analysis(request):
                 # return JsonResponse(r.json())
 
             except:
-                print ("testing here")
-                pass
+                return HttpResponse(status=400)
 
     return HttpResponse(status=200)
 

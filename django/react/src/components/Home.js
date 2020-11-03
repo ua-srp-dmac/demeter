@@ -16,11 +16,16 @@ export default class Home extends Component {
 
     this.updateTab = this.updateTab.bind(this);
     this.handleTabChange = this.handleTabChange.bind(this);
-    this.notify = this.notify.bind(this);
+    this.notifySuccess = this.notifySuccess.bind(this);
+    this.notifyError = this.notifyError.bind(this);
   };
 
-  notify(message) {
-    NotificationManager.success('Submitted', message);
+  notifySuccess(message) {
+    NotificationManager.success('Success', message);
+  }
+
+  notifyError(message) {
+    NotificationManager.error('Error', message);
   }
 
   updateTab (tab) {
@@ -40,7 +45,7 @@ export default class Home extends Component {
             <h2>Files</h2>
           </Menu.Item>
         ),
-        render: () => <div className="p-t-25"><FileList updateTab={this.updateTab} notify={this.notify}></FileList></div>
+        render: () => <div className="p-t-25"><FileList updateTab={this.updateTab} notifySuccess={this.notifySuccess} notifyError={this.notifyError}></FileList></div>
       },
       {
         menuItem: (
