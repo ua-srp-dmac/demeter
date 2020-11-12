@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Table } from 'semantic-ui-react'
-import { Container, Header, Loader, Icon, Dropdown, Button, Checkbox } from 'semantic-ui-react'
+import { Container, Header, Loader, Icon, Dropdown, Button, Checkbox, Input } from 'semantic-ui-react'
 import axios from '../axios';
 import AnalysisList from './AnalysisList';
 
@@ -16,6 +16,8 @@ export default class FileList extends Component {
       selectedGenomes: {},
       selectedReadLengths: {},
       selectedGroups: {},
+      selectedPairs: {},
+      selectedPositions: {},
       selectedFiles: [],
       analysisType: null,
       readType: null,
@@ -81,8 +83,17 @@ export default class FileList extends Component {
 
   handlePairChange (e, data, file_path) {
     this.setState({
-      selectedGenomes: {
-        ...this.state.selectedGenomes,
+      selectedPairs: {
+        ...this.state.selectedPairs,
+        [file_path]: data.value
+      }, 
+    });
+  }
+
+  handlePositionChange (e, data, file_path) {
+    this.setState({
+      selectedPositions: {
+        ...this.state.selectedPositions,
         [file_path]: data.value
       }, 
     });
@@ -115,10 +126,18 @@ export default class FileList extends Component {
 
     for (var i = 0; i < this.state.selectedFiles.length; i++) {
       var file = this.state.selectedFiles[i];
-      var file_obj = { path: file, genome: this.state.selectedGenomes[file], group: this.state.selectedGroups[file]}
+      var file_obj = { path: file, genome: this.state.selectedGenomes[file] }
       if (this.state.analysisType === 'RNAseq') {
         file_obj.sjdbOverhang = this.state.selectedReadLengths[file]
       }
+      if (this.state.readType === 'Paired') {
+        file_obj.pair = this.state.selectedPairs[file]
+        file_obj.position = this.state.selectedPositions[file]
+      }
+      if (this.state.readType === 'Unpaired') {
+        file_obj.group = this.state.selectedGroups[file];
+      }
+      
       files.push(file_obj);
     }
 
@@ -131,12 +150,25 @@ export default class FileList extends Component {
     var endpoint;
 
     if (this.state.analysisType === 'DNAseq') {
-      endpoint = '/api/bowtie2_analysis/'
+      if (this.state.readType === 'Unpaired') {
+        endpoint = '/api/bowtie2_analysis/'
+      } else {
+        endpoint = '/api/bowtie2_paired/'
+      }
+      
     } else if (this.state.analysisType === 'RNAseq') {
-      endpoint = '/api/star_analysis/'
+
+      if (this.state.readType === 'Unpaired') {
+        endpoint = '/api/star_analysis/'
+      } else {
+        endpoint = '/api/star_paired/'
+      }
+      
     } else {
       return;
     }
+
+
 
     axios.post(endpoint, request)
     .then(result => {
@@ -193,6 +225,11 @@ export default class FileList extends Component {
       { key: 'Group 8' , text: 'Group 8' , value: 8 },
       { key: 'Group 9' , text: 'Group 9' , value: 9 },
       { key: 'Group 10' , text: 'Group 10' , value: 10 },
+    ]
+
+    const pairOptions = [
+      { key: 'Group 1' , text: 'Group 1' , value: 1 },
+      { key: 'Group 2' , text: 'Group 2' , value: 2 },
     ]
 
     const readLengthOptions = [
@@ -324,8 +361,8 @@ export default class FileList extends Component {
                                   <Dropdown placeholder='Select Pair'
                                             value={this.state.selectedPairs[file.path]}
                                             selection
-                                            options={groupOptions}
-                                            onChange={(e, data) => this.handleGroupChange(e, data, file.path)}>      
+                                            options={pairOptions}
+                                            onChange={(e, data) => this.handlePairChange(e, data, file.path)}>      
                                   </Dropdown>
                                   </>
                                 }
@@ -333,12 +370,18 @@ export default class FileList extends Component {
                               <Table.Cell>
                                 { this.state.selectionStatus[file.path] &&
                                   <>
-                                  <Dropdown placeholder='Select Order'
-                                            value={this.state.selectedPairs[file.path]}
+                                  <Input 
+                                    type="number"
+                                    min="0"
+                                    placeholder="Enter Position"
+                                    value={this.state.selectedPositions[file.path]}
+                                    onChange={(e, data) => this.handlePositionChange(e, data, file.path)}/>
+                                  {/* <Dropdown placeholder='Select Position'
+                                            value={this.state.selectedPositions[file.path]}
                                             selection
                                             options={groupOptions}
-                                            onChange={(e, data) => this.handleGroupChange(e, data, file.path)}>      
-                                  </Dropdown>
+                                            onChange={(e, data) => this.handlePositionChange(e, data, file.path)}>      
+                                  </Dropdown> */}
                                   </>
                                 }
                               </Table.Cell>

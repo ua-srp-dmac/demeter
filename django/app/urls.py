@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path
 
 from .api import app_login, app_logout, is_user_logged_in, file_list
-from .api import bowtie2_analysis, analysis_list, star_analysis
+from .api import bowtie2_analysis, analysis_list, star_analysis, bowtie2_paired, star_paired
 from .views import FrontendAppView
 
 urlpatterns = [
@@ -30,5 +30,7 @@ urlpatterns = [
     path('api/files/', file_list, name='file_list'),
     path('api/analyses/', analysis_list, name='analysis_list'),
     path('api/bowtie2_analysis/', bowtie2_analysis, name='bowtie2_analysis'),
+    path('api/bowtie2_paired/', bowtie2_paired, name='bowtie2_paired'),
     path('api/star_analysis/', star_analysis, name='star_analysis'),
+    path('api/star_paired/', star_paired, name='star_paired'),
 ]

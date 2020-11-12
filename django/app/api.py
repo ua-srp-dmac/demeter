@@ -291,6 +291,205 @@ def bowtie2_analysis(request):
     return HttpResponse(status=200)
 
 
+def bowtie2_paired(request):
+    """ Submits an analysis to the DE.
+    """
+
+    if request.method == "POST" and request.user.is_authenticated:
+        
+        # DNAseq pipeline app ID
+        app_id = '10cabb5a-0757-11eb-8b4c-008cfa5ae621'
+
+        #bowtie2 app ID
+        # app_id = '4f9b03f0-f2d3-11ea-9df7-008cfa5ae621'
+        system_id = 'de'
+
+        username = request.user.username
+        home_directory = '/iplant/home/' + username + '/'
+
+        form_data = json.loads(request.body.decode())
+        selected_files = form_data['selectedFiles']
+
+        
+        group1 = [x for x in selected_files if x['pair'] == 1]
+        group2 = [x for x in selected_files if x['pair'] == 2]
+        # print(group1)
+        # print(group2)
+        
+        sorted_group1 = sorted(group1, key=lambda k: k['position']) 
+        sorted_group2 = sorted(group2, key=lambda k: k['position']) 
+        print(sorted_group1)
+        print(sorted_group2)
+
+        fastq = []
+        paired = []
+
+        for item in sorted_group1:
+            fastq.append(item['path'])
+        
+        for item in sorted_group2:
+            paired.append(item['path'])
+
+
+        genome = sorted_group1[0]['genome']
+        file_name = sorted_group1[0]['path'].split(home_directory)[1].split('.')[0]
+        print(file_name)
+
+        # bowtie2config contains app parameters
+        human_config = {
+            # index folder
+            "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9ce63e-f2d3-11ea-9df7-008cfa5ae621": "/iplant/home/michellito/genomes/hg38/Sequence/Bowtie2Index",
+            # index name
+            "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9d9660-f2d3-11ea-9df7-008cfa5ae621": "genome",
+            # fastq file
+            "d743b2be-0842-11eb-9cbd-008cfa5ae621_644b7b2c-251e-11eb-8a8f-008cfa5ae621": fastq,
+            "d743b2be-0842-11eb-9cbd-008cfa5ae621_644c61c2-251e-11eb-8a8f-008cfa5ae621": paired,
+        }
+
+        # paired arg id:  d743b2be-0842-11eb-9cbd-008cfa5ae621_644c61c2-251e-11eb-8a8f-008cfa5ae621
+
+        mouse_config = {
+            # index folder
+            "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9ce63e-f2d3-11ea-9df7-008cfa5ae621": "/iplant/home/michellito/genomes/bowtie2_mm10",
+            # index name
+            "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9d9660-f2d3-11ea-9df7-008cfa5ae621": "mm10",
+            # fastq file
+            "d743b2be-0842-11eb-9cbd-008cfa5ae621_644b7b2c-251e-11eb-8a8f-008cfa5ae621": fastq,
+            "d743b2be-0842-11eb-9cbd-008cfa5ae621_644c61c2-251e-11eb-8a8f-008cfa5ae621": paired,
+        }
+
+        time = timezone.now()
+
+        request_body = {
+            "name": file_name + "_DNAseq_" + str(time),
+            "app_id": app_id,
+            "system_id": system_id,
+            "debug": False,
+            "output_dir": "/iplant/home/" + username + "/analyses",
+            "notify": True
+        }
+
+        if genome == 'mouse':
+            request_body['config'] = mouse_config
+        elif genome == 'human':
+            request_body['config'] = human_config
+
+        try:
+            print('submitting to cyverse!')
+            acc = CyVerseAccount.objects.get(user__username=username)
+            auth_headers = {"Authorization": "Bearer " + acc.api_token}
+            r = requests.post("https://de.cyverse.org/terrain/analyses", headers=auth_headers, json=request_body)
+            print (r.content)
+            r.raise_for_status()
+            # return JsonResponse(r.json())
+
+        except:
+            print ("testing here")
+            pass
+
+    return HttpResponse(status=200)
+
+
+def star_paired(request):
+    """ Submits an analysis to the DE.
+    """
+
+    if request.method == "POST" and request.user.is_authenticated:
+        
+        # RNAseq pipeline app ID
+        app_id = 'd6dc40a8-0837-11eb-9cfa-008cfa5ae621'
+        system_id = 'de'
+
+        username = request.user.username
+        home_directory = '/iplant/home/' + username + '/'
+
+        form_data = json.loads(request.body.decode())
+        selected_files = form_data['selectedFiles']
+
+        group1 = [x for x in selected_files if x['pair'] == 1]
+        group2 = [x for x in selected_files if x['pair'] == 2]
+        # print(group1)
+        # print(group2)
+        
+        sorted_group1 = sorted(group1, key=lambda k: k['position']) 
+        sorted_group2 = sorted(group2, key=lambda k: k['position']) 
+        print(sorted_group1)
+        print(sorted_group2)
+
+        fastq = []
+        paired = []
+
+        for item in sorted_group1:
+            fastq.append(item['path'])
+        
+        for item in sorted_group2:
+            paired.append(item['path'])
+
+
+        genome = sorted_group1[0]['genome']
+        sjdbOverhang = sorted_group1[0]['sjdbOverhang']
+        file_name = sorted_group1[0]['path'].split(home_directory)[1].split('.')[0]
+        print(file_name)
+
+        # app parameters
+        human_config = {
+            # index folder
+            "286b30e0-1df1-11eb-b141-008cfa5ae621_90b9c7fe-1493-11eb-82d6-008cfa5ae621": "/iplant/home/michellito/genomes/hg38/Sequence/STAR",
+            # fastq files
+            "286b30e0-1df1-11eb-b141-008cfa5ae621_90bb0c4a-1493-11eb-82d6-008cfa5ae621": fastq,
+            # sjdbOverhang
+            "286b30e0-1df1-11eb-b141-008cfa5ae621_90bc2558-1493-11eb-82d6-008cfa5ae621": sjdbOverhang,
+            "286b30e0-1df1-11eb-b141-008cfa5ae621_1c79dae0-1494-11eb-9c84-008cfa5ae621": paired
+        }
+
+        # paired files: 286b30e0-1df1-11eb-b141-008cfa5ae621_1c79dae0-1494-11eb-9c84-008cfa5ae621
+
+        if 'fastq.gz' in fastq[0]:
+            human_config["286b30e0-1df1-11eb-b141-008cfa5ae621_90bf01a6-1493-11eb-82d6-008cfa5ae621"] = 'gunzip -c'
+
+        # mouse_config = {
+        #    # index folder
+        #    "286b30e0-1df1-11eb-b141-008cfa5ae621_90b9c7fe-1493-11eb-82d6-008cfa5ae621": "/iplant/home/michellito/genomes/bowtie2_mm10",
+        #    # fastq files
+        #    "286b30e0-1df1-11eb-b141-008cfa5ae621_90bb0c4a-1493-11eb-82d6-008cfa5ae621": fastq,
+            # sjdbOverhang
+        #    "286b30e0-1df1-11eb-b141-008cfa5ae621_90bc2558-1493-11eb-82d6-008cfa5ae621": sjdbOverhang,
+        # "286b30e0-1df1-11eb-b141-008cfa5ae621_1c79dae0-1494-11eb-9c84-008cfa5ae621": paired
+        # }
+
+        time = timezone.now()
+
+        request_body = {
+            "name": file_name + "_RNAseq_" + str(time),
+            "app_id": app_id,
+            "system_id": system_id,
+            "debug": False,
+            "output_dir": "/iplant/home/" + username + "/analyses",
+            "notify": True
+        }
+
+        # if genome == 'mouse':
+        #     request_body['config'] = mouse_config
+        # elif genome == 'human':
+        #     request_body['config'] = human_config
+        request_body['config'] = human_config
+
+        print(request_body)
+
+        try:
+            print('submitting to cyverse!')
+            acc = CyVerseAccount.objects.get(user__username=username)
+            auth_headers = {"Authorization": "Bearer " + acc.api_token}
+            r = requests.post("https://de.cyverse.org/terrain/analyses", headers=auth_headers, json=request_body)
+            print (r.content)
+            r.raise_for_status()
+            # return JsonResponse(r.json())
+
+        except:
+            return HttpResponse(status=400)
+
+    return HttpResponse(status=200)
+
 def star_analysis(request):
     """ Submits an analysis to the DE.
     """
@@ -378,7 +577,6 @@ def star_analysis(request):
                 return HttpResponse(status=400)
 
     return HttpResponse(status=200)
-
 
 # POST /terrain/secured/filesystem/{data-id}/metadata
 
