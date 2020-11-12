@@ -221,15 +221,21 @@ def bowtie2_analysis(request):
         home_directory = '/iplant/home/' + username + '/'
 
         form_data = json.loads(request.body.decode())
+        selected_files = form_data['selectedFiles']
 
-        for item in form_data['selectedFiles']:
+        for group in range(1,10):
 
-            genome = item['genome']
-            fastq = item['path']
-            
+            group_files = [x for x in selected_files if x['group'] == group]
+            if not group_files:
+                continue
 
-            file_name = fastq.split(home_directory)[1].split('.')[0]
-            
+            fastq = []
+
+            for item in group_files:
+                fastq.append(item['path'])
+
+            genome = group_files[0]['genome']
+            file_name = group_files[0]['path'].split(home_directory)[1].split('.')[0]
             print(file_name)
 
             # bowtie2config contains app parameters
@@ -239,8 +245,10 @@ def bowtie2_analysis(request):
                # index name
                "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9d9660-f2d3-11ea-9df7-008cfa5ae621": "genome",
                # fastq file
-               "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9deef8-f2d3-11ea-9df7-008cfa5ae621": fastq,
+               "d743b2be-0842-11eb-9cbd-008cfa5ae621_644b7b2c-251e-11eb-8a8f-008cfa5ae621": fastq,
             }
+
+            # paired arg id:  d743b2be-0842-11eb-9cbd-008cfa5ae621_644c61c2-251e-11eb-8a8f-008cfa5ae621
 
             mouse_config = {
                # index folder
@@ -248,7 +256,7 @@ def bowtie2_analysis(request):
                # index name
                "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9d9660-f2d3-11ea-9df7-008cfa5ae621": "mm10",
                # fastq file
-               "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9deef8-f2d3-11ea-9df7-008cfa5ae621": fastq,
+               "d743b2be-0842-11eb-9cbd-008cfa5ae621_644b7b2c-251e-11eb-8a8f-008cfa5ae621": fastq,
             }
 
             time = timezone.now()

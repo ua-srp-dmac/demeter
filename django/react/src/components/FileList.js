@@ -18,12 +18,15 @@ export default class FileList extends Component {
       selectedGroups: {},
       selectedFiles: [],
       analysisType: null,
+      readType: null,
       readLength: null,
     };
 
     this.getFiles = this.getFiles.bind(this)
     this.handleGenomeChange = this.handleGenomeChange.bind(this);
     this.handleReadLengthChange = this.handleReadLengthChange.bind(this);
+    this.handleGroupChange = this.handleGroupChange.bind(this);
+    this.handlePairChange = this.handlePairChange.bind(this);
     this.handleGroupChange = this.handleGroupChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleCheck = this.handleCheck.bind(this);
@@ -75,6 +78,16 @@ export default class FileList extends Component {
       }, 
     });
   }
+
+  handlePairChange (e, data, file_path) {
+    this.setState({
+      selectedGenomes: {
+        ...this.state.selectedGenomes,
+        [file_path]: data.value
+      }, 
+    });
+  }
+
 
   handleReadLengthChange (e, data, file_path) {
     this.setState({
@@ -165,7 +178,7 @@ export default class FileList extends Component {
     ];
 
     const readTypeOptions = [
-      // { key: 'Paired' , text: 'Paired' , value: 'Paired' },
+      { key: 'Paired' , text: 'Paired' , value: 'Paired' },
       { key: 'Unpaired' , text: 'Unpaired' , value: 'Unpaired' },
     ];
 
@@ -233,13 +246,14 @@ export default class FileList extends Component {
             <Table basic='very' className="p-t-15">
                 <Table.Header>
                 <Table.Row>
-                    <Table.HeaderCell></Table.HeaderCell>
+                    { this.state.analysisType && this.state.readType && <Table.HeaderCell></Table.HeaderCell> }
                     <Table.HeaderCell>Name</Table.HeaderCell>
                     <Table.HeaderCell>Size</Table.HeaderCell>
                     <Table.HeaderCell>Last Modified</Table.HeaderCell>
                     <Table.HeaderCell></Table.HeaderCell>
                     { this.state.analysisType === 'RNAseq' && <Table.HeaderCell></Table.HeaderCell>}
                     <Table.HeaderCell></Table.HeaderCell>
+                    { this.state.readType === 'Paired' && <Table.HeaderCell></Table.HeaderCell> }
                 </Table.Row>
                 </Table.Header>
 
@@ -247,11 +261,13 @@ export default class FileList extends Component {
                 {this.state.fileList.map((file, i) => {
                     return (
                         <Table.Row obj={file} key={file.path}>
+                            { this.state.analysisType && this.state.readType && 
                             <Table.Cell>
-                              <Checkbox
-                                onChange={(e, data) => this.handleCheck(e, data, file.path, i)}
-                                checked={file.selected}/>
-                            </Table.Cell>
+                            <Checkbox
+                              onChange={(e, data) => this.handleCheck(e, data, file.path, i)}
+                              checked={file.selected}/>
+                            </Table.Cell> }
+                            
                             <Table.Cell>{file.name}</Table.Cell>
                             <Table.Cell>{file.size}</Table.Cell>
                             <Table.Cell>{file.last_updated}</Table.Cell>
@@ -262,6 +278,7 @@ export default class FileList extends Component {
                                         value={this.state.selectedGenomes[file.path]}
                                         selection
                                         options={genomeOptions}
+                                        className="dropdown"
                                         onChange={(e, data) => this.handleGenomeChange(e, data, file.path)}>      
                                 </Dropdown> 
                         
@@ -285,6 +302,7 @@ export default class FileList extends Component {
                                 </>
                               }
                             </Table.Cell>}
+                            { this.state.readType === 'Unpaired' &&
                             <Table.Cell>
                               { this.state.selectionStatus[file.path] &&
                                 <>
@@ -297,6 +315,35 @@ export default class FileList extends Component {
                                 </>
                               }
                             </Table.Cell>
+                            }
+                            { this.state.readType === 'Paired' &&
+                            <>
+                              <Table.Cell>
+                                { this.state.selectionStatus[file.path] &&
+                                  <>
+                                  <Dropdown placeholder='Select Pair'
+                                            value={this.state.selectedPairs[file.path]}
+                                            selection
+                                            options={groupOptions}
+                                            onChange={(e, data) => this.handleGroupChange(e, data, file.path)}>      
+                                  </Dropdown>
+                                  </>
+                                }
+                              </Table.Cell>
+                              <Table.Cell>
+                                { this.state.selectionStatus[file.path] &&
+                                  <>
+                                  <Dropdown placeholder='Select Order'
+                                            value={this.state.selectedPairs[file.path]}
+                                            selection
+                                            options={groupOptions}
+                                            onChange={(e, data) => this.handleGroupChange(e, data, file.path)}>      
+                                  </Dropdown>
+                                  </>
+                                }
+                              </Table.Cell>
+                            </>
+                            }
                         </Table.Row>
                     )
                 })}
