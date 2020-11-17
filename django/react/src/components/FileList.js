@@ -228,8 +228,8 @@ export default class FileList extends Component {
     ]
 
     const pairOptions = [
-      { key: 'Group 1' , text: 'Group 1' , value: 1 },
-      { key: 'Group 2' , text: 'Group 2' , value: 2 },
+      { key: 'Pair 1' , text: 'Pair 1' , value: 1 },
+      { key: 'Pair 2' , text: 'Pair 2' , value: 2 },
     ]
 
     const readLengthOptions = [
