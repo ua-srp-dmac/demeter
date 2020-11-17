@@ -12,9 +12,11 @@ code {
     monospace;
 }
 
-.dropdown {
-  width: 50px !important; 
+.table-input {
+  width: 125px !important;
 }
+
+.ui.selection.dropdown.table-dropdown { min-width: 125px !important; }
 
 .appBody {
   padding-top: 100px;

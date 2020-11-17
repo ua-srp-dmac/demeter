@@ -210,8 +210,8 @@ export default class FileList extends Component {
     ];
 
     const readTypeOptions = [
-      { key: 'Paired' , text: 'Paired' , value: 'Paired' },
       { key: 'Unpaired' , text: 'Unpaired' , value: 'Unpaired' },
+      { key: 'Paired' , text: 'Paired' , value: 'Paired' },
     ];
 
     const groupOptions = [
@@ -312,11 +312,11 @@ export default class FileList extends Component {
                             <Table.Cell>
                               { this.state.selectionStatus[file.path] &&
                                 <>
-                                <Dropdown placeholder='Select Genome'
+                                <Dropdown placeholder='Genome'
                                         value={this.state.selectedGenomes[file.path]}
                                         selection
                                         options={genomeOptions}
-                                        className="dropdown"
+                                        className="table-dropdown"
                                         onChange={(e, data) => this.handleGenomeChange(e, data, file.path)}>      
                                 </Dropdown> 
                         
@@ -329,9 +329,9 @@ export default class FileList extends Component {
                                 <>
 
                                 
-                                  <Dropdown placeholder='Select Read Length'
-
+                                  <Dropdown placeholder='Read Length'
                                             value={this.state.selectedReadLengths[file.path]}
+                                            className="table-dropdown"
                                             selection
                                             options={readLengthOptions}
                                             onChange={(e, data) => this.handleReadLengthChange(e, data, file.path)}>      
@@ -344,8 +344,9 @@ export default class FileList extends Component {
                             <Table.Cell>
                               { this.state.selectionStatus[file.path] &&
                                 <>
-                                <Dropdown placeholder='Select Group'
+                                <Dropdown placeholder='Group'
                                           value={this.state.selectedGroups[file.path]}
+                                          className="table-dropdown"
                                           selection
                                           options={groupOptions}
                                           onChange={(e, data) => this.handleGroupChange(e, data, file.path)}>      
@@ -359,8 +360,9 @@ export default class FileList extends Component {
                               <Table.Cell>
                                 { this.state.selectionStatus[file.path] &&
                                   <>
-                                  <Dropdown placeholder='Select Pair'
+                                  <Dropdown placeholder='Pair'
                                             value={this.state.selectedPairs[file.path]}
+                                            className="table-dropdown"
                                             selection
                                             options={pairOptions}
                                             onChange={(e, data) => this.handlePairChange(e, data, file.path)}>      
@@ -374,8 +376,9 @@ export default class FileList extends Component {
                                   <Input 
                                     type="number"
                                     min="0"
-                                    placeholder="Enter Position"
+                                    placeholder="Position"
                                     value={this.state.selectedPositions[file.path]}
+                                    className="table-input"
                                     onChange={(e, data) => this.handlePositionChange(e, data, file.path)}/>
                                   {/* <Dropdown placeholder='Select Position'
                                             value={this.state.selectedPositions[file.path]}
