@@ -280,6 +280,7 @@ export default class FileList extends Component {
             <p className="p-t-15">
               3. Select the files you would like to process and specify their genome types{this.state.analysisType === 'RNAseq' && <span> and read lengths</span>}.
             </p>
+            <div className="table-container">   
             <Table basic='very' className="p-t-15">
                 <Table.Header>
                 <Table.Row>
@@ -392,6 +393,7 @@ export default class FileList extends Component {
                 })}
                 </Table.Body>
             </Table>
+            </div>
           
             
             {this.state.submitting ? 
