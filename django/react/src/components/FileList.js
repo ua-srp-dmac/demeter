@@ -62,6 +62,24 @@ export default class FileList extends Component {
       var index = selectedFiles.indexOf(file_path);
       selectedFiles.splice(index, 1);
     }
+
+    if (this.state.readType === 'Paired' && selectedFiles.length) {
+      let path = this.state.selectedFiles[0];
+      var readLength = this.state.selectedReadLengths[path];
+      var genome = this.state.selectedGenomes[path];
+      
+      this.setState({
+        selectedReadLengths: {
+          ...this.state.selectedReadLengths,
+          [file_path]: readLength
+        },
+        selectedGenomes: {
+          ...this.state.selectedGenomes,
+          [file_path]: genome
+        }
+      });
+    }
+
     this.setState({
       selectedFiles: selectedFiles,
       selectionStatus: {
@@ -69,6 +87,7 @@ export default class FileList extends Component {
         [file_path]: data.checked
       }, 
     });
+
   }
 
   handleGenomeChange (e, data, file_path) {
@@ -82,8 +101,13 @@ export default class FileList extends Component {
 
     for (var i = 0; i < this.state.selectedFiles.length; i++) {
       let path = this.state.selectedFiles[i];
-      if (path !== file_path && this.state.selectedGroups[path] == currentGroup) {
+      if (this.state.readType === 'Paired') {
         update[path] = data.value;
+      }
+      else {
+        if (path !== file_path && currentGroup && this.state.selectedGroups[path] == currentGroup) {
+          update[path] = data.value;
+        }
       }
     }
 
@@ -120,8 +144,13 @@ export default class FileList extends Component {
 
     for (var i = 0; i < this.state.selectedFiles.length; i++) {
       let path = this.state.selectedFiles[i];
-      if (path !== file_path && this.state.selectedGroups[path] == currentGroup) {
+      if (this.state.readType === 'Paired') {
         update[path] = data.value;
+      }
+      else {
+        if (path !== file_path && currentGroup && this.state.selectedGroups[path] == currentGroup) {
+          update[path] = data.value;
+        }
       }
     }
 
