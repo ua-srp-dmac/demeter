@@ -429,12 +429,9 @@ def star_paired(request):
         genome = sorted_group1[0]['genome']
         sjdbOverhang = sorted_group1[0]['sjdbOverhang']
         file_name = sorted_group1[0]['path'].split(home_directory)[1].split('.')[0]
-        print(file_name)
 
         # app parameters
         human_config = {
-            # index folder
-            "286b30e0-1df1-11eb-b141-008cfa5ae621_90b9c7fe-1493-11eb-82d6-008cfa5ae621": "/iplant/home/michellito/genomes/hg38/Sequence/STAR",
             # fastq files
             "286b30e0-1df1-11eb-b141-008cfa5ae621_90bb0c4a-1493-11eb-82d6-008cfa5ae621": fastq,
             # sjdbOverhang
@@ -443,6 +440,19 @@ def star_paired(request):
         }
 
         # paired files: 286b30e0-1df1-11eb-b141-008cfa5ae621_1c79dae0-1494-11eb-9c84-008cfa5ae621
+
+        index_folder = None
+
+        if sjdbOverhang == '49':
+            index_folder = "/iplant/home/michellito/genomes/hg38/Sequence/STAR"
+        elif sjdbOverhang == '74':
+            index_folder = "/iplant/home/michellito/genomes/hg38/Sequence/STAR"
+        elif sjdbOverhang == '99':
+            index_folder = "/iplant/home/michellito/genomes/hg38/Sequence/STAR"
+        elif sjdbOverhang == '149':
+            index_folder = "/iplant/home/michellito/genomes/hg38/Sequence/STAR"
+
+        human_config["286b30e0-1df1-11eb-b141-008cfa5ae621_90b9c7fe-1493-11eb-82d6-008cfa5ae621"] = index_folder
 
         if 'fastq.gz' in fastq[0]:
             human_config["286b30e0-1df1-11eb-b141-008cfa5ae621_90bf01a6-1493-11eb-82d6-008cfa5ae621"] = 'gunzip -c'
@@ -523,18 +533,27 @@ def star_analysis(request):
         
             # app parameters
             human_config = {
-               # index folder
-               "286b30e0-1df1-11eb-b141-008cfa5ae621_90b9c7fe-1493-11eb-82d6-008cfa5ae621": "/iplant/home/michellito/genomes/hg38/Sequence/STAR",
                # fastq files
                "286b30e0-1df1-11eb-b141-008cfa5ae621_90bb0c4a-1493-11eb-82d6-008cfa5ae621": fastq,
                # sjdbOverhang
                "286b30e0-1df1-11eb-b141-008cfa5ae621_90bc2558-1493-11eb-82d6-008cfa5ae621": sjdbOverhang,
             }
 
-            # paired files: 286b30e0-1df1-11eb-b141-008cfa5ae621_1c79dae0-1494-11eb-9c84-008cfa5ae621
+            index_folder = None
+
+            if sjdbOverhang == '49':
+                index_folder = '/iplant/home/michellito/genomes/hg38/Sequence/STAR'
+            elif sjdbOverhang == '74':
+                index_folder = '/iplant/home/michellito/genomes/hg38/Sequence/STAR'
+            elif sjdbOverhang == '99':
+                index_folder = '/iplant/home/michellito/genomes/hg38/Sequence/STAR'
+            elif sjdbOverhang == '149':
+                index_folder = '/iplant/home/michellito/genomes/hg38/Sequence/STAR'
+
+            human_config['286b30e0-1df1-11eb-b141-008cfa5ae621_90b9c7fe-1493-11eb-82d6-008cfa5ae621'] = index_folder
 
             if 'fastq.gz' in fastq[0]:
-                human_config["286b30e0-1df1-11eb-b141-008cfa5ae621_90bf01a6-1493-11eb-82d6-008cfa5ae621"] = 'gunzip -c'
+                human_config['286b30e0-1df1-11eb-b141-008cfa5ae621_90bf01a6-1493-11eb-82d6-008cfa5ae621'] = 'gunzip -c'
 
             # mouse_config = {
             #    # index folder
