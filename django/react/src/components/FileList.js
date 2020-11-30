@@ -69,16 +69,25 @@ export default class FileList extends Component {
         [file_path]: data.checked
       }, 
     });
-
   }
 
   handleGenomeChange (e, data, file_path) {
-    this.setState({
-      selectedGenomes: {
-        ...this.state.selectedGenomes,
-        [file_path]: data.value
-      }, 
-    });
+
+    // check for others in group, and update genome
+    var currentGroup = this.state.selectedGroups[file_path];
+    var update = {
+      ...this.state.selectedGenomes,
+      [file_path]: data.value
+    }
+
+    for (var i = 0; i < this.state.selectedFiles.length; i++) {
+      let path = this.state.selectedFiles[i];
+      if (path !== file_path && this.state.selectedGroups[path] == currentGroup) {
+        update[path] = data.value;
+      }
+    }
+
+    this.setState({selectedGenomes: update});
   }
 
   handlePairChange (e, data, file_path) {
@@ -101,12 +110,22 @@ export default class FileList extends Component {
 
 
   handleReadLengthChange (e, data, file_path) {
-    this.setState({
-      selectedReadLengths: {
-        ...this.state.selectedReadLengths,
-        [file_path]: data.value
-      }, 
-    });
+
+    // check for others in group, and update read lengths
+    var currentGroup = this.state.selectedGroups[file_path];
+    var update = {
+      ...this.state.selectedReadLengths,
+      [file_path]: data.value
+    }
+
+    for (var i = 0; i < this.state.selectedFiles.length; i++) {
+      let path = this.state.selectedFiles[i];
+      if (path !== file_path && this.state.selectedGroups[path] == currentGroup) {
+        update[path] = data.value;
+      }
+    }
+
+    this.setState({selectedReadLengths: update});
   }
 
   handleGroupChange (e, data, file_path) {
@@ -116,6 +135,33 @@ export default class FileList extends Component {
         [file_path]: data.value
       }, 
     });
+
+    // search for another file in same group
+    for (var i = 0; i < this.state.selectedFiles.length; i++) {
+      let path = this.state.selectedFiles[i];
+      
+      // if matching file found, set read length & genome to match
+      if (path !== file_path && this.state.selectedGroups[path] == data.value) {
+        
+        var readLength = this.state.selectedReadLengths[path];
+        var genome = this.state.selectedGenomes[path];
+        
+        this.setState({
+          selectedReadLengths: {
+            ...this.state.selectedReadLengths,
+            [file_path]: readLength
+          },
+          selectedGenomes: {
+            ...this.state.selectedGenomes,
+            [file_path]: genome
+          }
+        })
+
+        break;
+      }
+
+    }
+
   }
 
   handleSubmit() {
@@ -239,7 +285,7 @@ export default class FileList extends Component {
       { key: '150bp' , text: '150bp' , value: '149' },
     ];
 
-    const {selectedFiles, selectedGenomes, selectedReadLengths, analysisType} = this.state;
+    const {selectedFiles, selectedGenomes, selectedReadLengths, selectedGroups, selectedPairs, analysisType, readType} = this.state;
 
     var formComplete = true;
 
@@ -252,6 +298,12 @@ export default class FileList extends Component {
         formComplete = false;
       }
       if (analysisType === 'RNAseq' && !selectedReadLengths[file]) {
+        formComplete = false;
+      }
+      if (readType === 'Unpaired' && !selectedGroups[file]) {
+        formComplete = false;
+      }
+      if (readType === 'Paired' && !selectedPairs[file]) {
         formComplete = false;
       }
     })
@@ -289,8 +341,8 @@ export default class FileList extends Component {
                     <Table.HeaderCell>Size</Table.HeaderCell>
                     <Table.HeaderCell>Last Modified</Table.HeaderCell>
                     <Table.HeaderCell></Table.HeaderCell>
-                    { this.state.analysisType === 'RNAseq' && <Table.HeaderCell></Table.HeaderCell>}
                     <Table.HeaderCell></Table.HeaderCell>
+                    { this.state.analysisType === 'RNAseq' && <Table.HeaderCell></Table.HeaderCell>}
                     { this.state.readType === 'Paired' && <Table.HeaderCell></Table.HeaderCell> }
                 </Table.Row>
                 </Table.Header>
@@ -309,6 +361,21 @@ export default class FileList extends Component {
                             <Table.Cell>{file.name}</Table.Cell>
                             <Table.Cell>{file.size}</Table.Cell>
                             <Table.Cell>{file.last_updated}</Table.Cell>
+                            { this.state.readType === 'Unpaired' &&
+                            <Table.Cell>
+                              { this.state.selectionStatus[file.path] &&
+                                <>
+                                <Dropdown placeholder='Group'
+                                          value={this.state.selectedGroups[file.path]}
+                                          className="table-dropdown"
+                                          selection
+                                          options={groupOptions}
+                                          onChange={(e, data) => this.handleGroupChange(e, data, file.path)}>      
+                                </Dropdown>
+                                </>
+                              }
+                            </Table.Cell>
+                            }
                             <Table.Cell>
                               { this.state.selectionStatus[file.path] &&
                                 <>
@@ -340,21 +407,7 @@ export default class FileList extends Component {
                                 </>
                               }
                             </Table.Cell>}
-                            { this.state.readType === 'Unpaired' &&
-                            <Table.Cell>
-                              { this.state.selectionStatus[file.path] &&
-                                <>
-                                <Dropdown placeholder='Group'
-                                          value={this.state.selectedGroups[file.path]}
-                                          className="table-dropdown"
-                                          selection
-                                          options={groupOptions}
-                                          onChange={(e, data) => this.handleGroupChange(e, data, file.path)}>      
-                                </Dropdown>
-                                </>
-                              }
-                            </Table.Cell>
-                            }
+                            
                             { this.state.readType === 'Paired' &&
                             <>
                               <Table.Cell>
