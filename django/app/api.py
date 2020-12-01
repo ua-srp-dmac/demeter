@@ -446,11 +446,11 @@ def star_paired(request):
         if sjdbOverhang == '49':
             index_folder = "/iplant/home/michellito/genomes/hg38/Sequence/STAR"
         elif sjdbOverhang == '74':
-            index_folder = "/iplant/home/shared/srp_dmac/STAR_indexes/STAR75"
-        elif sjdbOverhang == '99':
-            index_folder = "/iplant/home/shared/srp_dmac/STAR_indexes/STAR100"
-        elif sjdbOverhang == '149':
-            index_folder = "/iplant/home/shared/srp_dmac/STAR_indexes/STAR150"
+                index_folder = "/iplant/home/shared/srp_dmac/STAR75"
+            elif sjdbOverhang == '99':
+                index_folder = "/iplant/home/shared/srp_dmac/STAR100"
+            elif sjdbOverhang == '149':
+                index_folder = "/iplant/home/shared/srp_dmac/STAR150"
 
         human_config["286b30e0-1df1-11eb-b141-008cfa5ae621_90b9c7fe-1493-11eb-82d6-008cfa5ae621"] = index_folder
 
@@ -544,11 +544,11 @@ def star_analysis(request):
             if sjdbOverhang == '49':
                 index_folder = "/iplant/home/michellito/genomes/hg38/Sequence/STAR"
             elif sjdbOverhang == '74':
-                index_folder = "/iplant/home/shared/srp_dmac/STAR_indexes/STAR75"
+                index_folder = "/iplant/home/shared/srp_dmac/STAR75"
             elif sjdbOverhang == '99':
-                index_folder = "/iplant/home/shared/srp_dmac/STAR_indexes/STAR100"
+                index_folder = "/iplant/home/shared/srp_dmac/STAR100"
             elif sjdbOverhang == '149':
-                index_folder = "/iplant/home/shared/srp_dmac/STAR_indexes/STAR150"
+                index_folder = "/iplant/home/shared/srp_dmac/STAR150"
 
             human_config['286b30e0-1df1-11eb-b141-008cfa5ae621_90b9c7fe-1493-11eb-82d6-008cfa5ae621'] = index_folder
 
