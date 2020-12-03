@@ -12,18 +12,39 @@ code {
     monospace;
 }
 
+.table-input {
+  width: 125px !important;
+}
+
+.ui.selection.dropdown.table-dropdown { min-width: 125px !important; }
+
 .appBody {
   padding-top: 100px;
   padding-left: 20px;
+}
+
+.table-container {
+  /* height: 290px; */
+  overflow-y: auto; 
+  overflow-x: auto; /* or auto */
 }
 
 .p-t-15 {
   padding-top: 15px;
 }
 
+.p-t-25 {
+  padding-top: 25px;
+}
+
 .m-t-15 {
   margin-top: 15px;
 }
+
+.m-t-25 {
+  margin-top: 25px;
+}
+
 
 .m-l-10 {
   margin-left: 10px;
