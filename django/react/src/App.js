@@ -58,7 +58,7 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
-          <Menu fixed='top' inverted>
+          <Menu fixed='top' inverted className="raised-menu">
             <Container>
               <Menu.Item as='a' header>
                 <h1>demeter</h1>

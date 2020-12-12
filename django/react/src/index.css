@@ -16,7 +16,7 @@ code {
   width: 125px !important;
 }
 
-.ui.selection.dropdown.table-dropdown { min-width: 125px !important; }
+.ui.selection.dropdown.table-dropdown { min-width: 150px !important; }
 
 .appBody {
   padding-top: 100px;
@@ -25,7 +25,7 @@ code {
 
 .table-container {
   /* height: 290px; */
-  overflow-y: auto; 
+  /* overflow-y: auto;  */
   overflow-x: auto; /* or auto */
 }
 
@@ -86,4 +86,8 @@ code {
 }
 .text-blue {
   color: #3B83C0;
+}
+
+.raised-menu {
+  z-index: 1000
 }

@@ -63,22 +63,22 @@ export default class FileList extends Component {
       selectedFiles.splice(index, 1);
     }
 
-    if (this.state.readType === 'Paired' && selectedFiles.length) {
-      let path = this.state.selectedFiles[0];
-      var readLength = this.state.selectedReadLengths[path];
-      var genome = this.state.selectedGenomes[path];
+    // if (this.state.readType === 'Paired' && selectedFiles.length) {
+    //   let path = this.state.selectedFiles[0];
+    //   var readLength = this.state.selectedReadLengths[path];
+    //   var genome = this.state.selectedGenomes[path];
       
-      this.setState({
-        selectedReadLengths: {
-          ...this.state.selectedReadLengths,
-          [file_path]: readLength
-        },
-        selectedGenomes: {
-          ...this.state.selectedGenomes,
-          [file_path]: genome
-        }
-      });
-    }
+    //   this.setState({
+    //     selectedReadLengths: {
+    //       ...this.state.selectedReadLengths,
+    //       [file_path]: readLength
+    //     },
+    //     selectedGenomes: {
+    //       ...this.state.selectedGenomes,
+    //       [file_path]: genome
+    //     }
+    //   });
+    // }
 
     this.setState({
       selectedFiles: selectedFiles,
@@ -158,38 +158,56 @@ export default class FileList extends Component {
   }
 
   handleGroupChange (e, data, file_path) {
+    // this.setState({
+    //   selectedGroups: {
+    //     ...this.state.selectedGroups,
+    //     [file_path]: data.value
+    //   }, 
+    // });
+
+    var update = {
+      ...this.state.selectedGroups,
+    }
+
+    this.state.selectedFiles.forEach(function(file) {
+      console.log(file);
+      update[file] = data.value;
+    })
+
     this.setState({
-      selectedGroups: {
-        ...this.state.selectedGroups,
-        [file_path]: data.value
-      }, 
+      selectedGroups: update,
     });
 
+    
+
+    // set all selected files to same group
+
+
     // search for another file in same group
-    for (var i = 0; i < this.state.selectedFiles.length; i++) {
-      let path = this.state.selectedFiles[i];
+    // for (var i = 0; i < this.state.selectedFiles.length; i++) {
+    //   let path = this.state.selectedFiles[i];
       
-      // if matching file found, set read length & genome to match
-      if (path !== file_path && this.state.selectedGroups[path] == data.value) {
+    //   // if matching file found, set read length & genome to match
+    //   if (path !== file_path && this.state.selectedGroups[path] == data.value) {
         
-        var readLength = this.state.selectedReadLengths[path];
-        var genome = this.state.selectedGenomes[path];
+    //     var readLength = this.state.selectedReadLengths[path];
+    //     var genome = this.state.selectedGenomes[path];
         
-        this.setState({
-          selectedReadLengths: {
-            ...this.state.selectedReadLengths,
-            [file_path]: readLength
-          },
-          selectedGenomes: {
-            ...this.state.selectedGenomes,
-            [file_path]: genome
-          }
-        })
+    //     this.setState({
+    //       selectedReadLengths: {
+    //         ...this.state.selectedReadLengths,
+    //         [file_path]: readLength
+    //       },
+    //       selectedGenomes: {
+    //         ...this.state.selectedGenomes,
+    //         [file_path]: genome
+    //       }
+    //     })
 
-        break;
-      }
+    //     break;
+    //   }
 
-    }
+    // }
 
   }
 
