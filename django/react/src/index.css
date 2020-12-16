@@ -91,3 +91,13 @@ code {
 .raised-menu {
   z-index: 1000
 }
+
+
+.change:hover{
+  background-color: teal!important;
+}
+
+.activeSegment{
+  border-color: teal!important;
+  border-width: 3px !important;
+}

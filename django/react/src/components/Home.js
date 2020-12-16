@@ -43,8 +43,16 @@ export default class Home extends Component {
     const panes = [
       {
         menuItem: (
+          <Menu.Item key='launch'>
+            <h3>Launch</h3>
+          </Menu.Item>
+        ),
+        render: () => <div className="p-t-25"><LaunchAnalysis></LaunchAnalysis></div>,
+      },
+      {
+        menuItem: (
           <Menu.Item key='files'>
-            <h2>Files</h2>
+            <h3>Files</h3>
           </Menu.Item>
         ),
         render: () => <div className="p-t-25"><FileList updateTab={this.updateTab} notifySuccess={this.notifySuccess} notifyError={this.notifyError}></FileList></div>
@@ -52,23 +60,16 @@ export default class Home extends Component {
       {
         menuItem: (
           <Menu.Item key='analyses'>
-            <h2>Analyses</h2>
+            <h3>Analyses</h3>
           </Menu.Item>
         ),
         render: () => <div className="p-t-25"><AnalysisList></AnalysisList></div>,
       },
-      {
-        menuItem: (
-          <Menu.Item key='launch'>
-            <h2>Launch</h2>
-          </Menu.Item>
-        ),
-        render: () => <div className="p-t-25"><LaunchAnalysis></LaunchAnalysis></div>,
-      },
+     
       {
         menuItem: (
           <Menu.Item key='review'>
-            <h2>Review</h2>
+            <h3>Review</h3>
           </Menu.Item>
         ),
         render: () => <div className="p-t-25"><ReviewAnalysis></ReviewAnalysis></div>,
