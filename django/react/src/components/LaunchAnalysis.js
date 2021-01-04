@@ -39,6 +39,7 @@ export default class LaunchAnalysis extends Component {
     this.getFiles();
   }
 
+  
 
   getFiles() {
 
@@ -66,11 +67,7 @@ export default class LaunchAnalysis extends Component {
 
     this.setState({
       selectedFiles: selectedFiles,
-      selectionStatus: {
-        ...this.state.selectionStatus,
-        [file_path]: data.checked
-      }, 
-    });
+    }, console.log(this.state.selectedFiles));
   }
 
   selectGroup(index) {
@@ -86,6 +83,19 @@ export default class LaunchAnalysis extends Component {
         selectedGroup: index
       }));
     }
+    
+  }
+
+  addFilesToGroup(group) {
+
+    
+    // if (this.state['group_' + group]) {
+
+    // }
+
+    this.setState({
+      ['group_' + group]: this.state.selectedFiles
+    }, console.log(this.state['group_' + group]));
     
   }
 
@@ -166,6 +176,13 @@ export default class LaunchAnalysis extends Component {
                 </Sticky>
               </Rail>
             <div className="table-container"> 
+            { this.state.selectedGroup &&
+            <>
+              <h4>Select Files for Group {this.state.selectedGroup} </h4> 
+              <Button primary onClick={() => this.addFilesToGroup(this.state.selectedGroup)}>Done</Button>
+            </>
+            }
+            
             <Table basic='very' className="p-t-15">
                 <Table.Header>
                 <Table.Row>
