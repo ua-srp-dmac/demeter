@@ -26,7 +26,12 @@ SECRET_KEY = 'ds9v^8n2+1l3s68s6upt_a(-6&5v%$y)a%y+cp5)ezbpav5(72'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', 'dhbooiserver2.pharmacy.arizona.edu']
+ALLOWED_HOSTS = [
+    'localhost',
+    'dhbooiserver2.pharmacy.arizona.edu',
+    '10.128.207.6',
+    'olympus.pharmacy.arizona.edu',
+]
 
 
 # Application definition
