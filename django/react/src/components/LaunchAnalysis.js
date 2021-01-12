@@ -36,6 +36,7 @@ export default class LaunchAnalysis extends Component {
     this.handleCheck = this.handleCheck.bind(this);
     this.selectGroup = this.selectGroup.bind(this);
     this.isSelected = this.isSelected.bind(this);
+    this.removeFile = this.removeFile.bind(this);
 
   };
 
@@ -105,6 +106,18 @@ export default class LaunchAnalysis extends Component {
     }
   }
 
+  removeFile(file, group) {
+    let selectedFiles = this.state['group_' + group]
+    
+    var index = selectedFiles.indexOf(file);
+    selectedFiles.splice(index, 1);
+
+    this.setState({
+      ['group_' + group]: selectedFiles,
+    }, console.log(this.state['group_' + group]));
+
+  }
+
   contextRef = createRef()
 
   render() {
@@ -136,7 +149,7 @@ export default class LaunchAnalysis extends Component {
                       labelPosition='left'
                       primary
                       size='small'
-                      className = 'm-b-25'
+                      onClick={() => this.setState({selectedGroup: null})}
                     >
                       <Icon name='check'/> Done
                     </Button>
@@ -193,13 +206,10 @@ export default class LaunchAnalysis extends Component {
                                 {this.state['group_' + index].map((file, i) => {
                                   let fileName = file.substring(file.lastIndexOf('/')+1);
                                   return (
-                                    
-                                      <div key={file} className="word-wrap m-b-5">
-                                        <Icon name='remove circle' color='red'/>{fileName}
-                                        <Divider></Divider>
-                                      </div>
-                                      
-                                    
+                                    <div key={file} className="word-wrap m-b-5">
+                                      <Icon name='remove circle' color='red' onClick={() => this.removeFile(file, index)} />{fileName}
+                                      <Divider></Divider>
+                                    </div>
                                   )
                                 })}
                               </>
@@ -259,9 +269,9 @@ export default class LaunchAnalysis extends Component {
                 </div>
               </Segment>
 
-              { this.state.selectedGroup &&
+              {/* { this.state.selectedGroup &&
                 <Segment clearing>
-                  <h4>
+                  <h4 >
                     Select Files for Group {this.state.selectedGroup} 
                     <Button
                       floated='right'
@@ -269,13 +279,14 @@ export default class LaunchAnalysis extends Component {
                       labelPosition='left'
                       primary
                       size='small'
+                      onClick={() => this.setState({selectedGroup: null})}
                     >
                       <Icon name='check'/> Done
                     </Button>
                   </h4>
                 </Segment>
 
-              }
+              } */}
             </Segment.Group>
           </Ref>
         </Grid.Column>
