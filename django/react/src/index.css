@@ -37,6 +37,14 @@ code {
   padding-top: 25px;
 }
 
+.m-b-25 {
+  margin-bottom: 25px;
+}
+
+.m-b-5 {
+  margin-bottom: 5px;
+}
+
 .m-t-15 {
   margin-top: 15px;
 }
@@ -89,7 +97,7 @@ code {
 }
 
 .raised-menu {
-  z-index: 1000
+  z-index: 1000!important;
 }
 
 
@@ -100,4 +108,12 @@ code {
 .activeSegment{
   border-color: teal!important;
   border-width: 3px !important;
+}
+
+.word-wrap {
+  word-wrap:break-word
+}
+
+.floated-right {
+  float:right;
 }

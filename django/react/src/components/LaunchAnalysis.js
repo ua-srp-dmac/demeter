@@ -13,7 +13,10 @@ import {
   Table,
   Checkbox,
   Dropdown,
-  Button
+  Button,
+  Icon,
+  Divider,
+  Label
 } from 'semantic-ui-react'
 
 
@@ -32,14 +35,13 @@ export default class LaunchAnalysis extends Component {
     this.getFiles = this.getFiles.bind(this)
     this.handleCheck = this.handleCheck.bind(this);
     this.selectGroup = this.selectGroup.bind(this);
+    this.isSelected = this.isSelected.bind(this);
 
   };
 
   async componentDidMount() {
     this.getFiles();
   }
-
-  
 
   getFiles() {
 
@@ -54,29 +56,14 @@ export default class LaunchAnalysis extends Component {
     });
   }
 
-  handleCheck(e, data, file_path, i) {
-
-    const selectedFiles = this.state.selectedFiles.slice() //copy the array
-
-    if (data.checked) {
-      selectedFiles.push(file_path);
-    } else {
-      var index = selectedFiles.indexOf(file_path);
-      selectedFiles.splice(index, 1);
-    }
-
-    this.setState({
-      selectedFiles: selectedFiles,
-    }, console.log(this.state.selectedFiles));
-  }
-
+  
   selectGroup(index) {
     console.log(index)
 
     if (this.state.groups.includes(index)) {
       this.setState({selectedGroup: index});
     } else {
-      this.state['group' + index] = [];
+      this.state['group_' + index] = [];
     
       this.setState(prevState => ({
         groups: [...prevState.groups, index],
@@ -86,17 +73,36 @@ export default class LaunchAnalysis extends Component {
     
   }
 
-  addFilesToGroup(group) {
+  handleCheck(e, data, file_path, group) {
 
+    let selectedFiles;
     
-    // if (this.state['group_' + group]) {
+    if (this.state['group_' + group]) {
+      selectedFiles = this.state['group_' + group]
+    } else {
+      selectedFiles = [];
+    }
 
-    // }
+    if (data.checked) {
+      selectedFiles.push(file_path);
+    } else {
+      var index = selectedFiles.indexOf(file_path);
+      selectedFiles.splice(index, 1);
+    }
 
     this.setState({
-      ['group_' + group]: this.state.selectedFiles
+      ['group_' + group]: selectedFiles,
     }, console.log(this.state['group_' + group]));
-    
+  }
+
+  isSelected(file) {
+    let group = this.state.selectedGroup;
+
+    if (this.state['group_' + group].includes(file)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   contextRef = createRef()
@@ -119,106 +125,158 @@ export default class LaunchAnalysis extends Component {
         <Grid.Column largeScreen={5}></Grid.Column>
         <Grid.Column largeScreen={11}>
           <Ref innerRef={this.contextRef}>
-            <Segment>
-            <Rail close position='left'>
-                <Segment>
-                  <h4>Analysis Type</h4>
-                  <Dropdown placeholder='Select Analysis Type'
-                        selection
-                        
-                        options={analysisOptions}
-                        onChange={(e, data) => this.setState({analysisType: data.value})}>      
-                  </Dropdown>
-                  <Dropdown placeholder='Select Read Type'
-                            selection
-                            className='m-t-15'
-                            options={readTypeOptions}
-                            onChange={(e, data) => this.setState({readType: data.value})}>      
-                  </Dropdown>
-
+            <Segment.Group>
+              { this.state.selectedGroup &&
+                <Segment clearing>
+                  <h4>
+                    Select Files for Group {this.state.selectedGroup} 
+                    <Button
+                      floated='right'
+                      icon
+                      labelPosition='left'
+                      primary
+                      size='small'
+                      className = 'm-b-25'
+                    >
+                      <Icon name='check'/> Done
+                    </Button>
+                  </h4>
                 </Segment>
-                <Sticky context={this.contextRef} offset={100}>
-                  <Segment style={{overflow: 'auto', maxHeight: '70vh' }}>
-                  <Header as='h4'>Groups</Header>
-                  { this.state.groups.length > 0 && 
-                    <>
-                    {this.state.groups.map((index, i) => {
-                      let group = this.state['group' + index]
-                      return (
-                        <Segment key={index} 
-                                onClick={() => this.selectGroup(index)}
-                                className={classNames({
-                                activeSegment: this.state.selectedGroup === index,
-                              })}>
-                          <h5>Group {index}</h5>
-                          { this.state['group' + index].length === 0 &&
-                            <>
-                              Select files to add.
-                            </>
+
+              }
+              <Rail close position='left'>
+                  {/* <Segment>
+                    <h4>Analysis Type</h4>
+                    <Dropdown placeholder='Select Analysis Type'
+                          selection
                           
-                          }
-                        </Segment>
-                      )
-                    })}
-                    </>
-                  }
-                  { this.state.groups.length < 8 && 
-                    <>
-                      <Segment textAlign={"center"}
-                              className="change"
-                              key="new"
-                              onClick={() => this.selectGroup(this.state.groups.length + 1)}>
-                        <Button circular icon='plus'/>
-                      </Segment>
-                    </>
-                  }
-                  </Segment>
-                </Sticky>
-              </Rail>
-            <div className="table-container"> 
-            { this.state.selectedGroup &&
-            <>
-              <h4>Select Files for Group {this.state.selectedGroup} </h4> 
-              <Button primary onClick={() => this.addFilesToGroup(this.state.selectedGroup)}>Done</Button>
-            </>
-            }
-            
-            <Table basic='very' className="p-t-15">
-                <Table.Header>
-                <Table.Row>
-                    { this.state.selectedGroup && <Table.HeaderCell></Table.HeaderCell> }
-                    <Table.HeaderCell>Name</Table.HeaderCell>
-                    <Table.HeaderCell>Size</Table.HeaderCell>
-                    <Table.HeaderCell>Last Modified</Table.HeaderCell>
+                          options={analysisOptions}
+                          onChange={(e, data) => this.setState({analysisType: data.value})}>      
+                    </Dropdown>
+                    <Dropdown placeholder='Select Read Type'
+                              selection
+                              className='m-t-15'
+                              options={readTypeOptions}
+                              onChange={(e, data) => this.setState({readType: data.value})}>      
+                    </Dropdown>
 
-                </Table.Row>
-                </Table.Header>
-
-                <Table.Body>
-                {this.state.fileList.map((file, i) => {
-                    return (
-                        <Table.Row obj={file} key={file.path}>
-                           { this.state.selectedGroup &&
-                            <Table.Cell>
-                            <Checkbox
-                              onChange={(e, data) => this.handleCheck(e, data, file.path, i)}
-                              checked={file.selected}/>
-                            </Table.Cell>
-                            }
-                            <Table.Cell>{file.name}</Table.Cell>
-                            <Table.Cell>{file.size}</Table.Cell>
-                            <Table.Cell>{file.last_updated}</Table.Cell>
+                  </Segment> */}
+                  <Sticky context={this.contextRef} offset={100}>
+                    <Segment style={{overflow: 'auto', maxHeight: '70vh' }}>
+                    <Header as='h4'>Groups</Header>
+                    { this.state.groups.length > 0 && 
+                      <>
+                      {this.state.groups.map((index, i) => {
+                        let group = this.state['group_' + index]
+                        
+                        return (
+                          <Segment key={index} 
+                                  onClick={() => this.selectGroup(index)}
+                                  className={classNames({
+                                  activeSegment: this.state.selectedGroup === index,
+                                })}>
+                            <h5>
+                              Group {index}
+                              <Label size='tiny'
+                                     className="floated-right">
+                                {this.state['group_' + index].length} files
+                              </Label>
+                            </h5>
+                            { this.state['group_' + index].length === 0 &&
+                              <>
+                                Select files to add.
+                              </>
                             
-                        </Table.Row>
-                    )
-                })}
-                </Table.Body>
-            </Table>
-            </div>
+                            }
+                            { this.state['group_' + index].length > 0 &&
+                              <>
+                                {this.state['group_' + index].map((file, i) => {
+                                  let fileName = file.substring(file.lastIndexOf('/')+1);
+                                  return (
+                                    
+                                      <div key={file} className="word-wrap m-b-5">
+                                        <Icon name='remove circle' color='red'/>{fileName}
+                                        <Divider></Divider>
+                                      </div>
+                                      
+                                    
+                                  )
+                                })}
+                              </>
+                            }
+                          </Segment>
+                        )
+                      })}
+                      </>
+                    }
+                    { this.state.groups.length < 8 && 
+                      <>
+                        <Segment textAlign={"center"}
+                                className="change"
+                                key="new"
+                                onClick={() => this.selectGroup(this.state.groups.length + 1)}>
+                          <Button circular icon='plus'/>
+                        </Segment>
+                      </>
+                    }
+                    </Segment>
+                  </Sticky>
+                </Rail>
 
-              
-            </Segment>
-            
+              <Segment>              
+                <div className="table-container">
+                
+                  <Table basic='very' className="p-t-15" compact>      
+                    <Table.Header>
+                      <Table.Row>
+                          { this.state.selectedGroup && <Table.HeaderCell></Table.HeaderCell> }
+                          <Table.HeaderCell>Name</Table.HeaderCell>
+                          <Table.HeaderCell>Size</Table.HeaderCell>
+                          <Table.HeaderCell>Last Modified</Table.HeaderCell>
+                      </Table.Row>
+                    </Table.Header>
+
+                    <Table.Body>
+                      {this.state.fileList.map((file, i) => {
+                          return (
+                              <Table.Row obj={file} key={file.path}>
+                                { this.state.selectedGroup &&
+                                  <Table.Cell>
+                                  <Checkbox
+                                    onChange={(e, data) => this.handleCheck(e, data, file.path, this.state.selectedGroup)}
+                                    checked={this.isSelected(file.path)}/>
+                                  </Table.Cell>
+                                  }
+                                  <Table.Cell>{file.name}</Table.Cell>
+                                  <Table.Cell>{file.size}</Table.Cell>
+                                  <Table.Cell>{file.last_updated}</Table.Cell>
+                                  
+                              </Table.Row>
+                          )
+                      })}
+                    </Table.Body>
+                  </Table>
+                </div>
+              </Segment>
+
+              { this.state.selectedGroup &&
+                <Segment clearing>
+                  <h4>
+                    Select Files for Group {this.state.selectedGroup} 
+                    <Button
+                      floated='right'
+                      icon
+                      labelPosition='left'
+                      primary
+                      size='small'
+                    >
+                      <Icon name='check'/> Done
+                    </Button>
+                  </h4>
+                </Segment>
+
+              }
+            </Segment.Group>
           </Ref>
         </Grid.Column>
       </Grid>
