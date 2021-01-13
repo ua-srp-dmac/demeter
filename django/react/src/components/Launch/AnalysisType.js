@@ -13,7 +13,8 @@ import {
   Button,
   Icon,
   Divider,
-  Label
+  Label,
+  Form
 } from 'semantic-ui-react'
 
 export default class AnalysisType extends Component {
@@ -41,21 +42,45 @@ export default class AnalysisType extends Component {
       { key: 'Unpaired' , text: 'Unpaired' , value: 'Unpaired' },
       { key: 'Paired' , text: 'Paired' , value: 'Paired' },
     ];
-    
+
     return (
       <>
-        Analysis Type
+        <Grid textAlign='center' style={{ height: '50vh' }} verticalAlign='middle'>
+          <Grid.Column style={{ maxWidth: 475 }}>
+            <Header as='h3' color='grey' textAlign='center'>
+              Select Analysis Type
+            </Header>
+            <Form size='large' onSubmit={this.login}>
+              <Segment stacked>
+              
+              <Dropdown placeholder='Select Analysis Type'
+                    selection
+                    fluid
+                    options={analysisOptions}
+                    onChange={(e, data) => this.setState({analysisType: data.value})}>      
+              </Dropdown>
+              
+              <Dropdown placeholder='Select Read Type'
+                        selection
+                        fluid
+                        className='m-t-15 m-b-15'
+                        options={readTypeOptions}
+                        onChange={(e, data) => this.setState({readType: data.value})}>      
+              </Dropdown>
+              
+              <Button
+                  icon
+                  labelPosition='right'
+                  primary
+                  size='small'
+                  onClick={() => this.props.updateStep(2)}>
+                  Next <Icon name='caret right'/>
+              </Button>
 
-        <Button
-            floated='right'
-            icon
-            labelPosition='right'
-            primary
-            size='small'
-            onClick={() => this.props.updateStep(2)}>
-            Next <Icon name='caret right'/>
-        </Button>
-
+              </Segment>
+            </Form>
+          </Grid.Column>
+        </Grid>
         
       </>
     )

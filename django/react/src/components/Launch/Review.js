@@ -17,7 +17,8 @@ import {
   Button,
   Icon,
   Divider,
-  Label
+  Label,
+  Card
 } from 'semantic-ui-react'
 
 export default class Review extends Component {
@@ -48,55 +49,55 @@ export default class Review extends Component {
             Back <Icon name='caret left'/>
         </Button>
 
-        
+        <div>
         { this.props.parentState.groups.length > 0 && 
             
-          <Grid container columns={3} stackable>
+          <Card.Group>
             <>
             {this.props.parentState.groups.map((index, i) => {
               let group = this.props.parentState['group_' + index]
               
               return (
-                <Grid.Column>
-                  <Segment key={index} 
-                          onClick={() => this.props.selectGroup(index)}
-                          className={classNames({
-                          activeSegment: this.props.parentState.selectedGroup === index,
-                        })}>
-                    <h5>
+                <Card key={index} 
+                      onClick={() => this.props.selectGroup(index)}>
+                  <Card.Content>
+                    <Card.Header>
                       Group {index}
                       <Label size='tiny'
                               className="floated-right">
                         {this.props.parentState['group_' + index].length} files
                       </Label>
-                    </h5>
-                    { this.props.parentState['group_' + index].length === 0 &&
-                      <>
-                        No files selected.
-                      </>
-                    }
-                    { this.props.parentState['group_' + index].length > 0 &&
-                      <>
-                        {this.props.parentState['group_' + index].map((file, i) => {
-                          let fileName = file.substring(file.lastIndexOf('/')+1);
-                          return (
-                            <div key={file} className="word-wrap m-b-5">
-                              {fileName}
-                              <Divider></Divider>
-                            </div>
-                          )
-                        })}
-                      </>
-                    }
-                  </Segment>
-                </Grid.Column>
+                    </Card.Header>
+                    <Card.Description>
+                      { this.props.parentState['group_' + index].length === 0 &&
+                        <>
+                          No files selected.
+                        </>
+                      }
+                      { this.props.parentState['group_' + index].length > 0 &&
+                        <>
+                          {this.props.parentState['group_' + index].map((file, i) => {
+                            let fileName = file.substring(file.lastIndexOf('/')+1);
+                            return (
+                              <div key={file} className="word-wrap m-b-5">
+                                {fileName}
+                                <Divider></Divider>
+                              </div>
+                            )
+                          })}
+                        </>
+                      }
+                    </Card.Description>
+                  </Card.Content>
+                </Card>
               )
             })}
+            
             </>
-          </Grid>
+          </Card.Group>
            
           }
-
+          </div>
 
           {/* <Grid.Column>
             <Segment>Content 1</Segment>

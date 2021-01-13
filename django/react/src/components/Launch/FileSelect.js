@@ -52,7 +52,15 @@ export default class LaunchAnalysis extends Component {
   contextRef = createRef()
 
   render() {
-    
+    const analysisOptions = [
+      { key: 'DNAseq' , text: 'DNAseq' , value: 'DNAseq' },
+      { key: 'RNAseq' , text: 'RNAseq' , value: 'RNAseq' },
+    ];
+
+    const readTypeOptions = [
+      { key: 'Unpaired' , text: 'Unpaired' , value: 'Unpaired' },
+      { key: 'Paired' , text: 'Paired' , value: 'Paired' },
+    ];
 
     return (
         <>
