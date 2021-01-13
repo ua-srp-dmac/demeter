@@ -28,10 +28,6 @@ export default class AnalysisType extends Component {
 
   };
 
-  updateStep() {
-
-  }
-
   render() {
     const analysisOptions = [
       { key: 'DNAseq' , text: 'DNAseq' , value: 'DNAseq' },
@@ -57,7 +53,7 @@ export default class AnalysisType extends Component {
                     selection
                     fluid
                     options={analysisOptions}
-                    onChange={(e, data) => this.setState({analysisType: data.value})}>      
+                    onChange={(e, data) => this.props.updateParentState('analysisType', data.value)}>      
               </Dropdown>
               
               <Dropdown placeholder='Select Read Type'
@@ -65,7 +61,7 @@ export default class AnalysisType extends Component {
                         fluid
                         className='m-t-15 m-b-15'
                         options={readTypeOptions}
-                        onChange={(e, data) => this.setState({readType: data.value})}>      
+                        onChange={(e, data) => this.props.updateParentState('readType', data.value)}>      
               </Dropdown>
               
               <Button
@@ -73,6 +69,7 @@ export default class AnalysisType extends Component {
                   labelPosition='right'
                   primary
                   size='small'
+                  disabled={!this.props.parentState.readType || !this.props.parentState.analysisType}
                   onClick={() => this.props.updateStep(2)}>
                   Next <Icon name='caret right'/>
               </Button>

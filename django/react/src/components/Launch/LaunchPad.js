@@ -24,11 +24,15 @@ export default class LaunchPad extends Component {
     this.selectGroup = this.selectGroup.bind(this);
     this.isSelected = this.isSelected.bind(this);
     this.removeFile = this.removeFile.bind(this);
-
+    this.updateParentState = this.updateParentState.bind(this);
   };
 
   updateStep(step) {
     this.setState({step: step});
+  }
+
+  updateParentState(attribute, value) {
+    this.setState({[attribute]: value});
   }
 
   selectGroup(index) {
@@ -127,8 +131,8 @@ export default class LaunchPad extends Component {
         { this.state.step === 1 && 
           <AnalysisType
             updateStep={this.updateStep}
-            parentState={this.state}>
-
+            parentState={this.state}
+            updateParentState={this.updateParentState}>
           </AnalysisType>
         }
 

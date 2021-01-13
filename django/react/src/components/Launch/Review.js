@@ -37,6 +37,20 @@ export default class Review extends Component {
   }
 
   render() {
+    
+    const readLengthOptions = [
+      { key: '50bp' , text: '50bp' , value: '49' },
+      { key: '75bp' , text: '75bp' , value: '74' },
+      { key: '100bp' , text: '100bp' , value: '99' },
+      { key: '150bp' , text: '150bp' , value: '149' },
+    ];
+
+    const genomeOptions = [
+      { key: 'mouse' , text: 'mouse' , value: 'mouse' },
+      { key: 'human' , text: 'human' , value: 'human' },
+      // { key: 'rat' , text: 'rat' , value: 'rat' },
+    ];
+
     return (
       <>
         <Button
@@ -87,6 +101,25 @@ export default class Review extends Component {
                           })}
                         </>
                       }
+
+                      <Dropdown placeholder='Genome'
+                              // value={this.state.selectedGenomes[file.path]}
+                              selection
+                              fluid
+                              options={genomeOptions}
+                              // onChange={(e, data) => this.handleGenomeChange(e, data, file.path)}
+                      >      
+                      </Dropdown>
+
+                      <Dropdown placeholder='Read Length'
+                              // value={this.state.selectedGenomes[file.path]}
+                              selection
+                              fluid
+                              options={readLengthOptions}
+                              className='m-t-15'
+                              // onChange={(e, data) => this.handleGenomeChange(e, data, file.path)}
+                      >      
+                      </Dropdown> 
                     </Card.Description>
                   </Card.Content>
                 </Card>

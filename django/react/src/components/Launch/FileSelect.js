@@ -52,38 +52,8 @@ export default class LaunchAnalysis extends Component {
   contextRef = createRef()
 
   render() {
-    const analysisOptions = [
-      { key: 'DNAseq' , text: 'DNAseq' , value: 'DNAseq' },
-      { key: 'RNAseq' , text: 'RNAseq' , value: 'RNAseq' },
-    ];
-
-    const readTypeOptions = [
-      { key: 'Unpaired' , text: 'Unpaired' , value: 'Unpaired' },
-      { key: 'Paired' , text: 'Paired' , value: 'Paired' },
-    ];
 
     return (
-        <>
-
-        {/* <Button
-            floated='left'
-            icon
-            labelPosition='left'
-            primary
-            size='small'
-            onClick={() => this.props.updateStep(1)}>
-            Back
-        </Button>
-
-        <Button
-            floated='right'
-            icon
-            labelPosition='right'
-            primary
-            size='small'
-            onClick={() => this.props.updateStep(3)}>
-            Next
-        </Button> */}
       <Grid columns={2}>
         <Grid.Column largeScreen={5}></Grid.Column>
         <Grid.Column largeScreen={11}>
@@ -92,7 +62,7 @@ export default class LaunchAnalysis extends Component {
               {/* { this.state.selectedGroup && */}
                 <Segment clearing>
                   <h4>
-                    Select Files for Group {this.state.selectedGroup} 
+                    Select Files for Group {this.props.parentState.selectedGroup} 
                     <Button
                       floated='right'
                       icon
@@ -105,29 +75,12 @@ export default class LaunchAnalysis extends Component {
                     </Button>
                   </h4>
                 </Segment>
-
               {/* } */}
               <Rail close position='left'>
-                  {/* <Segment>
-                    <h4>Analysis Type</h4>
-                    <Dropdown placeholder='Select Analysis Type'
-                          selection
-                          
-                          options={analysisOptions}
-                          onChange={(e, data) => this.setState({analysisType: data.value})}>      
-                    </Dropdown>
-                    <Dropdown placeholder='Select Read Type'
-                              selection
-                              className='m-t-15'
-                              options={readTypeOptions}
-                              onChange={(e, data) => this.setState({readType: data.value})}>      
-                    </Dropdown>
-
-                  </Segment> */}
                   <Sticky context={this.contextRef} offset={100}>
                     <Segment style={{overflow: 'auto', maxHeight: '70vh' }}>
                     <Header as='h4'>
-                        RNAseq Paired
+                        {this.props.parentState.analysisType} - {this.props.parentState.readType}
                         <Button
                           floated='right'
                           primary
@@ -230,30 +183,10 @@ export default class LaunchAnalysis extends Component {
                   </Table>
                 </div>
               </Segment>
-
-              {/* { this.props.parentState.selectedGroup &&
-                <Segment clearing>
-                  <h4 >
-                    Select Files for Group {this.props.parentState.selectedGroup} 
-                    <Button
-                      floated='right'
-                      icon
-                      labelPosition='left'
-                      primary
-                      size='small'
-                      onClick={() => this.setState({selectedGroup: null})}
-                    >
-                      <Icon name='check'/> Done
-                    </Button>
-                  </h4>
-                </Segment>
-
-              } */}
             </Segment.Group>
           </Ref>
         </Grid.Column>
       </Grid>
-      </>
     )
   }
 }
