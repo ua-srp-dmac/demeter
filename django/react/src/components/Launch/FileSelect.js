@@ -1,7 +1,8 @@
 import _ from 'lodash'
 import React, { Component, createRef } from 'react';
 import classNames from "classnames";
-import axios from '../axios';
+import axios from '../../axios';
+
 import {
   Grid,
   Header,
@@ -134,6 +135,27 @@ export default class LaunchAnalysis extends Component {
     
 
     return (
+        <>
+
+        {/* <Button
+            floated='left'
+            icon
+            labelPosition='left'
+            primary
+            size='small'
+            onClick={() => this.props.updateStep(1)}>
+            Back
+        </Button>
+
+        <Button
+            floated='right'
+            icon
+            labelPosition='right'
+            primary
+            size='small'
+            onClick={() => this.props.updateStep(3)}>
+            Next
+        </Button> */}
       <Grid columns={2}>
         <Grid.Column largeScreen={5}></Grid.Column>
         <Grid.Column largeScreen={11}>
@@ -149,9 +171,9 @@ export default class LaunchAnalysis extends Component {
                       labelPosition='left'
                       primary
                       size='small'
-                      onClick={() => this.setState({selectedGroup: null})}
+                      onClick={() => this.props.updateStep(3)}
                     >
-                      <Icon name='check'/> Done
+                      <Icon name='check'/> Next
                     </Button>
                   </h4>
                 </Segment>
@@ -176,7 +198,17 @@ export default class LaunchAnalysis extends Component {
                   </Segment> */}
                   <Sticky context={this.contextRef} offset={100}>
                     <Segment style={{overflow: 'auto', maxHeight: '70vh' }}>
-                    <Header as='h4'>RNAseq Paired</Header>
+                    <Header as='h4'>
+                        RNAseq Paired
+                        <Button
+                          floated='right'
+                          primary
+                          size='mini'
+                          onClick={() => this.props.updateStep(1)}
+                          >
+                          Change
+                        </Button>
+                    </Header>
                     <Divider></Divider>
                     <Header as='h4'>Groups</Header>
                     { this.state.groups.length > 0 && 
@@ -293,6 +325,7 @@ export default class LaunchAnalysis extends Component {
           </Ref>
         </Grid.Column>
       </Grid>
+      </>
     )
   }
 }
