@@ -7,12 +7,8 @@ import {
   Grid,
   Header,
   Image,
-  Rail,
   Ref,
   Segment,
-  Sticky,
-  Table,
-  Checkbox,
   Dropdown,
   Button,
   Icon,
@@ -36,6 +32,16 @@ export default class AnalysisType extends Component {
   }
 
   render() {
+    const analysisOptions = [
+      { key: 'DNAseq' , text: 'DNAseq' , value: 'DNAseq' },
+      { key: 'RNAseq' , text: 'RNAseq' , value: 'RNAseq' },
+    ];
+
+    const readTypeOptions = [
+      { key: 'Unpaired' , text: 'Unpaired' , value: 'Unpaired' },
+      { key: 'Paired' , text: 'Paired' , value: 'Paired' },
+    ];
+    
     return (
       <>
         Analysis Type
@@ -47,7 +53,7 @@ export default class AnalysisType extends Component {
             primary
             size='small'
             onClick={() => this.props.updateStep(2)}>
-            Next
+            Next <Icon name='caret right'/>
         </Button>
 
         

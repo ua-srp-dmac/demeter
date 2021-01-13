@@ -38,8 +38,6 @@ export default class Review extends Component {
   render() {
     return (
       <>
-        Review
-
         <Button
             floated='left'
             icon
@@ -47,11 +45,60 @@ export default class Review extends Component {
             primary
             size='small'
             onClick={() => this.props.updateStep(2)}>
-            Back
+            Back <Icon name='caret left'/>
         </Button>
 
-        <Grid container columns={3} stackable>
-          <Grid.Column>
+        
+        { this.props.parentState.groups.length > 0 && 
+            
+          <Grid container columns={3} stackable>
+            <>
+            {this.props.parentState.groups.map((index, i) => {
+              let group = this.props.parentState['group_' + index]
+              
+              return (
+                <Grid.Column>
+                  <Segment key={index} 
+                          onClick={() => this.props.selectGroup(index)}
+                          className={classNames({
+                          activeSegment: this.props.parentState.selectedGroup === index,
+                        })}>
+                    <h5>
+                      Group {index}
+                      <Label size='tiny'
+                              className="floated-right">
+                        {this.props.parentState['group_' + index].length} files
+                      </Label>
+                    </h5>
+                    { this.props.parentState['group_' + index].length === 0 &&
+                      <>
+                        No files selected.
+                      </>
+                    }
+                    { this.props.parentState['group_' + index].length > 0 &&
+                      <>
+                        {this.props.parentState['group_' + index].map((file, i) => {
+                          let fileName = file.substring(file.lastIndexOf('/')+1);
+                          return (
+                            <div key={file} className="word-wrap m-b-5">
+                              {fileName}
+                              <Divider></Divider>
+                            </div>
+                          )
+                        })}
+                      </>
+                    }
+                  </Segment>
+                </Grid.Column>
+              )
+            })}
+            </>
+          </Grid>
+           
+          }
+
+
+          {/* <Grid.Column>
             <Segment>Content 1</Segment>
           </Grid.Column>
           <Grid.Column>
@@ -75,7 +122,7 @@ export default class Review extends Component {
           <Grid.Column>
             <Segment>Content 8</Segment>
           </Grid.Column>
-        </Grid>
+        </Grid> */}
       </>
     )
   }
