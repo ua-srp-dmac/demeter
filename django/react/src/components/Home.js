@@ -43,14 +43,6 @@ export default class Home extends Component {
     const panes = [
       {
         menuItem: (
-          <Menu.Item key='launch'>
-            <h3>Launch</h3>
-          </Menu.Item>
-        ),
-        render: () => <div className="p-t-25"><LaunchAnalysis></LaunchAnalysis></div>,
-      },
-      {
-        menuItem: (
           <Menu.Item key='files'>
             <h3>Files</h3>
           </Menu.Item>
@@ -64,15 +56,6 @@ export default class Home extends Component {
           </Menu.Item>
         ),
         render: () => <div className="p-t-25"><AnalysisList></AnalysisList></div>,
-      },
-     
-      {
-        menuItem: (
-          <Menu.Item key='review'>
-            <h3>Review</h3>
-          </Menu.Item>
-        ),
-        render: () => <div className="p-t-25"><ReviewAnalysis></ReviewAnalysis></div>,
       },
     ]
 

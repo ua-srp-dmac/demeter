@@ -121,3 +121,7 @@ code {
 .floated-right {
   float:right;
 }
+
+.small-button-link {
+  margin-top: 5px!important;
+}

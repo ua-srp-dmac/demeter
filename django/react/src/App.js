@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import 'semantic-ui-css/semantic.min.css'
+import 'semantic-ui-css/semantic.min.css';
 import { Container, Menu, Segment, Grid, Header, List, Divider, Image } from 'semantic-ui-react';
 
 import axios from './axios';
@@ -63,7 +63,7 @@ class App extends Component {
               <Menu.Item as='a' header>
                 <h1>demeter</h1>
               </Menu.Item>
-              <Menu.Item as='a'><h4>Home</h4></Menu.Item>
+              <Menu.Item as='a' href="/"><h4>Home</h4></Menu.Item>
               {this.state.loggedIn && <Menu.Item as='a' onClick={this.logout}><h4>Logout</h4></Menu.Item>}
             </Container>
           </Menu>
