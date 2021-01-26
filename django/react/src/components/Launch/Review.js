@@ -22,19 +22,6 @@ import {
 } from 'semantic-ui-react'
 
 export default class Review extends Component {
-  constructor(props) {
-    super(props);
-    
-    this.state = {
-      analysisType: null,
-      readType: null
-    };
-
-  };
-
-  updateStep() {
-
-  }
 
   render() {
     
@@ -72,8 +59,7 @@ export default class Review extends Component {
               let group = this.props.parentState['group_' + index]
               
               return (
-                <Card key={index} 
-                      onClick={() => this.props.selectGroup(index)}>
+                <Card key={index}>
                   <Card.Content>
                     <Card.Header>
                       Group {index}
@@ -103,21 +89,21 @@ export default class Review extends Component {
                       }
 
                       <Dropdown placeholder='Genome'
-                              // value={this.state.selectedGenomes[file.path]}
+                              value={this.props.parentState['genome_' + index]}
                               selection
                               fluid
                               options={genomeOptions}
-                              // onChange={(e, data) => this.handleGenomeChange(e, data, file.path)}
+                              onChange={(e, data) => this.props.updateGroup(index, 'genome', data.value)}
                       >      
                       </Dropdown>
 
                       <Dropdown placeholder='Read Length'
-                              // value={this.state.selectedGenomes[file.path]}
+                              value={this.props.parentState['readLength_' + index]}
                               selection
                               fluid
                               options={readLengthOptions}
                               className='m-t-15'
-                              // onChange={(e, data) => this.handleGenomeChange(e, data, file.path)}
+                              onChange={(e, data) => this.props.updateGroup(index, 'readLength', data.value)}
                       >      
                       </Dropdown> 
                     </Card.Description>
@@ -131,6 +117,16 @@ export default class Review extends Component {
            
           }
           </div>
+
+          <Button
+            floated='left'
+            icon
+            labelPosition='lef'
+            primary
+            size='small'
+            onClick={() => this.props.handleSubmit()}>
+            Submit <Icon name='caret left'/>
+        </Button>
 
           {/* <Grid.Column>
             <Segment>Content 1</Segment>

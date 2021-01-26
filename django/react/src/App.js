@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import { Container, Menu, Segment, Grid, Header, List, Divider, Image } from 'semantic-ui-react';
+import {NotificationContainer, NotificationManager} from 'react-notifications';
 
 import axios from './axios';
 import Routes from "./Routes";
@@ -14,6 +15,9 @@ class App extends Component {
 
     this.logout = this.logout.bind(this);
     this.updateAuth = this.updateAuth.bind(this);
+    this.notifySuccess = this.notifySuccess.bind(this);
+    this.notifyError = this.notifyError.bind(this);
+    this.updateTab = this.updateTab.bind(this);
     
     this.state = {
       loggedIn: null,
@@ -32,6 +36,18 @@ class App extends Component {
           console.log(error)
           console.log('not logged in')
     });
+  }
+
+  notifySuccess(message) {
+    NotificationManager.success('Success', message);
+  }
+
+  notifyError(message) {
+    NotificationManager.error('Error', message);
+  }
+
+  updateTab (tab) {
+    this.setState({ activeIndex: tab });
   }
 
   updateAuth(authenticated) {
@@ -69,7 +85,11 @@ class App extends Component {
           </Menu>
         </header>
         <Container className="appBody">
-          { this.state.loggedIn && <div style={{ minHeight: '80vh' }}><Routes childProps={{loggedIn: this.state.loggedIn}} /></div>}
+          { this.state.loggedIn && 
+            <div style={{ minHeight: '80vh' }}>
+              <Routes childProps={{loggedIn: this.state.loggedIn, notifySuccess:this.notifySuccess, notifyError:this.notifyError}} />
+              <NotificationContainer/>
+            </div>}
           { !this.state.loggedIn && !this.state.loading && <LoginForm updateAuth={this.updateAuth}></LoginForm>}
         </Container>
 

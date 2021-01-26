@@ -221,22 +221,17 @@ def bowtie2_analysis(request):
         home_directory = '/iplant/home/' + username + '/'
 
         form_data = json.loads(request.body.decode())
-        selected_files = form_data['selectedFiles']
+        groups = form_data['groups']
 
-        for group in range(1,10):
+        for group in groups:
 
-            group_files = [x for x in selected_files if x['group'] == group]
-            if not group_files:
+            if group['files']:
+                fastq = group['files']
+            else:
                 continue
 
-            fastq = []
-
-            for item in group_files:
-                fastq.append(item['path'])
-
-            genome = group_files[0]['genome']
-            file_name = group_files[0]['path'].split(home_directory)[1].split('.')[0]
-            print(file_name)
+            genome = group['genome']
+            file_name = fastq[0].split(home_directory)[1].split('.')[0]
 
             # bowtie2config contains app parameters
             human_config = {
@@ -247,8 +242,6 @@ def bowtie2_analysis(request):
                # fastq file
                "d743b2be-0842-11eb-9cbd-008cfa5ae621_644b7b2c-251e-11eb-8a8f-008cfa5ae621": fastq,
             }
-
-            # paired arg id:  d743b2be-0842-11eb-9cbd-008cfa5ae621_644c61c2-251e-11eb-8a8f-008cfa5ae621
 
             mouse_config = {
                # index folder
