@@ -507,22 +507,18 @@ def star_analysis(request):
         home_directory = '/iplant/home/' + username + '/'
 
         form_data = json.loads(request.body.decode())
-        selected_files = form_data['selectedFiles']
+        groups = form_data['groups']
 
-        for group in range(1,10):
+        for group in groups:
 
-            group_files = [x for x in selected_files if x['group'] == group]
-            if not group_files:
+            if group['files']:
+                fastq = group['files']
+            else:
                 continue
 
-            fastq = []
-
-            for item in group_files:
-                fastq.append(item['path'])
-
-            genome = group_files[0]['genome']
-            sjdbOverhang = group_files[0]['sjdbOverhang']
-            file_name = group_files[0]['path'].split(home_directory)[1].split('.')[0]
+            genome = group['genome']
+            sjdbOverhang = group['sjdbOverhang']
+            file_name = fastq[0].split(home_directory)[1].split('.')[0]
         
             # app parameters
             human_config = {
