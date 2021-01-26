@@ -236,7 +236,7 @@ def bowtie2_analysis(request):
             # bowtie2config contains app parameters
             human_config = {
                # index folder
-               "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9ce63e-f2d3-11ea-9df7-008cfa5ae621": "/iplant/home/michellito/genomes/hg38/Sequence/Bowtie2Index",
+               "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9ce63e-f2d3-11ea-9df7-008cfa5ae621": "/iplant/home/shared/srp_dmac/dmac/demeter/ucsc_genomes/hg38/Sequence/Bowtie2Index",
                # index name
                "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9d9660-f2d3-11ea-9df7-008cfa5ae621": "genome",
                # fastq file
@@ -245,7 +245,7 @@ def bowtie2_analysis(request):
 
             mouse_config = {
                # index folder
-               "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9ce63e-f2d3-11ea-9df7-008cfa5ae621": "/iplant/home/michellito/genomes/bowtie2_mm10",
+               "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9ce63e-f2d3-11ea-9df7-008cfa5ae621": "/iplant/home/shared/srp_dmac/dmac/demeter/ucsc_genomes/mm10/Sequence/Bowtie2Index",
                # index name
                "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9d9660-f2d3-11ea-9df7-008cfa5ae621": "mm10",
                # fastq file
@@ -331,7 +331,7 @@ def bowtie2_paired(request):
         # bowtie2config contains app parameters
         human_config = {
             # index folder
-            "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9ce63e-f2d3-11ea-9df7-008cfa5ae621": "/iplant/home/michellito/genomes/hg38/Sequence/Bowtie2Index",
+            "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9ce63e-f2d3-11ea-9df7-008cfa5ae621": "/iplant/home/shared/srp_dmac/dmac/demeter/ucsc_genomes/hg38/Sequence/Bowtie2Index",
             # index name
             "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9d9660-f2d3-11ea-9df7-008cfa5ae621": "genome",
             # fastq file
@@ -343,7 +343,7 @@ def bowtie2_paired(request):
 
         mouse_config = {
             # index folder
-            "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9ce63e-f2d3-11ea-9df7-008cfa5ae621": "/iplant/home/michellito/genomes/bowtie2_mm10",
+            "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9ce63e-f2d3-11ea-9df7-008cfa5ae621": "/iplant/home/shared/srp_dmac/dmac/demeter/ucsc_genomes/mm10/Sequence/Bowtie2Index",
             # index name
             "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9d9660-f2d3-11ea-9df7-008cfa5ae621": "mm10",
             # fastq file
@@ -437,13 +437,13 @@ def star_paired(request):
         index_folder = None
 
         if sjdbOverhang == '49':
-            index_folder = "/iplant/home/michellito/genomes/hg38/Sequence/STAR"
+            index_folder = "/iplant/home/shared/srp_dmac/dmac/demeter/star_indexes/STAR50"
         elif sjdbOverhang == '74':
-                index_folder = "/iplant/home/shared/srp_dmac/STAR75"
+                index_folder = "/iplant/home/shared/srp_dmac/dmac/demeter/star_indexes/STAR75"
         elif sjdbOverhang == '99':
-            index_folder = "/iplant/home/shared/srp_dmac/STAR100"
+            index_folder = "/iplant/home/shared/srp_dmac/dmac/demeter/star_indexes/STAR100"
         elif sjdbOverhang == '149':
-            index_folder = "/iplant/home/shared/srp_dmac/STAR150"
+            index_folder = "/iplant/home/shared/srp_dmac/dmac/demeter/star_indexes/STAR150"
 
         human_config["286b30e0-1df1-11eb-b141-008cfa5ae621_90b9c7fe-1493-11eb-82d6-008cfa5ae621"] = index_folder
 
@@ -531,13 +531,13 @@ def star_analysis(request):
             index_folder = None
 
             if sjdbOverhang == '49':
-                index_folder = "/iplant/home/michellito/genomes/hg38/Sequence/STAR"
+                index_folder = "/iplant/home/shared/srp_dmac/dmac/demeter/star_indexes/STAR50"
             elif sjdbOverhang == '74':
-                index_folder = "/iplant/home/shared/srp_dmac/STAR75"
+                    index_folder = "/iplant/home/shared/srp_dmac/dmac/demeter/star_indexes/STAR75"
             elif sjdbOverhang == '99':
-                index_folder = "/iplant/home/shared/srp_dmac/STAR100"
+                index_folder = "/iplant/home/shared/srp_dmac/dmac/demeter/star_indexes/STAR100"
             elif sjdbOverhang == '149':
-                index_folder = "/iplant/home/shared/srp_dmac/STAR150"
+                index_folder = "/iplant/home/shared/srp_dmac/dmac/demeter/star_indexes/STAR150"
 
             human_config['286b30e0-1df1-11eb-b141-008cfa5ae621_90b9c7fe-1493-11eb-82d6-008cfa5ae621'] = index_folder
 
