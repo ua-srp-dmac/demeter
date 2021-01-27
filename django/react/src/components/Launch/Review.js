@@ -40,26 +40,35 @@ export default class Review extends Component {
 
     return (
       <>
-        <Button
-            floated='left'
-            icon
-            labelPosition='left'
-            primary
-            size='small'
-            onClick={() => this.props.updateStep(2)}>
-            Back <Icon name='caret left'/>
-        </Button>
-
+        <Grid>
+          <Grid.Column textAlign="center">
+          <Button
+              floated='left'
+              icon
+              labelPosition='left'
+              size='small'
+              onClick={() => this.props.updateStep(2)}>
+              Back <Icon name='caret left'/>
+          </Button>
+          </Grid.Column>
+        </Grid>
+{/* 
+        <div class="ui secondary menu">
+          <div class="left menu">
+            
+          </div>
+        </div>
+         */}
         <div>
         { this.props.parentState.groups.length > 0 && 
             
-          <Card.Group>
+          <Card.Group className="two doubling stacking centered">
             <>
             {this.props.parentState.groups.map((index, i) => {
               let group = this.props.parentState['group_' + index]
               
               return (
-                <Card key={index}>
+                <Card key={index} fluid>
                   <Card.Content>
                     <Card.Header>
                       Group {index}
@@ -68,7 +77,10 @@ export default class Review extends Component {
                         {this.props.parentState['group_' + index].length} files
                       </Label>
                     </Card.Header>
+                  </Card.Content>
+                  <Card.Content>
                     <Card.Description>
+                      <h4>Selected Files</h4>
                       { this.props.parentState['group_' + index].length === 0 &&
                         <>
                           No files selected.
@@ -81,32 +93,36 @@ export default class Review extends Component {
                             return (
                               <div key={file} className="word-wrap m-b-5">
                                 {fileName}
-                                <Divider></Divider>
                               </div>
                             )
                           })}
                         </>
                       }
 
-                      <Dropdown placeholder='Genome'
+                      
+                    </Card.Description>
+                  </Card.Content>
+                  <Card.Content extra>
+                    <Dropdown placeholder='Genome'
                               value={this.props.parentState['genome_' + index]}
                               selection
+                              clearable
                               fluid
                               options={genomeOptions}
                               onChange={(e, data) => this.props.updateGroup(index, 'genome', data.value)}
-                      >      
-                      </Dropdown>
+                    >      
+                    </Dropdown>
 
-                      <Dropdown placeholder='Read Length'
-                              value={this.props.parentState['readLength_' + index]}
-                              selection
-                              fluid
-                              options={readLengthOptions}
-                              className='m-t-15'
-                              onChange={(e, data) => this.props.updateGroup(index, 'readLength', data.value)}
-                      >      
-                      </Dropdown> 
-                    </Card.Description>
+                    <Dropdown placeholder='Read Length'
+                            value={this.props.parentState['readLength_' + index]}
+                            selection
+                            clearable
+                            fluid
+                            options={readLengthOptions}
+                            className='m-t-15'
+                            onChange={(e, data) => this.props.updateGroup(index, 'readLength', data.value)}
+                    >      
+                    </Dropdown> 
                   </Card.Content>
                 </Card>
               )
@@ -115,18 +131,25 @@ export default class Review extends Component {
             </>
           </Card.Group>
            
-          }
-          </div>
+        }
+        </div>
 
-          <Button
-            floated='left'
-            icon
-            labelPosition='lef'
-            primary
-            size='small'
-            onClick={() => this.props.handleSubmit()}>
-            Submit <Icon name='caret left'/>
-        </Button>
+        <Divider hidden></Divider>
+        
+        <Grid>
+          <Grid.Column textAlign="center">
+            <Button
+              icon
+              labelPosition='right'
+              primary
+              size='large'
+              onClick={() => this.props.handleSubmit()}>
+              Submit Analysis <Icon name='check circle outline'/>
+            </Button>
+          </Grid.Column>
+        </Grid>
+
+          
 
           {/* <Grid.Column>
             <Segment>Content 1</Segment>

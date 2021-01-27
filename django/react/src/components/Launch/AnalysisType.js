@@ -53,7 +53,9 @@ export default class AnalysisType extends Component {
                     selection
                     fluid
                     options={analysisOptions}
-                    onChange={(e, data) => this.props.updateParentState('analysisType', data.value)}>      
+                    onChange={(e, data) => this.props.updateParentState('analysisType', data.value)}
+                    value={this.props.parentState.analysisType}
+                    >      
               </Dropdown>
               
               <Dropdown placeholder='Select Read Type'
@@ -61,7 +63,8 @@ export default class AnalysisType extends Component {
                         fluid
                         className='m-t-15 m-b-15'
                         options={readTypeOptions}
-                        onChange={(e, data) => this.props.updateParentState('readType', data.value)}>      
+                        onChange={(e, data) => this.props.updateParentState('readType', data.value)}
+                        value={this.props.parentState.readType}>      
               </Dropdown>
               
               <Button

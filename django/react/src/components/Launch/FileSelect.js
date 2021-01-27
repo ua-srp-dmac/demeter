@@ -34,6 +34,7 @@ export default class LaunchAnalysis extends Component {
 
   async componentDidMount() {
     this.getFiles();
+    this.props.selectGroup(1);
   }
 
   getFiles() {
@@ -123,7 +124,7 @@ export default class LaunchAnalysis extends Component {
                                   return (
                                     <div key={file} className="word-wrap m-b-5">
                                       <Icon name='remove circle' color='red' onClick={() => this.props.removeFile(file, index)} />{fileName}
-                                      <Divider></Divider>
+                                      {i < this.props.parentState['group_' + index].length - 1 && <Divider></Divider>}
                                     </div>
                                   )
                                 })}

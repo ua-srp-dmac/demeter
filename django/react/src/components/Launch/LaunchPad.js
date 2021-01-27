@@ -60,6 +60,13 @@ export default class LaunchPad extends Component {
         selectedGroup: index
       }));
     }
+  }
+
+  removeGroup(index) {
+    console.log(this.state.groups);
+    // for (var i = index; i < this.state.groups.length; i++) {
+    //   this.setState({['group_' + i]: this.state['group_' + (i + 1)]})
+    // }
     
   }
 
