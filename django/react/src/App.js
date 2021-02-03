@@ -17,7 +17,6 @@ class App extends Component {
     this.updateAuth = this.updateAuth.bind(this);
     this.notifySuccess = this.notifySuccess.bind(this);
     this.notifyError = this.notifyError.bind(this);
-    this.updateTab = this.updateTab.bind(this);
     
     this.state = {
       loggedIn: null,
@@ -44,10 +43,6 @@ class App extends Component {
 
   notifyError(message) {
     NotificationManager.error('Error', message);
-  }
-
-  updateTab (tab) {
-    this.setState({ activeIndex: tab });
   }
 
   updateAuth(authenticated) {

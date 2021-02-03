@@ -1,10 +1,16 @@
 import React, { Component } from 'react'
-import { Label, Menu, Tab } from 'semantic-ui-react'
+import { Tab } from 'semantic-ui-react'
+
+import {
+  BrowserRouter,
+  Route,
+  NavLink,
+  Switch
+} from "react-router-dom";
+
 import AnalysisList from './AnalysisList';
 import FileList from './FileList';
-import LaunchAnalysis from './LaunchAnalysis';
-import ReviewAnalysis from './ReviewAnalysis';
-import {NotificationContainer, NotificationManager} from 'react-notifications';
+import {NotificationManager} from 'react-notifications';
 
 
 export default class Home extends Component {
@@ -12,12 +18,6 @@ export default class Home extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      activeIndex: 0
-    }
-
-    this.updateTab = this.updateTab.bind(this);
-    this.handleTabChange = this.handleTabChange.bind(this);
     this.notifySuccess = this.notifySuccess.bind(this);
     this.notifyError = this.notifyError.bind(this);
   };
@@ -30,41 +30,57 @@ export default class Home extends Component {
     NotificationManager.error('Error', message);
   }
 
-  updateTab (tab) {
-    this.setState({ activeIndex: tab });
-  }
-
-  handleTabChange = (e, { activeIndex }) => this.setState({ activeIndex });
-
   render() {
-    
-    const { activeIndex } = this.state
 
-    const panes = [
-      {
-        menuItem: (
-          <Menu.Item key='files'>
-            <h3>Files</h3>
-          </Menu.Item>
-        ),
-        render: () => <div className="p-t-25"><FileList updateTab={this.updateTab} notifySuccess={this.notifySuccess} notifyError={this.notifyError}></FileList></div>
-      },
-      {
-        menuItem: (
-          <Menu.Item key='analyses'>
-            <h3>Analyses</h3>
-          </Menu.Item>
-        ),
-        render: () => <div className="p-t-25"><AnalysisList></AnalysisList></div>,
-      },
-    ]
-
-    return(
-      <>
-        <Tab panes={panes} activeIndex={activeIndex} onTabChange={this.handleTabChange}></Tab>
-        <NotificationContainer/>
-      </>
-    )
+      const panes = [
+        {
+          menuItem: {
+            as: NavLink,
+            id: "files",
+            content: <h3>Files</h3>,
+            to: "/",
+            exact: true,
+            key: "files"
+          },
+          pane: (
+            <Route
+              path="/"
+              exact
+              render={() => (
+                <div className="p-t-25"><FileList notifySuccess={this.notifySuccess} notifyError={this.notifyError}></FileList></div>
+              )}
+            />
+          )
+        },
+        {
+          menuItem: {
+            as: NavLink,
+            id: "analyses",
+            content: <h3>Analyses</h3>,
+            to: "/analyses",
+            exact: true,
+            key: "analyses"
+          },
+          pane: (
+            <Route
+              path="/analyses"
+              exact
+              render={() => (
+                <div className="p-t-25"><AnalysisList></AnalysisList></div>
+              )}
+            />
+          )
+        },
+      
+      ];
+  
+      return (
+        <BrowserRouter>
+          <Switch>
+            <Tab renderActiveOnly={false} activeIndex={-1} panes={panes} />
+          </Switch>
+        </BrowserRouter>
+      );
 
   }
 }
