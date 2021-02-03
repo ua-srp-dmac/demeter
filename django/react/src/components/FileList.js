@@ -48,21 +48,6 @@ export default class FileList extends Component {
 
     return (
       <>
-      <div class="ui secondary menu">
-        <div class="right menu">
-          <Button floated='right'
-                  icon
-                  className='small-button-link'
-                  // labelPosition='left'
-                  primary
-                  size='small'
-                  as={Link} to='/launch'
-          >
-            Launch Analysis
-          </Button>
-        </div>
-      
-      </div>
       
         <Container>
         

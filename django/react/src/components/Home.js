@@ -1,5 +1,8 @@
 import React, { Component } from 'react'
-import { Tab } from 'semantic-ui-react'
+import { Tab, Button } from 'semantic-ui-react'
+import {withRouter} from 'react-router';
+import {Link} from 'react-router-dom'
+
 
 import {
   BrowserRouter,
@@ -71,15 +74,27 @@ export default class Home extends Component {
             />
           )
         },
-      
       ];
   
       return (
-        <BrowserRouter>
-          <Switch>
-            <Tab renderActiveOnly={false} activeIndex={-1} panes={panes} />
-          </Switch>
-        </BrowserRouter>
+        <>
+          <Button floated='right'
+                  icon
+                  className='small-button-link'
+                  primary
+                  size='small'
+                  as={Link} to='/launch'>
+            Launch Analysis
+          </Button>
+
+          <BrowserRouter>
+            <Switch>
+              <Tab renderActiveOnly={false} activeIndex={-1} panes={panes} />
+              
+            </Switch>
+          </BrowserRouter>
+
+        </>
       );
 
   }

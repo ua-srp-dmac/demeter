@@ -10,7 +10,7 @@ import AppliedRoute from "./components/AppliedRoute";
 export default ({ childProps }) =>
     <BrowserRouter>
         <Switch>
-            <AppliedRoute path="/launch" exact component={Launch} props={childProps} />
+            <Route path="/launch" exact component={Launch} props={childProps} />
             <AppliedRoute path="/" exact component={Home} props={childProps} />
             <AppliedRoute path="/analyses" exact component={Home} props={childProps} />
             
