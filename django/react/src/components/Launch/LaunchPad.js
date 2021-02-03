@@ -3,6 +3,7 @@ import { Step, Button, Grid, Icon } from 'semantic-ui-react'
 import classNames from "classnames";
 import React, { Component } from 'react';
 import axios from '../../axios';
+import { Redirect } from "react-router-dom";
 
 import AnalysisType from './AnalysisType';
 import FileSelect from './FileSelect';
@@ -31,6 +32,11 @@ export default class LaunchPad extends Component {
     this.updateGroup = this.updateGroup.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
+
+  componentDidMount() {
+    console.log(this.props)
+  }
+  
 
   updateStep(step) {
     this.setState({step: step});
@@ -157,12 +163,9 @@ export default class LaunchPad extends Component {
     .then(result => {
       this.props.notifySuccess('Your analysis was submitted.');
       this.setState({
-        selectionStatus: {},
-        selectedFiles: [],
-        analysisType: null,
         submitting: false
       });
-      this.props.updateTab(1);
+      return <Redirect to="/analyses" />
     }) 
     .catch((error) => {
       this.props.notifyError('There was an error submitting your analysis.');

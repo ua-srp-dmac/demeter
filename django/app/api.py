@@ -99,14 +99,17 @@ def file_list(request):
     if request.user.is_authenticated:
 
         username = request.user.username
-        path='/iplant/home/' + username
-
+        path = request.GET.get('path', None)
+        
+        if not path:
+            path='/iplant/home/' + username
+        
         query_params = {
             "path": path,
             "limit": 100,
             "offset": 0,
-            "entity-type": "file",
-            "info-type": "fastq"
+            # "entity-type": "file",
+            # "info-type": "fastq"
         }
 
         try:
@@ -115,6 +118,21 @@ def file_list(request):
             auth_headers = {"Authorization": "Bearer " + account.api_token}
             r = requests.get(url, headers=auth_headers, params=query_params)
             r.raise_for_status()
+
+            fileList = []
+
+            # {
+            #     'infoType': None,
+            #     'path': '/iplant/home/michellito/mm10',
+            #     'date-created': 1602268071000,
+            #     'permission': 'own',
+            #     'date-modified': 1602268071000,
+            #     'file-size': 0,
+            #     'badName': False,
+            #     'isFavorite': False,
+            #     'label': 'mm10',
+            #     'id': '23fd3186-0a5d-11eb-9303-90e2ba675364'
+            # }
 
             # {
             #     'infoType': 'fastq',
@@ -129,7 +147,18 @@ def file_list(request):
             #     'id': '4139e402-ed47-11ea-9281-90e2ba675364'
             # }
 
-            fileList = []
+            for item in r.json()['folders']:
+
+                updated = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(item['date-modified']/1000.0))
+
+                fileList.append({
+                    "name": item['label'],
+                    "last_updated": updated,
+                    # "size": size,
+                    "type": "folder",
+                    "path": item['path'],
+                    "id": item['id']
+                })
             
             for item in r.json()['files']:
                 

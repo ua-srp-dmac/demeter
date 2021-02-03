@@ -125,3 +125,7 @@ code {
 .small-button-link {
   margin-top: 5px!important;
 }
+
+.fake-link {
+  cursor: pointer;
+}

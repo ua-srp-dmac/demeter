@@ -23,11 +23,15 @@ export default class FileList extends Component {
     this.getFiles();
   }
 
-  getFiles() {
+  getFiles(path) {
 
     this.setState({error: null, loading:true })
   
-    axios.get('/api/files/', {})
+    axios.get('/api/files/', {
+      params: {
+        path: path
+      }
+    })
     .then(result => {
         this.setState({error: null, loading: false, fileList: result.data });
     }) 
@@ -67,7 +71,17 @@ export default class FileList extends Component {
                   {this.state.fileList.map((file, i) => {
                       return (
                         <Table.Row obj={file} key={file.path}>
-                          <Table.Cell>{file.name}</Table.Cell>
+                          <Table.Cell>
+                            { file.type === 'folder' ?
+                              <>
+                                <Icon name='folder'/>
+                                <span className="fake-link m-l-10"><a onClick={() => this.getFiles(file.path)}>{file.name}</a></span>
+                              </> :
+                              <>
+                                {file.name}
+                              </>
+                            } 
+                          </Table.Cell>
                           <Table.Cell>{file.size}</Table.Cell>
                           <Table.Cell>{file.last_updated}</Table.Cell>
                         </Table.Row>
