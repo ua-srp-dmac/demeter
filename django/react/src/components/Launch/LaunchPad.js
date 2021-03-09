@@ -165,7 +165,7 @@ export default class LaunchPad extends Component {
       this.setState({
         submitting: false
       });
-      return <Redirect to="/analyses" />
+      this.props.history.push("/analyses");
     }) 
     .catch((error) => {
       this.props.notifyError('There was an error submitting your analysis.');
@@ -259,7 +259,8 @@ export default class LaunchPad extends Component {
             isSelected= {this.isSelected}
             removeFile={this.removeFile}
             updateGroup={this.updateGroup}
-            handleSubmit={this.handleSubmit}>
+            handleSubmit={this.handleSubmit}
+            submitting={this.state.submitting}>
           </Review>
         } 
       </>

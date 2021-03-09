@@ -143,6 +143,8 @@ export default class Review extends Component {
               labelPosition='right'
               primary
               size='large'
+              loading={this.props.submitting}
+              disabled={this.props.submitting}
               onClick={() => this.props.handleSubmit()}>
               Submit Analysis <Icon name='check circle outline'/>
             </Button>
