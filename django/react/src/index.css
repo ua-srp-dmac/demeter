@@ -16,7 +16,7 @@ code {
   width: 125px !important;
 }
 
-.ui.selection.dropdown.table-dropdown { min-width: 125px !important; }
+.ui.selection.dropdown.table-dropdown { min-width: 150px !important; }
 
 .appBody {
   padding-top: 100px;
@@ -25,7 +25,7 @@ code {
 
 .table-container {
   /* height: 290px; */
-  overflow-y: auto; 
+  /* overflow-y: auto;  */
   overflow-x: auto; /* or auto */
 }
 
@@ -35,6 +35,18 @@ code {
 
 .p-t-25 {
   padding-top: 25px;
+}
+
+.m-b-25 {
+  margin-bottom: 25px;
+}
+
+.m-b-15 {
+  margin-bottom: 15px;
+}
+
+.m-b-5 {
+  margin-bottom: 5px;
 }
 
 .m-t-15 {
@@ -86,4 +98,34 @@ code {
 }
 .text-blue {
   color: #3B83C0;
+}
+
+.raised-menu {
+  z-index: 1000!important;
+}
+
+
+.change:hover{
+  background-color: teal!important;
+}
+
+.activeSegment{
+  border-color: teal!important;
+  border-width: 3px !important;
+}
+
+.word-wrap {
+  word-wrap:break-word
+}
+
+.floated-right {
+  float:right;
+}
+
+.small-button-link {
+  margin-top: 5px!important;
+}
+
+.fake-link {
+  cursor: pointer;
 }

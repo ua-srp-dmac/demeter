@@ -99,14 +99,17 @@ def file_list(request):
     if request.user.is_authenticated:
 
         username = request.user.username
-        path='/iplant/home/' + username
-
+        path = request.GET.get('path', None)
+        
+        if not path:
+            path='/iplant/home/' + username
+        
         query_params = {
             "path": path,
             "limit": 100,
             "offset": 0,
-            "entity-type": "file",
-            "info-type": "fastq"
+            # "entity-type": "file",
+            # "info-type": "fastq"
         }
 
         try:
@@ -115,6 +118,21 @@ def file_list(request):
             auth_headers = {"Authorization": "Bearer " + account.api_token}
             r = requests.get(url, headers=auth_headers, params=query_params)
             r.raise_for_status()
+
+            fileList = []
+
+            # {
+            #     'infoType': None,
+            #     'path': '/iplant/home/michellito/mm10',
+            #     'date-created': 1602268071000,
+            #     'permission': 'own',
+            #     'date-modified': 1602268071000,
+            #     'file-size': 0,
+            #     'badName': False,
+            #     'isFavorite': False,
+            #     'label': 'mm10',
+            #     'id': '23fd3186-0a5d-11eb-9303-90e2ba675364'
+            # }
 
             # {
             #     'infoType': 'fastq',
@@ -129,7 +147,18 @@ def file_list(request):
             #     'id': '4139e402-ed47-11ea-9281-90e2ba675364'
             # }
 
-            fileList = []
+            for item in r.json()['folders']:
+
+                updated = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(item['date-modified']/1000.0))
+
+                fileList.append({
+                    "name": item['label'],
+                    "last_updated": updated,
+                    # "size": size,
+                    "type": "folder",
+                    "path": item['path'],
+                    "id": item['id']
+                })
             
             for item in r.json()['files']:
                 
@@ -221,38 +250,31 @@ def bowtie2_analysis(request):
         home_directory = '/iplant/home/' + username + '/'
 
         form_data = json.loads(request.body.decode())
-        selected_files = form_data['selectedFiles']
+        groups = form_data['groups']
 
-        for group in range(1,10):
+        for group in groups:
 
-            group_files = [x for x in selected_files if x['group'] == group]
-            if not group_files:
+            if group['files']:
+                fastq = group['files']
+            else:
                 continue
 
-            fastq = []
-
-            for item in group_files:
-                fastq.append(item['path'])
-
-            genome = group_files[0]['genome']
-            file_name = group_files[0]['path'].split(home_directory)[1].split('.')[0]
-            print(file_name)
+            genome = group['genome']
+            file_name = fastq[0].split(home_directory)[1].split('.')[0]
 
             # bowtie2config contains app parameters
             human_config = {
                # index folder
-               "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9ce63e-f2d3-11ea-9df7-008cfa5ae621": "/iplant/home/michellito/genomes/hg38/Sequence/Bowtie2Index",
+               "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9ce63e-f2d3-11ea-9df7-008cfa5ae621": "/iplant/home/shared/srp_dmac/dmac/demeter/ucsc_genomes/hg38/Sequence/Bowtie2Index",
                # index name
                "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9d9660-f2d3-11ea-9df7-008cfa5ae621": "genome",
                # fastq file
                "d743b2be-0842-11eb-9cbd-008cfa5ae621_644b7b2c-251e-11eb-8a8f-008cfa5ae621": fastq,
             }
 
-            # paired arg id:  d743b2be-0842-11eb-9cbd-008cfa5ae621_644c61c2-251e-11eb-8a8f-008cfa5ae621
-
             mouse_config = {
                # index folder
-               "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9ce63e-f2d3-11ea-9df7-008cfa5ae621": "/iplant/home/michellito/genomes/bowtie2_mm10",
+               "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9ce63e-f2d3-11ea-9df7-008cfa5ae621": "/iplant/home/shared/srp_dmac/dmac/demeter/ucsc_genomes/mm10/Sequence/Bowtie2Index",
                # index name
                "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9d9660-f2d3-11ea-9df7-008cfa5ae621": "mm10",
                # fastq file
@@ -338,7 +360,7 @@ def bowtie2_paired(request):
         # bowtie2config contains app parameters
         human_config = {
             # index folder
-            "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9ce63e-f2d3-11ea-9df7-008cfa5ae621": "/iplant/home/michellito/genomes/hg38/Sequence/Bowtie2Index",
+            "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9ce63e-f2d3-11ea-9df7-008cfa5ae621": "/iplant/home/shared/srp_dmac/dmac/demeter/ucsc_genomes/hg38/Sequence/Bowtie2Index",
             # index name
             "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9d9660-f2d3-11ea-9df7-008cfa5ae621": "genome",
             # fastq file
@@ -350,7 +372,7 @@ def bowtie2_paired(request):
 
         mouse_config = {
             # index folder
-            "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9ce63e-f2d3-11ea-9df7-008cfa5ae621": "/iplant/home/michellito/genomes/bowtie2_mm10",
+            "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9ce63e-f2d3-11ea-9df7-008cfa5ae621": "/iplant/home/shared/srp_dmac/dmac/demeter/ucsc_genomes/mm10/Sequence/Bowtie2Index",
             # index name
             "d743b2be-0842-11eb-9cbd-008cfa5ae621_4f9d9660-f2d3-11ea-9df7-008cfa5ae621": "mm10",
             # fastq file
@@ -444,13 +466,13 @@ def star_paired(request):
         index_folder = None
 
         if sjdbOverhang == '49':
-            index_folder = "/iplant/home/michellito/genomes/hg38/Sequence/STAR"
+            index_folder = "/iplant/home/shared/srp_dmac/dmac/demeter/star_indexes/STAR50"
         elif sjdbOverhang == '74':
-                index_folder = "/iplant/home/shared/srp_dmac/STAR75"
+                index_folder = "/iplant/home/shared/srp_dmac/dmac/demeter/star_indexes/STAR75"
         elif sjdbOverhang == '99':
-            index_folder = "/iplant/home/shared/srp_dmac/STAR100"
+            index_folder = "/iplant/home/shared/srp_dmac/dmac/demeter/star_indexes/STAR100"
         elif sjdbOverhang == '149':
-            index_folder = "/iplant/home/shared/srp_dmac/STAR150"
+            index_folder = "/iplant/home/shared/srp_dmac/dmac/demeter/star_indexes/STAR150"
 
         human_config["286b30e0-1df1-11eb-b141-008cfa5ae621_90b9c7fe-1493-11eb-82d6-008cfa5ae621"] = index_folder
 
@@ -514,22 +536,18 @@ def star_analysis(request):
         home_directory = '/iplant/home/' + username + '/'
 
         form_data = json.loads(request.body.decode())
-        selected_files = form_data['selectedFiles']
+        groups = form_data['groups']
 
-        for group in range(1,10):
+        for group in groups:
 
-            group_files = [x for x in selected_files if x['group'] == group]
-            if not group_files:
+            if group['files']:
+                fastq = group['files']
+            else:
                 continue
 
-            fastq = []
-
-            for item in group_files:
-                fastq.append(item['path'])
-
-            genome = group_files[0]['genome']
-            sjdbOverhang = group_files[0]['sjdbOverhang']
-            file_name = group_files[0]['path'].split(home_directory)[1].split('.')[0]
+            genome = group['genome']
+            sjdbOverhang = group['sjdbOverhang']
+            file_name = fastq[0].split(home_directory)[1].split('.')[0]
         
             # app parameters
             human_config = {
@@ -542,13 +560,13 @@ def star_analysis(request):
             index_folder = None
 
             if sjdbOverhang == '49':
-                index_folder = "/iplant/home/michellito/genomes/hg38/Sequence/STAR"
+                index_folder = "/iplant/home/shared/srp_dmac/dmac/demeter/star_indexes/STAR50"
             elif sjdbOverhang == '74':
-                index_folder = "/iplant/home/shared/srp_dmac/STAR75"
+                    index_folder = "/iplant/home/shared/srp_dmac/dmac/demeter/star_indexes/STAR75"
             elif sjdbOverhang == '99':
-                index_folder = "/iplant/home/shared/srp_dmac/STAR100"
+                index_folder = "/iplant/home/shared/srp_dmac/dmac/demeter/star_indexes/STAR100"
             elif sjdbOverhang == '149':
-                index_folder = "/iplant/home/shared/srp_dmac/STAR150"
+                index_folder = "/iplant/home/shared/srp_dmac/dmac/demeter/star_indexes/STAR150"
 
             human_config['286b30e0-1df1-11eb-b141-008cfa5ae621_90b9c7fe-1493-11eb-82d6-008cfa5ae621'] = index_folder
 

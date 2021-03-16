@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import 'semantic-ui-css/semantic.min.css'
+import 'semantic-ui-css/semantic.min.css';
 import { Container, Menu, Segment, Grid, Header, List, Divider, Image } from 'semantic-ui-react';
+import {NotificationContainer, NotificationManager} from 'react-notifications';
 
 import axios from './axios';
 import Routes from "./Routes";
@@ -14,6 +15,8 @@ class App extends Component {
 
     this.logout = this.logout.bind(this);
     this.updateAuth = this.updateAuth.bind(this);
+    this.notifySuccess = this.notifySuccess.bind(this);
+    this.notifyError = this.notifyError.bind(this);
     
     this.state = {
       loggedIn: null,
@@ -32,6 +35,14 @@ class App extends Component {
           console.log(error)
           console.log('not logged in')
     });
+  }
+
+  notifySuccess(message) {
+    NotificationManager.success('Success', message);
+  }
+
+  notifyError(message) {
+    NotificationManager.error('Error', message);
   }
 
   updateAuth(authenticated) {
@@ -58,18 +69,22 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
-          <Menu fixed='top' inverted>
+          <Menu fixed='top' inverted className="raised-menu">
             <Container>
               <Menu.Item as='a' header>
                 <h1>demeter</h1>
               </Menu.Item>
-              <Menu.Item as='a'><h4>Home</h4></Menu.Item>
+              <Menu.Item as='a' href="/"><h4>Home</h4></Menu.Item>
               {this.state.loggedIn && <Menu.Item as='a' onClick={this.logout}><h4>Logout</h4></Menu.Item>}
             </Container>
           </Menu>
         </header>
         <Container className="appBody">
-          { this.state.loggedIn && <div style={{ minHeight: '80vh' }}><Routes childProps={{loggedIn: this.state.loggedIn}} /></div>}
+          { this.state.loggedIn && 
+            <div style={{ minHeight: '80vh' }}>
+              <Routes childProps={{loggedIn: this.state.loggedIn, notifySuccess:this.notifySuccess, notifyError:this.notifyError}} />
+              <NotificationContainer/>
+            </div>}
           { !this.state.loggedIn && !this.state.loading && <LoginForm updateAuth={this.updateAuth}></LoginForm>}
         </Container>
 
