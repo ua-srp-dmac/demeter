@@ -31,7 +31,8 @@ ALLOWED_HOSTS = [
     'dhbooiserver2.pharmacy.arizona.edu',
     '10.128.207.6',
     'olympus.pharmacy.arizona.edu',
-    'dmac.pharmacy.arizona.edu'
+    'dmac.pharmacy.arizona.edu',
+    'demeter.pharmacy.arizona.edu'
 ]
 
 
