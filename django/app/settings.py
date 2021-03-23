@@ -32,7 +32,8 @@ ALLOWED_HOSTS = [
     '10.128.207.6',
     'olympus.pharmacy.arizona.edu',
     'dmac.pharmacy.arizona.edu',
-    'demeter.pharmacy.arizona.edu'
+    'demeter.pharmacy.arizona.edu',
+    'f02f27e5bb96.ngrok.io'
 ]
 
 
@@ -133,6 +134,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+ARES_ROOT  = os.path.join(BASE_DIR, 'ares')
 
 REACT_APP_DIR = os.path.join(BASE_DIR, 'react')
 

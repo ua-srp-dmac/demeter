@@ -2,12 +2,15 @@ import json
 import requests
 import time
 from urllib.parse import urlencode, quote
+import subprocess
 
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
+from django.core.management import call_command
+from django.conf import settings
 
 from datetime import timedelta
 
@@ -289,8 +292,10 @@ def bowtie2_analysis(request):
                 "system_id": system_id,
                 "debug": False,
                 "output_dir": "/iplant/home/" + username + "/analyses",
-                "notify": True
+                "notify": True,
             }
+
+            print(request_body)
 
             if genome == 'mouse':
                 request_body['config'] = mouse_config
@@ -585,12 +590,12 @@ def star_analysis(request):
             time = timezone.now()
 
             request_body = {
-                "name": file_name + "_RNAseq_" + str(time),
+                "name": file_name + "_RNAseq_" + str(time.strftime("%m-%d-%y_%H:%M:%S")),
                 "app_id": app_id,
                 "system_id": system_id,
                 "debug": False,
                 "output_dir": "/iplant/home/" + username + "/analyses",
-                "notify": True
+                "notify": True,
             }
 
             # if genome == 'mouse':
@@ -616,6 +621,20 @@ def star_analysis(request):
     return HttpResponse(status=200)
 
 # POST /terrain/secured/filesystem/{data-id}/metadata
+@csrf_exempt
+def file_transfer(request):
+    """ Downloads a file from CyVerse.
+    """
+
+    print('file transfer')
+    file = '/iplant/home/michellito/analyses/Con-IgG_S16_L002_R1_001_RNAseq_2021-03-09_19:45:40.015620+00:00-2021-03-09-19-45-41.3/ReadsPerGene.out.tab'
+
+    # if request.method == "POST" and request.user.is_authenticated:
+        
+    #     # r = subprocess.run(['iget ' + file + ' ' + settings.ARES_ROOT], shell=True)
+    #     r = subprocess.run(['iget ' + file + ' ' + '/Users/myung'], shell=True)
+
+    return HttpResponse(status=200)
 
 
 
