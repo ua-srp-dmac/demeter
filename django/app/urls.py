@@ -22,8 +22,9 @@ from .views import FrontendAppView
 
 urlpatterns = [
     path('', FrontendAppView.as_view()),
+    path('launch', FrontendAppView.as_view()),
+    path('analyses', FrontendAppView.as_view()),
     path('admin/', admin.site.urls),
-
     path('api/login/', app_login, name='app_login'),
     path('api/logout/', app_logout, name='app_logout'),
     path('api/auth/', is_user_logged_in, name='is_user_logged_in'),
