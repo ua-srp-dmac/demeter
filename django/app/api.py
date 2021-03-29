@@ -1,6 +1,7 @@
 import json
 import requests
 import time
+import os
 from urllib.parse import urlencode, quote
 import subprocess
 
@@ -621,18 +622,26 @@ def star_analysis(request):
     return HttpResponse(status=200)
 
 # POST /terrain/secured/filesystem/{data-id}/metadata
+
+def handle_uploaded_file(f, path):
+    with open(path, 'wb+') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
+            
 @csrf_exempt
 def file_transfer(request):
     """ Downloads a file from CyVerse.
     """
 
-    print('file transfer')
-    file = '/iplant/home/michellito/analyses/Con-IgG_S16_L002_R1_001_RNAseq_2021-03-09_19:45:40.015620+00:00-2021-03-09-19-45-41.3/ReadsPerGene.out.tab'
+    rename = request.POST.get('rename', None)
+    save_path = request.POST.get('path', None)
+    transfer_file = request.FILES[rename]
 
-    # if request.method == "POST" and request.user.is_authenticated:
-        
-    #     # r = subprocess.run(['iget ' + file + ' ' + settings.ARES_ROOT], shell=True)
-    #     r = subprocess.run(['iget ' + file + ' ' + '/Users/myung'], shell=True)
+
+    complete_path = os.path.join(settings.ARES_ROOT, save_path, rename)
+    print(complete_path)
+
+    handle_uploaded_file(transfer_file, complete_path)
 
     return HttpResponse(status=200)
 

@@ -135,7 +135,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-ARES_ROOT  = os.path.join(BASE_DIR, 'ares')
+ARES_ROOT = os.path.join(BASE_DIR, 'ares')
 
 REACT_APP_DIR = os.path.join(BASE_DIR, 'react')
 
