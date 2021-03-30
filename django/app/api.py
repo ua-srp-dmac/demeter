@@ -623,10 +623,7 @@ def star_analysis(request):
 
 # POST /terrain/secured/filesystem/{data-id}/metadata
 
-def handle_uploaded_file(f, path):
-    with open(path, 'wb+') as destination:
-        for chunk in f.chunks():
-            destination.write(chunk)
+    
             
 @csrf_exempt
 def file_transfer(request):
@@ -641,9 +638,15 @@ def file_transfer(request):
     complete_path = os.path.join(settings.ARES_ROOT, save_path, rename)
     print(complete_path)
 
-    handle_uploaded_file(transfer_file, complete_path)
+    try:
+        with open(complete_path, 'wb+') as destination:
+            for chunk in transfer_file.chunks():
+                destination.write(chunk)
+        return HttpResponse(status=200)
+    except:
+        return HttpResponse(status=400)
 
-    return HttpResponse(status=200)
+    
 
 
 
