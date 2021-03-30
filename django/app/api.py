@@ -635,7 +635,7 @@ def file_transfer(request):
     transfer_file = request.FILES[rename]
 
 
-    complete_path = os.path.join(settings.ARES_ROOT, save_path, rename)
+    complete_path = os.path.join(settings.MEDIA_ROOT, save_path, rename)
     print(complete_path)
 
     try:
@@ -643,7 +643,8 @@ def file_transfer(request):
             for chunk in transfer_file.chunks():
                 destination.write(chunk)
         return HttpResponse(status=200)
-    except:
+    except Exception as e:
+        print(e)
         return HttpResponse(status=400)
 
     
