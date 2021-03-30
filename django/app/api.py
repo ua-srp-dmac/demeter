@@ -561,9 +561,11 @@ def star_analysis(request):
             # app parameters
             human_config = {
                # fastq files
-               "286b30e0-1df1-11eb-b141-008cfa5ae621_90bb0c4a-1493-11eb-82d6-008cfa5ae621": fastq,
+               "42841516-90cc-11eb-87c2-008cfa5ae621_90bb0c4a-1493-11eb-82d6-008cfa5ae621": fastq,
                # sjdbOverhang
-               "286b30e0-1df1-11eb-b141-008cfa5ae621_90bc2558-1493-11eb-82d6-008cfa5ae621": sjdbOverhang,
+               "42841516-90cc-11eb-87c2-008cfa5ae621_90bc2558-1493-11eb-82d6-008cfa5ae621": sjdbOverhang,
+               "4284e77a-90cc-11eb-87c2-008cfa5ae621_faf2ed12-90cb-11eb-ba25-008cfa5ae621": 'ooi_lab',
+               "4284e77a-90cc-11eb-87c2-008cfa5ae621_faf33c5e-90cb-11eb-ba25-008cfa5ae621": file_name + '_ReadsPerGene.tab'
             }
 
             index_folder = None
@@ -577,10 +579,11 @@ def star_analysis(request):
             elif sjdbOverhang == '149':
                 index_folder = "/iplant/home/shared/srp_dmac/dmac/demeter/star_indexes/STAR150"
 
-            human_config['286b30e0-1df1-11eb-b141-008cfa5ae621_90b9c7fe-1493-11eb-82d6-008cfa5ae621'] = index_folder
+            # GenomeDir
+            human_config['42841516-90cc-11eb-87c2-008cfa5ae621_90b9c7fe-1493-11eb-82d6-008cfa5ae621'] = index_folder
 
             if 'fastq.gz' in fastq[0]:
-                human_config['286b30e0-1df1-11eb-b141-008cfa5ae621_90bf01a6-1493-11eb-82d6-008cfa5ae621'] = 'gunzip -c'
+                human_config['42841516-90cc-11eb-87c2-008cfa5ae621_90bf01a6-1493-11eb-82d6-008cfa5ae621'] = 'gunzip -c'
 
             # mouse_config = {
             #    # index folder
@@ -630,7 +633,8 @@ def star_analysis(request):
             
 @csrf_exempt
 def file_transfer(request):
-    """ Downloads a file from CyVerse.
+    """ Receives a POST request containing a ReadsPerGene.out.tab file generated
+        by STAR and writes file to server.
     """
 
     if request.method == 'POST':
@@ -638,8 +642,6 @@ def file_transfer(request):
         rename = request.POST.get('rename', None)
         save_path = request.POST.get('path', None)
         transfer_file = request.FILES[rename]
-
-        print(transfer_file.size)
 
         complete_path = os.path.join(settings.MEDIA_ROOT, save_path)
 
