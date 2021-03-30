@@ -639,13 +639,15 @@ def file_transfer(request):
         save_path = request.POST.get('path', None)
         transfer_file = request.FILES[rename]
 
+        print(transfer_file.size)
+
         complete_path = os.path.join(settings.MEDIA_ROOT, save_path)
 
         fs = FileSystemStorage(location=complete_path) # defaults to MEDIA_ROOT  
         filename = fs.save(rename, transfer_file)
         file_url = fs.url(filename)
 
-        return HttpResponse(status=200)
+        return HttpResponse(transfer_file.size, content_type='text/plain', status=200)
 
     
 
