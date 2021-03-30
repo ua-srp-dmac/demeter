@@ -9,6 +9,7 @@ __pycache__
 .vscode
 
 django/static/
+django/media/
 django/react/.cache
 django/react/node_modules
 django/react/package-lock.json

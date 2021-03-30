@@ -4,11 +4,13 @@ import time
 import os
 from urllib.parse import urlencode, quote
 import subprocess
+from django.core.files.storage import default_storage
 
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
+from django.core.files.storage import FileSystemStorage
 from django.utils import timezone
 from django.core.management import call_command
 from django.conf import settings
@@ -17,6 +19,7 @@ from datetime import timedelta
 
 from .models import CyVerseAccount
 from .helpers import format_size
+
 
 
 def is_user_logged_in(request):
@@ -630,22 +633,19 @@ def file_transfer(request):
     """ Downloads a file from CyVerse.
     """
 
-    rename = request.POST.get('rename', None)
-    save_path = request.POST.get('path', None)
-    transfer_file = request.FILES[rename]
+    if request.method == 'POST':
 
+        rename = request.POST.get('rename', None)
+        save_path = request.POST.get('path', None)
+        transfer_file = request.FILES[rename]
 
-    complete_path = os.path.join(settings.MEDIA_ROOT, save_path, rename)
-    print(complete_path)
+        complete_path = os.path.join(settings.MEDIA_ROOT, save_path)
 
-    try:
-        with open(complete_path, 'wb+') as destination:
-            for chunk in transfer_file.chunks():
-                destination.write(chunk)
+        fs = FileSystemStorage(location=complete_path) # defaults to MEDIA_ROOT  
+        filename = fs.save(rename, transfer_file)
+        file_url = fs.url(filename)
+
         return HttpResponse(status=200)
-    except Exception as e:
-        print(e)
-        return HttpResponse(status=400)
 
     
 
