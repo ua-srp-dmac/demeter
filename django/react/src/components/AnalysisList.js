@@ -99,9 +99,6 @@ export default class FileList extends Component {
                             <Table.Cell>
                               {item.end_date === '1970-01-01 00:00:00' ? <>-----</> : item.end_date }
                             </Table.Cell>
-                            <Table.Cell>
-                              <Button onClick={this.transferFiles}>Transfer</Button>
-                            </Table.Cell>
                         </Table.Row>
 
                     )
