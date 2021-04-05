@@ -27,21 +27,25 @@ export default class LaunchAnalysis extends Component {
     
     this.state = {
       cyverseFiles: [],
-      currentPath: '',
+      currentPath: null,
+      breadcrumbs: null,
     };
 
     this.getFiles = this.getFiles.bind(this);
+    this.getFolders = this.getFolders.bind(this);
+    this.buildBreadcrumbs = this.buildBreadcrumbs.bind(this);
   
   };
 
   async componentDidMount() {
+    this.getFolders();
     this.getFiles();
     this.props.selectGroup(1);
   }
 
   getFiles(path) {
 
-    this.setState({error: null, loading:true, currentPath: path })
+    this.setState({error: null, loading:true })
   
     axios.get('/api/files/', {
       params: {
@@ -49,11 +53,88 @@ export default class LaunchAnalysis extends Component {
       }
     })
     .then(result => {
-        this.setState({error: null, loading: false, cyverseFiles: result.data });
+      this.setState({
+        error: null,
+        loading: false,
+        cyverseFiles: result.data.fileList,
+        currentPath: result.data.currentPath
+      },
+        this.buildBreadcrumbs(result.data.currentPath)
+      );
     }) 
     .catch((error) => {
         console.log(error);
     });
+  }
+
+  getFolders() {
+    axios.get('/api/folders/', {})
+    
+    .then(result => {
+        this.setState({
+          defaultFolder: result.data.default_folder });
+    }) 
+    .catch((error) => {
+        console.log(error);
+    });
+  }
+
+  buildBreadcrumbs(path) {
+
+    let crumbs = path.split('/');
+    let breadcrumbs = [];
+
+    for (var i = 1; i < crumbs.length; i++) {
+      
+      var path = crumbs.slice(0, i + 1).join("/");
+
+      let clickable = false;
+      if (path.includes(this.state.defaultFolder)) {
+        clickable = true;
+      }
+
+      let crumb = {
+        name: crumbs[i],
+        path: path,
+        clickable: clickable,
+      }
+      if (path.includes('srp_dmac')) {
+        breadcrumbs.push(crumb);
+      }
+    }
+
+    this.setState({breadcrumbs: breadcrumbs})
+  }
+
+    /**
+   * Builds breadcrumb menu for file navigation.
+   * @param {*} path 
+   */
+  buildBreadcrumbs(path) {
+
+    let crumbs = path.split('/');
+    let breadcrumbs = [];
+
+    for (var i = 1; i < crumbs.length; i++) {
+      
+      var path = crumbs.slice(0, i + 1).join("/");
+
+      let clickable = false;
+      if (path.includes(this.state.defaultFolder)) {
+        clickable = true;
+      }
+
+      let crumb = {
+        name: crumbs[i],
+        path: path,
+        clickable: clickable,
+      }
+      if (path.includes('srp_dmac')) {
+        breadcrumbs.push(crumb);
+      }
+    }
+
+    this.setState({breadcrumbs: breadcrumbs})
   }
 
   contextRef = createRef()
@@ -71,27 +152,43 @@ export default class LaunchAnalysis extends Component {
             <Segment.Group>
               
               <Segment clearing>
-                <h4>
-                  Select Files for Group { selectedGroup }
-                  <br></br>
-                  {/* <Breadcrumb>
-                    <Breadcrumb.Section link>Home</Breadcrumb.Section>
-                    <Breadcrumb.Divider>/</Breadcrumb.Divider>
-                    <Breadcrumb.Section link>Registration</Breadcrumb.Section>
-                    <Breadcrumb.Divider>/</Breadcrumb.Divider>
-                    <Breadcrumb.Section active>Personal Information</Breadcrumb.Section>
-                  </Breadcrumb> */}
-                  <Button
-                    floated='right'
-                    icon
-                    labelPosition='right'
-                    primary
-                    size='small'
-                    onClick={() => this.props.updateStep(3)}
-                  > 
-                    Next <Icon name='caret right'/> 
-                  </Button>
-                </h4>
+                  
+                <Button
+                  floated='right'
+                  icon
+                  labelPosition='right'
+                  primary
+                  size='small'
+                  onClick={() => this.props.updateStep(3)}
+                > 
+                  Next <Icon name='caret right'/> 
+                </Button>
+
+                <Breadcrumb className="p-t-10 p-b-15">
+                    { this.state.breadcrumbs &&
+                      <>
+                        {this.state.breadcrumbs.map((item, i) => {
+                          return (
+                            <span key={item.path}>
+                              { item.path === currentPath ?
+                                  <Breadcrumb.Section active>{item.name}</Breadcrumb.Section>
+                                :
+                                <>
+                                  { item.clickable && 
+                                    <Breadcrumb.Section link onClick={() => this.getFiles(item.path)}>
+                                      {item.name}
+                                    </Breadcrumb.Section>
+                                  }
+                                  { !item.clickable && <Breadcrumb.Section>{item.name}</Breadcrumb.Section>}
+                                </>
+                              }    
+                              { i < this.state.breadcrumbs.length - 1 && <Breadcrumb.Divider icon='right angle'/> }
+                            </span>
+                          )
+                        })}
+                      </>
+                    }
+                  </Breadcrumb>
               </Segment>
 
               <Rail close position='left'>
