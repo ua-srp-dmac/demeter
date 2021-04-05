@@ -33,6 +33,7 @@ class CyVerseAccount(models.Model):
         on_delete=models.CASCADE, related_name="cyverse_account", 
     )
 
+    default_folder = models.ForeignKey(CyVerseFolder, on_delete=models.CASCADE, related_name="default_folder", blank=True, null=True)
     folders = models.ManyToManyField(CyVerseFolder, blank=True)
 
     class Meta:

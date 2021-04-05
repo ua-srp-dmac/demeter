@@ -3,7 +3,7 @@ from .models import *
 
 class CyVerseAccountAdmin(admin.ModelAdmin):
     list_display = (
-        'user', 'api_token_expiration', 'folder_display'
+        'user', 'api_token_expiration', 'default_folder', 'folder_display'
     )
     search_fields = (
         'user', 
@@ -13,7 +13,7 @@ class CyVerseAccountAdmin(admin.ModelAdmin):
         return ", ".join([
             folder.friendly_name for folder in obj.folders.all()
         ])
-        
+
     folder_display.short_description = "Folders"
 
 class CyVerseFolderAdmin(admin.ModelAdmin):
