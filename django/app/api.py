@@ -280,6 +280,8 @@ def bowtie2_analysis(request):
         system_id = 'de'
 
         username = request.user.username
+        cyverse_account = CyVerseAccount.objects.get(user__username=username)
+        current_folder = cyverse_account.default_folder
 
         form_data = json.loads(request.body.decode())
         groups = form_data['groups']
@@ -318,11 +320,11 @@ def bowtie2_analysis(request):
             time = timezone.now()
 
             request_body = {
-                "name": file_name + "_DNAseq_" + str(time),
+                "name": file_name + "_DNAseq_" + str(time.strftime("%m-%d-%y")),
                 "app_id": app_id,
                 "system_id": system_id,
                 "debug": False,
-                "output_dir": "/iplant/home/" + username + "/analyses",
+                "output_dir": current_folder.results_path,
                 "notify": True,
             }
 
@@ -335,8 +337,7 @@ def bowtie2_analysis(request):
 
             try:
                 print('submitting to cyverse!')
-                acc = CyVerseAccount.objects.get(user__username=username)
-                auth_headers = {"Authorization": "Bearer " + acc.api_token}
+                auth_headers = {"Authorization": "Bearer " + cyverse_account.api_token}
                 r = requests.post("https://de.cyverse.org/terrain/analyses", headers=auth_headers, json=request_body)
                 print (r.content)
                 r.raise_for_status()
@@ -569,6 +570,8 @@ def star_analysis(request):
         system_id = 'de'
 
         username = request.user.username
+        cyverse_account = CyVerseAccount.objects.get(user__username=username)
+        current_folder = cyverse_account.default_folder
 
         form_data = json.loads(request.body.decode())
         groups = form_data['groups']
@@ -591,7 +594,7 @@ def star_analysis(request):
                "42841516-90cc-11eb-87c2-008cfa5ae621_90bb0c4a-1493-11eb-82d6-008cfa5ae621": fastq,
                # sjdbOverhang
                "42841516-90cc-11eb-87c2-008cfa5ae621_90bc2558-1493-11eb-82d6-008cfa5ae621": sjdbOverhang,
-               "4284e77a-90cc-11eb-87c2-008cfa5ae621_faf2ed12-90cb-11eb-ba25-008cfa5ae621": 'ooi_lab',
+               "4284e77a-90cc-11eb-87c2-008cfa5ae621_faf2ed12-90cb-11eb-ba25-008cfa5ae621": current_folder.friendly_name,
                "4284e77a-90cc-11eb-87c2-008cfa5ae621_faf33c5e-90cb-11eb-ba25-008cfa5ae621": file_name + '_ReadsPerGene.tab'
             }
 
@@ -624,11 +627,11 @@ def star_analysis(request):
             time = timezone.now()
 
             request_body = {
-                "name": file_name + "_RNAseq_" + str(time.strftime("%m-%d-%y_%H:%M:%S")),
+                "name": file_name + "_RNAseq_" + str(time.strftime("%m-%d-%y")),
                 "app_id": app_id,
                 "system_id": system_id,
                 "debug": False,
-                "output_dir": "/iplant/home/" + username + "/analyses",
+                "output_dir": current_folder.results_path,
                 "notify": True,
             }
 
@@ -642,8 +645,7 @@ def star_analysis(request):
 
             try:
                 print('submitting to cyverse!')
-                acc = CyVerseAccount.objects.get(user__username=username)
-                auth_headers = {"Authorization": "Bearer " + acc.api_token}
+                auth_headers = {"Authorization": "Bearer " + cyverse_account.api_token}
                 r = requests.post("https://de.cyverse.org/terrain/analyses", headers=auth_headers, json=request_body)
                 print (r.content)
                 r.raise_for_status()
