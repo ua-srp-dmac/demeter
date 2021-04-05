@@ -280,7 +280,6 @@ def bowtie2_analysis(request):
         system_id = 'de'
 
         username = request.user.username
-        home_directory = '/iplant/home/' + username + '/'
 
         form_data = json.loads(request.body.decode())
         groups = form_data['groups']
@@ -293,7 +292,9 @@ def bowtie2_analysis(request):
                 continue
 
             genome = group['genome']
-            file_name = fastq[0].split(home_directory)[1].split('.')[0]
+
+            split_path = fastq[0].split('/')
+            file_name = split_path[-1].split('.')[0]
 
             # bowtie2config contains app parameters
             human_config = {
@@ -568,7 +569,6 @@ def star_analysis(request):
         system_id = 'de'
 
         username = request.user.username
-        home_directory = '/iplant/home/' + username + '/'
 
         form_data = json.loads(request.body.decode())
         groups = form_data['groups']
@@ -582,7 +582,8 @@ def star_analysis(request):
 
             genome = group['genome']
             sjdbOverhang = group['sjdbOverhang']
-            file_name = fastq[0].split(home_directory)[1].split('.')[0]
+            split_path = fastq[0].split('/')
+            file_name = split_path[-1].split('.')[0]
         
             # app parameters
             human_config = {
