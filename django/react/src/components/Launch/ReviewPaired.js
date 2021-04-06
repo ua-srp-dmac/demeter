@@ -2,6 +2,7 @@
 import { Step } from 'semantic-ui-react'
 import classNames from "classnames";
 import React, { Component, createRef } from 'react';
+import _ from 'lodash'
 
 import {
   Grid,
@@ -23,6 +24,11 @@ import {
 
 export default class ReviewPaired extends Component {
 
+  componentDidMount() {
+    console.log(this.props.parentState.pair_1)
+    console.log(this.props.parentState.pair_2)
+  }
+
   render() {
     
     const readLengthOptions = [
@@ -38,6 +44,15 @@ export default class ReviewPaired extends Component {
       // { key: 'rat' , text: 'rat' , value: 'rat' },
     ];
 
+    const orderOptions = _.range(1, this.props.parentState['pair_1'].length + 1).map(function(i) {
+      return {
+        key: i,
+        text: i,
+        value: i
+      };
+    })
+    console.log(orderOptions)
+
     return (
       <>
         <Grid>
@@ -52,86 +67,96 @@ export default class ReviewPaired extends Component {
           </Button>
           </Grid.Column>
         </Grid>
-{/* 
-        <div class="ui secondary menu">
-          <div class="left menu">
-            
-          </div>
-        </div>
-         */}
+
         <div>
-        { this.props.parentState.groups.length > 0 && 
-            
+
           <Card.Group className="two doubling stacking centered">
             <>
-            {this.props.parentState.groups.map((index, i) => {
-              let group = this.props.parentState['group_' + index]
-              
-              return (
-                <Card key={index} fluid>
-                  <Card.Content>
-                    <Card.Header>
-                      Group {index}
-                      <Label size='tiny'
-                              className="floated-right">
-                        {this.props.parentState['group_' + index].length} {this.props.parentState['group_' + index].length === 1 ? 'file' : 'files' }
-                      </Label>
-                    </Card.Header>
-                  </Card.Content>
-                  <Card.Content>
-                    <Card.Description>
-                      <h4>Selected Files</h4>
-                      { this.props.parentState['group_' + index].length === 0 &&
-                        <>
-                          No files selected.
-                        </>
-                      }
-                      { this.props.parentState['group_' + index].length > 0 &&
-                        <>
-                          {this.props.parentState['group_' + index].map((file, i) => {
-                            let fileName = file.substring(file.lastIndexOf('/')+1);
-                            return (
-                              <div key={file} className="word-wrap m-b-5">
-                                {fileName}
-                              </div>
-                            )
-                          })}
-                        </>
-                      }
+              {this.props.parentState.pairs.map((index, i) => {
+                let group = this.props.parentState['pair_' + index]
+                
+                return (
+                  <Card key={index} fluid>
+                    <Card.Content>
+                      <Card.Header>
+                        Group {index}
+                        <Label size='tiny'
+                                className="floated-right">
+                          {this.props.parentState['pair_' + index].length} {this.props.parentState['pair_' + index].length === 1 ? 'file' : 'files' }
+                        </Label>
+                      </Card.Header>
+                    </Card.Content>
+                    <Card.Content>
+                      <Card.Description>
+                        <h4>Order Files</h4>
+                        { this.props.parentState['pair_' + index].length === 0 &&
+                          <>
+                            No files selected.
+                          </>
+                        }
+                        { this.props.parentState['pair_' + index].length > 0 &&
+                          <>
+                            {this.props.parentState['pair_' + index].map((file, i) => {
+                              let fileName = file.substring(file.lastIndexOf('/')+1);
+                              return (
+                                <div key={file} className="word-wrap">
+                                  <Dropdown
+                                    placeholder={i+1}
+                                    value={this.props.parentState.pairGenome}
+                                    selection
+                                    compact
+                                    options={orderOptions}
+                                    onChange={(e, data) => this.props.updatePair('pairGenome', data.value)}
+                                  >      
+                                  </Dropdown>
+                                  <span className="m-l-10">{fileName}</span>
+                                </div>
+                                
+                              )
+                            })}
+                          </>
+                        }
 
-                      
-                    </Card.Description>
-                  </Card.Content>
-                  <Card.Content extra>
-                    <Dropdown placeholder='Genome'
-                              value={this.props.parentState['genome_' + index]}
-                              selection
-                              clearable
-                              fluid
-                              options={genomeOptions}
-                              onChange={(e, data) => this.props.updateGroup(index, 'genome', data.value)}
-                    >      
-                    </Dropdown>
+                      </Card.Description>
+                    </Card.Content>
+                  </Card>
+                )
+              })}
 
-                    <Dropdown placeholder='Read Length'
-                            value={this.props.parentState['readLength_' + index]}
+              <Card fluid>
+                <Card.Content>
+                  <Card.Header>
+                    Parameters
+                  </Card.Header>
+                </Card.Content>
+                
+                <Card.Content extra>
+                  <Dropdown placeholder='Genome'
+                            value={this.props.parentState.pairGenome}
                             selection
                             clearable
                             fluid
-                            options={readLengthOptions}
-                            className='m-t-15'
-                            onChange={(e, data) => this.props.updateGroup(index, 'readLength', data.value)}
-                    >      
-                    </Dropdown> 
-                  </Card.Content>
-                </Card>
-              )
-            })}
+                            options={genomeOptions}
+                            onChange={(e, data) => this.props.updatePair('pairGenome', data.value)}
+                  >      
+                  </Dropdown>
+
+                  <Dropdown placeholder='Read Length'
+                          value={this.props.parentState.pairReadLength}
+                          selection
+                          clearable
+                          fluid
+                          options={readLengthOptions}
+                          className='m-t-15'
+                          onChange={(e, data) => this.props.updatePair('pairReadLength', data.value)}
+                  >      
+                  </Dropdown> 
+                </Card.Content>
+              </Card>
             
             </>
           </Card.Group>
            
-        }
         </div>
 
         <Divider hidden></Divider>

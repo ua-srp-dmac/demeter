@@ -22,6 +22,8 @@ export default class LaunchPad extends Component {
       readType: null,
       pair_1: [],
       pair_2: [],
+      pair_1_order: {},
+      pair_2_order: {},
       pairs: [1, 2],
       groups: [],
       genomes: {},
@@ -43,7 +45,7 @@ export default class LaunchPad extends Component {
     this.isSelectedPaired = this.isSelectedPaired.bind(this);
     this.removeFilePaired = this.removeFilePaired.bind(this);
     this.handleSubmitPaired = this.handleSubmitPaired.bind(this);
-    this.updateGroupPaired = this.updateGroupPaired.bind(this);
+    this.updatePair = this.updatePair.bind(this);
   }
 
   componentDidMount() {
@@ -190,10 +192,17 @@ export default class LaunchPad extends Component {
 
   /**-------------------------------- Paired ------------------------------------ */
 
-  updateGroupPaired(pair, attribute, value) {
+  updatePair(attribute, value) {
     this.setState({
-      [attribute + '_' + pair]: value}, 
-      console.log(this.state[attribute + '_' + pair])
+      [attribute]: value}, 
+      console.log(this.state[attribute])
+    );
+  }
+
+  updatePairOrder(pair, attribute, value) {
+    this.setState({
+      [attribute]: value}, 
+      console.log(this.state[attribute])
     );
   }
   
@@ -390,7 +399,7 @@ export default class LaunchPad extends Component {
                 selectGroup= {this.selectPair}
                 isSelected= {this.isSelectedPaired}
                 removeFile={this.removeFilePaired}
-                updateGroup={this.updateGroupPaired}
+                updatePair={this.updatePair}
                 handleSubmit={this.handleSubmitPaired}
                 submitting={this.state.submitting}>
               </ReviewPaired>

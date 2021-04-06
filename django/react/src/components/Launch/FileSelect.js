@@ -316,7 +316,7 @@ export default class FileSelect extends Component {
                     </Table>
                     { cyverseFiles.length === 0 &&
                       <Segment padded="very" color="blue">
-                        <div className="centered">
+                        <div className="text-center">
                           <h3>This folder is empty.</h3>
                           Get into the lab and generate some data!
                         </div>
