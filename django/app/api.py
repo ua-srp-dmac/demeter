@@ -667,9 +667,9 @@ def file_transfer(request):
         save_path = request.POST.get('path', None)
         transfer_file = request.FILES[rename]
 
-        complete_path = os.path.join(settings.MEDIA_ROOT, save_path)
+        complete_path = os.path.join(settings.MEDIA_ROOT, save_path, 'Ares/Data')
 
-        fs = FileSystemStorage(location=complete_path) # defaults to MEDIA_ROOT  
+        fs = FileSystemStorage(location=complete_path) 
         filename = fs.save(rename, transfer_file)
         file_url = fs.url(filename)
 
