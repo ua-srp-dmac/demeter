@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import {Link} from 'react-router-dom'
 import { Table } from 'semantic-ui-react'
-import { Container, Header, Loader, Icon,  Button, Breadcrumb } from 'semantic-ui-react'
+import { Container, Header, Loader, Icon,  Button, Breadcrumb, Segment } from 'semantic-ui-react'
 import axios from '../axios';
 import AnalysisList from './AnalysisList';
 
@@ -112,37 +112,46 @@ export default class FileList extends Component {
           { this.state.fileList &&
             <>
               <div className="table-container">   
-              <Table basic='very' className="p-t-15">
-                  <Table.Header>
-                  <Table.Row>
-                      <Table.HeaderCell>Name</Table.HeaderCell>
-                      <Table.HeaderCell>Size</Table.HeaderCell>
-                      <Table.HeaderCell>Last Modified</Table.HeaderCell>
-                  </Table.Row>
-                  </Table.Header>
+                <Table basic='very' className="p-t-15">
+                    <Table.Header>
+                    <Table.Row>
+                        <Table.HeaderCell>Name</Table.HeaderCell>
+                        <Table.HeaderCell>Size</Table.HeaderCell>
+                        <Table.HeaderCell>Last Modified</Table.HeaderCell>
+                    </Table.Row>
+                    </Table.Header>
 
-                  <Table.Body>
-                  {this.state.fileList.map((file, i) => {
-                      return (
-                        <Table.Row obj={file} key={file.path}>
-                          <Table.Cell>
-                            { file.type === 'folder' ?
-                              <>
-                                <Icon name='folder'/>
-                                <span className="fake-link m-l-10"><a onClick={() => this.getFiles(file.path)}>{file.name}</a></span>
-                              </> :
-                              <>
-                                {file.name}
-                              </>
-                            } 
-                          </Table.Cell>
-                          <Table.Cell>{file.size}</Table.Cell>
-                          <Table.Cell>{file.last_updated}</Table.Cell>
-                        </Table.Row>
-                      )
-                  })}
-                  </Table.Body>
-              </Table>
+                    <Table.Body>
+                      {this.state.fileList.map((file, i) => {
+                          return (
+                            <Table.Row obj={file} key={file.path}>
+                              <Table.Cell>
+                                { file.type === 'folder' ?
+                                  <>
+                                    <Icon name='folder'/>
+                                    <span className="fake-link m-l-10"><a onClick={() => this.getFiles(file.path)}>{file.name}</a></span>
+                                  </> :
+                                  <>
+                                    {file.name}
+                                  </>
+                                } 
+                              </Table.Cell>
+                              <Table.Cell>{file.size}</Table.Cell>
+                              <Table.Cell>{file.last_updated}</Table.Cell>
+                            </Table.Row>
+                          )
+                      })}
+                    </Table.Body>
+                </Table>
+
+                {this.state.fileList.length === 0 &&
+                  <Segment padded="very" color="blue">
+                    <div className="centered">
+                      <h3>This folder is empty.</h3>
+                      Get into the lab and generate some data!
+                    </div>
+                  </Segment>
+                }
               </div>  
             </>
           }

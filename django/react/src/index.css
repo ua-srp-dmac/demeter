@@ -138,3 +138,7 @@ code {
 .fake-link {
   cursor: pointer;
 }
+
+.centered {
+  text-align:center;
+}

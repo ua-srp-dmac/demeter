@@ -16,7 +16,8 @@ import {
   Icon,
   Divider,
   Label,
-  Breadcrumb
+  Breadcrumb,
+  Loader
 } from 'semantic-ui-react'
 
 
@@ -141,7 +142,7 @@ export default class LaunchAnalysis extends Component {
 
   render() {
 
-    const { currentPath, cyverseFiles } = this.state;
+    const { currentPath, cyverseFiles, loading } = this.state;
     const { selectedGroup, readType, groups } = this.props.parentState;
 
     return (
@@ -263,50 +264,66 @@ export default class LaunchAnalysis extends Component {
                 </Sticky>
               </Rail>
 
-              <Segment>              
-                <div className="table-container">
-                
-                  <Table basic='very' className="p-t-15" compact>      
-                    <Table.Header>
-                      <Table.Row>
-                          { selectedGroup && <Table.HeaderCell></Table.HeaderCell> }
-                          <Table.HeaderCell>Name</Table.HeaderCell>
-                          <Table.HeaderCell>Size</Table.HeaderCell>
-                          <Table.HeaderCell>Last Modified</Table.HeaderCell>
-                      </Table.Row>
-                    </Table.Header>
+              <Segment>
 
-                    <Table.Body>
-                      { cyverseFiles.map((file, i) => {
-                          return (
-                            <Table.Row obj={file} key={file.path}>
-                              { selectedGroup &&
+                { loading && 
+                  <Loader active inline='centered'>Loading</Loader>
+                }
+
+                { !loading &&               
+                  <div className="table-container">
+                  
+                    <Table basic='very' className="p-t-15" compact>      
+                      <Table.Header>
+                        <Table.Row>
+                            { selectedGroup && <Table.HeaderCell></Table.HeaderCell> }
+                            <Table.HeaderCell>Name</Table.HeaderCell>
+                            <Table.HeaderCell>Size</Table.HeaderCell>
+                            <Table.HeaderCell>Last Modified</Table.HeaderCell>
+                        </Table.Row>
+                      </Table.Header>
+
+                      
+                      <Table.Body>
+                        { cyverseFiles.map((file, i) => {
+                            return (
+                              <Table.Row obj={file} key={file.path}>
+                                { selectedGroup &&
+                                  <Table.Cell>
+                                    { file.type === 'folder' ?
+                                      <Icon name='folder'/>
+                                    :
+                                      <Checkbox
+                                        onChange={(e, data) => this.props.handleCheck(e, data, file.path, selectedGroup)}
+                                        checked={this.props.isSelected(file.path)}/>
+                                    }
+                                  </Table.Cell>
+                                }
                                 <Table.Cell>
                                   { file.type === 'folder' ?
-                                    <Icon name='folder'/>
-                                  :
-                                    <Checkbox
-                                      onChange={(e, data) => this.props.handleCheck(e, data, file.path, selectedGroup)}
-                                      checked={this.props.isSelected(file.path)}/>
+                                      <span className="fake-link"><a onClick={() => this.getFiles(file.path)}>{file.name}</a></span>
+                                    :
+                                      <>{file.name}</>
                                   }
                                 </Table.Cell>
-                              }
-                              <Table.Cell>
-                                { file.type === 'folder' ?
-                                    <span className="fake-link"><a onClick={() => this.getFiles(file.path)}>{file.name}</a></span>
-                                  :
-                                    <>{file.name}</>
-                                }
-                              </Table.Cell>
-                              <Table.Cell>{file.size}</Table.Cell>
-                              <Table.Cell>{file.last_updated}</Table.Cell>
-                                
-                            </Table.Row>
-                          )
-                      })}
-                    </Table.Body>
-                  </Table>
-                </div>
+                                <Table.Cell>{file.size}</Table.Cell>
+                                <Table.Cell>{file.last_updated}</Table.Cell>
+                                  
+                              </Table.Row>
+                            )
+                        })}
+                      </Table.Body>
+                    </Table>
+                    { cyverseFiles.length === 0 &&
+                      <Segment padded="very" color="blue">
+                        <div className="centered">
+                          <h3>This folder is empty.</h3>
+                          Get into the lab and generate some data!
+                        </div>
+                      </Segment>
+                    }
+                  </div>
+                }
               </Segment>
             </Segment.Group>
           </Ref>
