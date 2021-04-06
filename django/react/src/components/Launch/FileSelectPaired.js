@@ -222,7 +222,7 @@ export default class FileSelectPaired extends Component {
                             Pair {index}
                             <Label size='tiny'
                                     className="floated-right">
-                              {this.props.parentState['pair_' + index].length} files
+                              {this.props.parentState['pair_' + index].length} {this.props.parentState['pair_' + index].length === 1 ? 'file' : 'files' }
                             </Label>
                           </h5>
                           { this.props.parentState['pair_' + index].length === 0 &&

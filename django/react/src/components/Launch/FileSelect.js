@@ -223,7 +223,7 @@ export default class FileSelect extends Component {
                             Group {index}
                             <Label size='tiny'
                                     className="floated-right">
-                              {this.props.parentState['group_' + index].length} files
+                              {this.props.parentState['group_' + index].length} {this.props.parentState['group_' + index].length === 1 ? 'file' : 'files' }
                             </Label>
                           </h5>
                           { this.props.parentState['group_' + index].length === 0 &&
