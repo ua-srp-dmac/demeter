@@ -358,22 +358,17 @@ def bowtie2_paired(request):
         
         # DNAseq pipeline app ID
         app_id = '10cabb5a-0757-11eb-8b4c-008cfa5ae621'
-
-        #bowtie2 app ID
-        # app_id = '4f9b03f0-f2d3-11ea-9df7-008cfa5ae621'
         system_id = 'de'
 
         username = request.user.username
-        home_directory = '/iplant/home/' + username + '/'
+        cyverse_account = CyVerseAccount.objects.get(user__username=username)
+        current_folder = cyverse_account.default_folder
 
         form_data = json.loads(request.body.decode())
-        selected_files = form_data['selectedFiles']
+        print(form_data)
 
-        
-        group1 = [x for x in selected_files if x['pair'] == 1]
-        group2 = [x for x in selected_files if x['pair'] == 2]
-        # print(group1)
-        # print(group2)
+        group1 = form_data['pair_1']
+        group2 = form_data['pair_2']
         
         sorted_group1 = sorted(group1, key=lambda k: k['position']) 
         sorted_group2 = sorted(group2, key=lambda k: k['position']) 
@@ -384,15 +379,14 @@ def bowtie2_paired(request):
         paired = []
 
         for item in sorted_group1:
-            fastq.append(item['path'])
+            fastq.append(item['file'])
         
         for item in sorted_group2:
-            paired.append(item['path'])
+            paired.append(item['file'])
 
-
-        genome = sorted_group1[0]['genome']
-        file_name = sorted_group1[0]['path'].split(home_directory)[1].split('.')[0]
-        print(file_name)
+        genome = form_data['genome']
+        split_path = fastq[0].split('/')
+        file_name = split_path[-1].split('.')[0]
 
         # bowtie2config contains app parameters
         human_config = {
@@ -404,8 +398,6 @@ def bowtie2_paired(request):
             "d743b2be-0842-11eb-9cbd-008cfa5ae621_644b7b2c-251e-11eb-8a8f-008cfa5ae621": fastq,
             "d743b2be-0842-11eb-9cbd-008cfa5ae621_644c61c2-251e-11eb-8a8f-008cfa5ae621": paired,
         }
-
-        # paired arg id:  d743b2be-0842-11eb-9cbd-008cfa5ae621_644c61c2-251e-11eb-8a8f-008cfa5ae621
 
         mouse_config = {
             # index folder
@@ -420,11 +412,11 @@ def bowtie2_paired(request):
         time = timezone.now()
 
         request_body = {
-            "name": file_name + "_DNAseq_" + str(time),
+            "name": file_name + "_DNAseq_" + str(time.strftime("%m-%d-%y")),
             "app_id": app_id,
             "system_id": system_id,
             "debug": False,
-            "output_dir": "/iplant/home/" + username + "/analyses",
+            "output_dir": current_folder.results_path,
             "notify": True
         }
 
@@ -432,6 +424,8 @@ def bowtie2_paired(request):
             request_body['config'] = mouse_config
         elif genome == 'human':
             request_body['config'] = human_config
+
+        print(request_body)
 
         try:
             print('submitting to cyverse!')
