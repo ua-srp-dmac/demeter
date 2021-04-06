@@ -7,6 +7,8 @@ import { Redirect } from "react-router-dom";
 
 import AnalysisType from './AnalysisType';
 import FileSelect from './FileSelect';
+import FileSelectPaired from './FileSelectPaired';
+import ReviewPaired from './ReviewPaired';
 import Review from './Review';
 
 
@@ -18,6 +20,9 @@ export default class LaunchPad extends Component {
       step: 1,
       analysisType: null,
       readType: null,
+      pair_1: [],
+      pair_2: [],
+      pairs: [1, 2],
       groups: [],
       genomes: {},
       readLengths: {},
@@ -31,6 +36,14 @@ export default class LaunchPad extends Component {
     this.updateParentState = this.updateParentState.bind(this);
     this.updateGroup = this.updateGroup.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+
+
+    this.selectPair = this.selectPair.bind(this);
+    this.handleCheckPaired = this.handleCheckPaired.bind(this);
+    this.isSelectedPaired = this.isSelectedPaired.bind(this);
+    this.removeFilePaired = this.removeFilePaired.bind(this);
+    this.handleSubmitPaired = this.handleSubmitPaired.bind(this);
+    this.updateGroupPaired = this.updateGroupPaired.bind(this);
   }
 
   componentDidMount() {
@@ -175,62 +188,150 @@ export default class LaunchPad extends Component {
     });
   }
 
+  /**-------------------------------- Paired ------------------------------------ */
+
+  updateGroupPaired(pair, attribute, value) {
+    this.setState({
+      [attribute + '_' + pair]: value}, 
+      console.log(this.state[attribute + '_' + pair])
+    );
+  }
+  
+  selectPair(index) {
+    this.setState({selectedPair: index});
+  }
+
+  handleCheckPaired(e, data, file_path, pair) {
+
+    let selectedFiles;
+    
+    if (this.state['pair_' + pair]) {
+      selectedFiles = this.state['pair_' + pair]
+    } else {
+      selectedFiles = [];
+    }
+
+    if (data.checked) {
+      selectedFiles.push(file_path);
+    } else {
+      var index = selectedFiles.indexOf(file_path);
+      selectedFiles.splice(index, 1);
+    }
+
+    this.setState({
+      ['pair_' + pair]: selectedFiles,
+    }, console.log(this.state['pair_' + pair]));
+  }
+
+  isSelectedPaired(file) {
+    let pair = this.state.selectedPair;
+
+    if (this.state['pair_' + pair].includes(file)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  removeFilePaired(file, pair) {
+    let selectedFiles = this.state['pair_' + pair]
+    
+    var index = selectedFiles.indexOf(file);
+    selectedFiles.splice(index, 1);
+
+    this.setState({
+      ['pair_' + pair]: selectedFiles,
+    }, console.log(this.state['pair_' + pair]));
+
+  }
+
+  handleSubmitPaired() {
+
+    this.setState({submitting:true });
+    
+    var groups = []
+
+    for (var i = 1; i <= this.state.groups.length; i++) {
+      var group = {}
+      group['files'] = this.state['pair_' + i];
+      group['sjdbOverhang'] = this.state['readLength_' + i];
+      group['genome'] = this.state['genome_' + i];
+      groups.push(group);
+    }
+
+    var request = {
+      groups: groups
+    }
+
+    var endpoint;
+
+    if (this.state.analysisType === 'DNAseq') {
+      if (this.state.readType === 'Unpaired') {
+        endpoint = '/api/bowtie2_analysis/'
+      } else {
+        endpoint = '/api/bowtie2_paired/'
+      }
+      
+    } else if (this.state.analysisType === 'RNAseq') {
+
+      if (this.state.readType === 'Unpaired') {
+        endpoint = '/api/star_analysis/'
+      } else {
+        endpoint = '/api/star_paired/'
+      }
+      
+    } else {
+      return;
+    }
+
+    axios.post(endpoint, request)
+    .then(result => {
+      this.props.notifySuccess('Your analysis was submitted.');
+      this.setState({
+        submitting: false
+      });
+      this.props.history.push("/analyses");
+    }) 
+    .catch((error) => {
+      this.props.notifyError('There was an error submitting your analysis.');
+      this.setState({
+        submitting: false
+      });
+    });
+  }
+
   render() {
     return (
       <>
         
-        {/* <Grid>
-          <Grid.Column width={2}>
+        <Step.Group ordered widths={3}>
+          <Step className={classNames({
+              completed: this.state.step > 1, active: this.state.step === 1
+            })}>
+            <Step.Content>
+              <Step.Title>Analysis Type</Step.Title>
+              <Step.Description>Select analysis type</Step.Description>
+            </Step.Content>
+          </Step>
 
-          </Grid.Column>
+          <Step className={classNames({
+              completed: this.state.step > 2, active: this.state.step === 2
+            })}>
+            <Step.Content>
+              <Step.Title>Files</Step.Title>
+              <Step.Description>Select Files</Step.Description>
+            </Step.Content>
+          </Step>
 
-          <Grid.Column width={12}> */}
-            <Step.Group ordered widths={3}>
-              <Step className={classNames({
-                  completed: this.state.step > 1, active: this.state.step === 1
-                })}>
-                <Step.Content>
-                  <Step.Title>Analysis Type</Step.Title>
-                  <Step.Description>Select analysis type</Step.Description>
-                </Step.Content>
-              </Step>
-
-              <Step className={classNames({
-                  completed: this.state.step > 2, active: this.state.step === 2
-                })}>
-                <Step.Content>
-                  <Step.Title>Files</Step.Title>
-                  <Step.Description>Select Files</Step.Description>
-                </Step.Content>
-              </Step>
-
-              <Step className={classNames({
-                  completed: this.state.step > 3, active: this.state.step === 3
-                })}>
-                <Step.Content>
-                  <Step.Title>Review</Step.Title>
-                </Step.Content>
-              </Step>
-            </Step.Group>
-          {/* </Grid.Column>
-
-          <Grid.Column width={2}>
-            <Button
-                  icon
-                  labelPosition='right'
-                  primary
-                  size='small'
-                  disabled={!this.state.readType || !this.state.analysisType}
-                  onClick={() => this.updateStep(2)}>
-                  Next <Icon name='caret right'/>
-              </Button>
-          </Grid.Column>
-
-
-
-        </Grid> */}
-        
-
+          <Step className={classNames({
+              completed: this.state.step > 3, active: this.state.step === 3
+            })}>
+            <Step.Content>
+              <Step.Title>Review</Step.Title>
+            </Step.Content>
+          </Step>
+        </Step.Group>
+   
         { this.state.step === 1 && 
           <AnalysisType
             updateStep={this.updateStep}
@@ -239,29 +340,62 @@ export default class LaunchPad extends Component {
           </AnalysisType>
         }
 
-        { this.state.step === 2 && 
-          <FileSelect
-            updateStep={this.updateStep}
-            parentState={this.state}
-            handleCheck= {this.handleCheck}
-            selectGroup= {this.selectGroup}
-            isSelected= {this.isSelected}
-            removeFile={this.removeFile}>
-          </FileSelect>
-        } 
+        { this.state.readType === 'Unpaired' && 
+          <>
+            { this.state.step === 2 && 
+              <FileSelect
+                updateStep={this.updateStep}
+                parentState={this.state}
+                handleCheck= {this.handleCheck}
+                selectGroup= {this.selectGroup}
+                isSelected= {this.isSelected}
+                removeFile={this.removeFile}>
+              </FileSelect>
+            }
 
-        { this.state.step === 3 && 
-          <Review
-            updateStep={this.updateStep}
-            parentState={this.state}
-            handleCheck= {this.handleCheck}
-            selectGroup= {this.selectGroup}
-            isSelected= {this.isSelected}
-            removeFile={this.removeFile}
-            updateGroup={this.updateGroup}
-            handleSubmit={this.handleSubmit}
-            submitting={this.state.submitting}>
-          </Review>
+            { this.state.step === 3 && 
+              <Review
+                updateStep={this.updateStep}
+                parentState={this.state}
+                handleCheck= {this.handleCheck}
+                selectGroup= {this.selectGroup}
+                isSelected= {this.isSelected}
+                removeFile={this.removeFile}
+                updateGroup={this.updateGroup}
+                handleSubmit={this.handleSubmit}
+                submitting={this.state.submitting}>
+              </Review>
+            }
+          </>
+        }
+
+        { this.state.readType === 'Paired' && 
+          <>
+            { this.state.step === 2 && 
+              <FileSelectPaired
+                updateStep={this.updateStep}
+                parentState={this.state}
+                handleCheck= {this.handleCheckPaired}
+                selectGroup= {this.selectPair}
+                isSelected= {this.isSelectedPaired}
+                removeFile={this.removeFilePaired}>
+              </FileSelectPaired>
+            }
+
+            { this.state.step === 3 && 
+              <ReviewPaired
+                updateStep={this.updateStep}
+                parentState={this.state}
+                handleCheck= {this.handleCheckPaired}
+                selectGroup= {this.selectPair}
+                isSelected= {this.isSelectedPaired}
+                removeFile={this.removeFilePaired}
+                updateGroup={this.updateGroupPaired}
+                handleSubmit={this.handleSubmitPaired}
+                submitting={this.state.submitting}>
+              </ReviewPaired>
+            }
+          </>
         } 
       </>
     )

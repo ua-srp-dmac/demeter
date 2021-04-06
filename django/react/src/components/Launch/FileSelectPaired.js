@@ -21,7 +21,7 @@ import {
 } from 'semantic-ui-react'
 
 
-export default class FileSelect extends Component {
+export default class FileSelectPaired extends Component {
 
   constructor(props) {
     super(props);
@@ -143,7 +143,7 @@ export default class FileSelect extends Component {
   render() {
 
     const { currentPath, cyverseFiles, loading } = this.state;
-    const { selectedGroup, readType, groups } = this.props.parentState;
+    const { selectedPair, readType, pairs } = this.props.parentState;
 
     return (
       <Grid columns={2}>
@@ -207,39 +207,38 @@ export default class FileSelect extends Component {
                       </Button>
                   </Header>
                   <Divider></Divider>
-                  <Header as='h4'>Groups</Header>
-                  { groups.length > 0 && 
+                  <Header as='h4'>Pairs</Header>
                     <>
-                    {groups.map((index, i) => {
-                      let group = this.props.parentState['group_' + index]
+                    {pairs.map((index, i) => {
+                      let group = this.props.parentState['pair_' + index]
                       
                       return (
                         <Segment key={index} 
                                 onClick={() => this.props.selectGroup(index)}
                                 className={classNames({
-                                activeSegment: selectedGroup === index,
+                                activeSegment: selectedPair === index,
                               })}>
                           <h5>
-                            Group {index}
+                            Pair {index}
                             <Label size='tiny'
                                     className="floated-right">
-                              {this.props.parentState['group_' + index].length} files
+                              {this.props.parentState['pair_' + index].length} files
                             </Label>
                           </h5>
-                          { this.props.parentState['group_' + index].length === 0 &&
+                          { this.props.parentState['pair_' + index].length === 0 &&
                             <>
                               Select files to add.
                             </>
                           
                           }
-                          { this.props.parentState['group_' + index].length > 0 &&
+                          { this.props.parentState['pair_' + index].length > 0 &&
                             <>
-                              {this.props.parentState['group_' + index].map((file, i) => {
+                              {this.props.parentState['pair_' + index].map((file, i) => {
                                 let fileName = file.substring(file.lastIndexOf('/')+1);
                                 return (
                                   <div key={file} className="word-wrap m-b-5">
                                     <Icon name='remove circle' color='red' onClick={() => this.props.removeFile(file, index)} />{fileName}
-                                    {i < this.props.parentState['group_' + index].length - 1 && <Divider></Divider>}
+                                    {i < this.props.parentState['pair_' + index].length - 1 && <Divider></Divider>}
                                   </div>
                                 )
                               })}
@@ -249,17 +248,7 @@ export default class FileSelect extends Component {
                       )
                     })}
                     </>
-                  }
-                  { groups.length < 8 && 
-                    <>
-                      <Segment textAlign={"center"}
-                              className="change"
-                              key="new"
-                              onClick={() => this.props.selectGroup(groups.length + 1)}>
-                        <Button circular icon='plus'/>
-                      </Segment>
-                    </>
-                  }
+                  
                   </Segment>
                 </Sticky>
               </Rail>
@@ -276,7 +265,7 @@ export default class FileSelect extends Component {
                     <Table basic='very' className="p-t-15" compact>      
                       <Table.Header>
                         <Table.Row>
-                            { selectedGroup && <Table.HeaderCell></Table.HeaderCell> }
+                            { selectedPair && <Table.HeaderCell></Table.HeaderCell> }
                             <Table.HeaderCell>Name</Table.HeaderCell>
                             <Table.HeaderCell>Size</Table.HeaderCell>
                             <Table.HeaderCell>Last Modified</Table.HeaderCell>
@@ -288,13 +277,13 @@ export default class FileSelect extends Component {
                         { cyverseFiles.map((file, i) => {
                             return (
                               <Table.Row obj={file} key={file.path}>
-                                { selectedGroup &&
+                                { selectedPair &&
                                   <Table.Cell>
                                     { file.type === 'folder' ?
                                       <Icon name='folder'/>
                                     :
                                       <Checkbox
-                                        onChange={(e, data) => this.props.handleCheck(e, data, file.path, selectedGroup)}
+                                        onChange={(e, data) => this.props.handleCheck(e, data, file.path, selectedPair)}
                                         checked={this.props.isSelected(file.path)}/>
                                     }
                                   </Table.Cell>
