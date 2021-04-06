@@ -1,19 +1,9 @@
 
-import { Step } from 'semantic-ui-react'
-import classNames from "classnames";
-import React, { Component, createRef } from 'react';
+import React, { Component } from 'react';
 import _ from 'lodash'
 
 import {
   Grid,
-  Header,
-  Image,
-  Rail,
-  Ref,
-  Segment,
-  Sticky,
-  Table,
-  Checkbox,
   Dropdown,
   Button,
   Icon,
@@ -23,11 +13,6 @@ import {
 } from 'semantic-ui-react'
 
 export default class ReviewPaired extends Component {
-
-  componentDidMount() {
-    console.log(this.props.parentState.pair_1)
-    console.log(this.props.parentState.pair_2)
-  }
 
   render() {
     
@@ -44,27 +29,28 @@ export default class ReviewPaired extends Component {
       // { key: 'rat' , text: 'rat' , value: 'rat' },
     ];
 
-    const orderOptions = _.range(1, this.props.parentState['pair_1'].length + 1).map(function(i) {
+    const orderOptions = _.range(
+      1, this.props.parentState['pair_1'].length + 1
+    ).map(function(i) {
       return {
         key: i,
         text: i,
         value: i
       };
-    })
-    console.log(orderOptions)
+    });
 
     return (
       <>
         <Grid>
           <Grid.Column textAlign="center">
-          <Button
-              floated='left'
-              icon
-              labelPosition='left'
-              size='small'
-              onClick={() => this.props.updateStep(2)}>
-              Back <Icon name='caret left'/>
-          </Button>
+            <Button
+                floated='left'
+                icon
+                labelPosition='left'
+                size='small'
+                onClick={() => this.props.updateStep(2)}>
+                Back <Icon name='caret left'/>
+            </Button>
           </Grid.Column>
         </Grid>
 
@@ -102,11 +88,11 @@ export default class ReviewPaired extends Component {
                                 <div key={file} className="word-wrap">
                                   <Dropdown
                                     placeholder={i+1}
-                                    value={this.props.parentState.pairGenome}
+                                    value={this.props.parentState['pair_order_' + index][file]}
                                     selection
                                     compact
                                     options={orderOptions}
-                                    onChange={(e, data) => this.props.updatePair('pairGenome', data.value)}
+                                    onChange={(e, data) => this.props.updatePairOrder(index, file, data.value)}
                                   >      
                                   </Dropdown>
                                   <span className="m-l-10">{fileName}</span>
@@ -175,34 +161,6 @@ export default class ReviewPaired extends Component {
             </Button>
           </Grid.Column>
         </Grid>
-
-          
-
-          {/* <Grid.Column>
-            <Segment>Content 1</Segment>
-          </Grid.Column>
-          <Grid.Column>
-            <Segment>Content 2</Segment>
-          </Grid.Column>
-          <Grid.Column>
-            <Segment>Content 3</Segment>
-          </Grid.Column>
-          <Grid.Column>
-            <Segment>Content 4</Segment>
-          </Grid.Column>
-          <Grid.Column>
-            <Segment>Content 5</Segment>
-          </Grid.Column>
-          <Grid.Column>
-            <Segment>Content 6</Segment>
-          </Grid.Column>
-          <Grid.Column>
-            <Segment>Content 7</Segment>
-          </Grid.Column>
-          <Grid.Column>
-            <Segment>Content 8</Segment>
-          </Grid.Column>
-        </Grid> */}
       </>
     )
   }

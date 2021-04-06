@@ -22,8 +22,8 @@ export default class LaunchPad extends Component {
       readType: null,
       pair_1: [],
       pair_2: [],
-      pair_1_order: {},
-      pair_2_order: {},
+      pair_order_1: {},
+      pair_order_2: {},
       pairs: [1, 2],
       groups: [],
       genomes: {},
@@ -41,6 +41,7 @@ export default class LaunchPad extends Component {
 
 
     this.selectPair = this.selectPair.bind(this);
+    this.updatePairOrder = this.updatePairOrder.bind(this);
     this.handleCheckPaired = this.handleCheckPaired.bind(this);
     this.isSelectedPaired = this.isSelectedPaired.bind(this);
     this.removeFilePaired = this.removeFilePaired.bind(this);
@@ -199,11 +200,13 @@ export default class LaunchPad extends Component {
     );
   }
 
-  updatePairOrder(pair, attribute, value) {
+  updatePairOrder(pair, file, value) {
     this.setState({
-      [attribute]: value}, 
-      console.log(this.state[attribute])
-    );
+      ['pair_order_' + pair]: {
+        ...this.state['pair_order_' + pair],
+        [file]: value
+      }, 
+    }, console.log(this.state['pair_order_' + pair]));
   }
   
   selectPair(index) {
@@ -256,57 +259,60 @@ export default class LaunchPad extends Component {
 
   handleSubmitPaired() {
 
-    this.setState({submitting:true });
+    // this.setState({submitting:true });
     
-    var groups = []
+    let pair_1 = []
+    let pair_2 = []
 
-    for (var i = 1; i <= this.state.groups.length; i++) {
-      var group = {}
-      group['files'] = this.state['pair_' + i];
-      group['sjdbOverhang'] = this.state['readLength_' + i];
-      group['genome'] = this.state['genome_' + i];
-      groups.push(group);
+    for (var i = 0; i < this.state.pair_1.length; i ++) {
+      let file = this.state.pair_1[i]
+      pair_1.push({
+        file: file,
+        position: this.state.pair_order_1[file]
+      })
+    }
+
+    for (var i = 0; i < this.state.pair_2.length; i ++) {
+      let file = this.state.pair_2[i]
+      pair_2.push({
+        file: file,
+        position: this.state.pair_order_2[file]
+      })
     }
 
     var request = {
-      groups: groups
+      pair_1: pair_1,
+      pair_2: pair_2,
+      genome: this.state.pairGenome,
+      read_length: this.state.pairReadLength
     }
+
+    console.log(request)
 
     var endpoint;
 
     if (this.state.analysisType === 'DNAseq') {
-      if (this.state.readType === 'Unpaired') {
-        endpoint = '/api/bowtie2_analysis/'
-      } else {
-        endpoint = '/api/bowtie2_paired/'
-      }
-      
+      endpoint = '/api/bowtie2_paired/' 
     } else if (this.state.analysisType === 'RNAseq') {
-
-      if (this.state.readType === 'Unpaired') {
-        endpoint = '/api/star_analysis/'
-      } else {
-        endpoint = '/api/star_paired/'
-      }
-      
+      endpoint = '/api/star_paired/'
     } else {
       return;
     }
 
-    axios.post(endpoint, request)
-    .then(result => {
-      this.props.notifySuccess('Your analysis was submitted.');
-      this.setState({
-        submitting: false
-      });
-      this.props.history.push("/analyses");
-    }) 
-    .catch((error) => {
-      this.props.notifyError('There was an error submitting your analysis.');
-      this.setState({
-        submitting: false
-      });
-    });
+    // axios.post(endpoint, request)
+    // .then(result => {
+    //   this.props.notifySuccess('Your analysis was submitted.');
+    //   this.setState({
+    //     submitting: false
+    //   });
+    //   this.props.history.push("/analyses");
+    // }) 
+    // .catch((error) => {
+    //   this.props.notifyError('There was an error submitting your analysis.');
+    //   this.setState({
+    //     submitting: false
+    //   });
+    // });
   }
 
   render() {
@@ -400,6 +406,7 @@ export default class LaunchPad extends Component {
                 isSelected= {this.isSelectedPaired}
                 removeFile={this.removeFilePaired}
                 updatePair={this.updatePair}
+                updatePairOrder={this.updatePairOrder}
                 handleSubmit={this.handleSubmitPaired}
                 submitting={this.state.submitting}>
               </ReviewPaired>
