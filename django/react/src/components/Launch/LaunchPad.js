@@ -299,20 +299,20 @@ export default class LaunchPad extends Component {
       return;
     }
 
-    // axios.post(endpoint, request)
-    // .then(result => {
-    //   this.props.notifySuccess('Your analysis was submitted.');
-    //   this.setState({
-    //     submitting: false
-    //   });
-    //   this.props.history.push("/analyses");
-    // }) 
-    // .catch((error) => {
-    //   this.props.notifyError('There was an error submitting your analysis.');
-    //   this.setState({
-    //     submitting: false
-    //   });
-    // });
+    axios.post(endpoint, request)
+    .then(result => {
+      this.props.notifySuccess('Your analysis was submitted.');
+      this.setState({
+        submitting: false
+      });
+      this.props.history.push("/analyses");
+    }) 
+    .catch((error) => {
+      this.props.notifyError('There was an error submitting your analysis.');
+      this.setState({
+        submitting: false
+      });
+    });
   }
 
   render() {

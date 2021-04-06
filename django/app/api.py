@@ -460,15 +460,14 @@ def star_paired(request):
         system_id = 'de'
 
         username = request.user.username
-        home_directory = '/iplant/home/' + username + '/'
+        cyverse_account = CyVerseAccount.objects.get(user__username=username)
+        current_folder = cyverse_account.default_folder
 
         form_data = json.loads(request.body.decode())
-        selected_files = form_data['selectedFiles']
+        print(form_data)
 
-        group1 = [x for x in selected_files if x['pair'] == 1]
-        group2 = [x for x in selected_files if x['pair'] == 2]
-        # print(group1)
-        # print(group2)
+        group1 = form_data['pair_1']
+        group2 = form_data['pair_2']
         
         sorted_group1 = sorted(group1, key=lambda k: k['position']) 
         sorted_group2 = sorted(group2, key=lambda k: k['position']) 
@@ -479,23 +478,25 @@ def star_paired(request):
         paired = []
 
         for item in sorted_group1:
-            fastq.append(item['path'])
+            fastq.append(item['file'])
         
         for item in sorted_group2:
-            paired.append(item['path'])
+            paired.append(item['file'])
 
-
-        genome = sorted_group1[0]['genome']
-        sjdbOverhang = sorted_group1[0]['sjdbOverhang']
-        file_name = sorted_group1[0]['path'].split(home_directory)[1].split('.')[0]
+        genome = form_data['genome']
+        sjdbOverhang = form_data['read_length']
+        split_path = fastq[0].split('/')
+        file_name = split_path[-1].split('.')[0]
 
         # app parameters
         human_config = {
             # fastq files
-            "286b30e0-1df1-11eb-b141-008cfa5ae621_90bb0c4a-1493-11eb-82d6-008cfa5ae621": fastq,
+            "42841516-90cc-11eb-87c2-008cfa5ae621_90bb0c4a-1493-11eb-82d6-008cfa5ae621": fastq,
             # sjdbOverhang
-            "286b30e0-1df1-11eb-b141-008cfa5ae621_90bc2558-1493-11eb-82d6-008cfa5ae621": sjdbOverhang,
-            "286b30e0-1df1-11eb-b141-008cfa5ae621_1c79dae0-1494-11eb-9c84-008cfa5ae621": paired
+            "42841516-90cc-11eb-87c2-008cfa5ae621_90bc2558-1493-11eb-82d6-008cfa5ae621": sjdbOverhang,
+            "42841516-90cc-11eb-87c2-008cfa5ae621_1c79dae0-1494-11eb-9c84-008cfa5ae621": paired,
+            "4284e77a-90cc-11eb-87c2-008cfa5ae621_faf2ed12-90cb-11eb-ba25-008cfa5ae621": current_folder.friendly_name,
+            "4284e77a-90cc-11eb-87c2-008cfa5ae621_faf33c5e-90cb-11eb-ba25-008cfa5ae621": file_name + '_ReadsPerGene.tab'
         }
 
         # paired files: 286b30e0-1df1-11eb-b141-008cfa5ae621_1c79dae0-1494-11eb-9c84-008cfa5ae621
@@ -511,10 +512,10 @@ def star_paired(request):
         elif sjdbOverhang == '149':
             index_folder = "/iplant/home/shared/srp_dmac/dmac/demeter/star_indexes/STAR150"
 
-        human_config["286b30e0-1df1-11eb-b141-008cfa5ae621_90b9c7fe-1493-11eb-82d6-008cfa5ae621"] = index_folder
+        human_config["42841516-90cc-11eb-87c2-008cfa5ae621_90b9c7fe-1493-11eb-82d6-008cfa5ae621"] = index_folder
 
         if 'fastq.gz' in fastq[0]:
-            human_config["286b30e0-1df1-11eb-b141-008cfa5ae621_90bf01a6-1493-11eb-82d6-008cfa5ae621"] = 'gunzip -c'
+            human_config["42841516-90cc-11eb-87c2-008cfa5ae621_90bf01a6-1493-11eb-82d6-008cfa5ae621"] = 'gunzip -c'
 
         # mouse_config = {
         #    # index folder
@@ -529,11 +530,11 @@ def star_paired(request):
         time = timezone.now()
 
         request_body = {
-            "name": file_name + "_RNAseq_" + str(time),
+            "name": file_name + "_RNAseq_" + str(time.strftime("%m-%d-%y")),
             "app_id": app_id,
             "system_id": system_id,
             "debug": False,
-            "output_dir": "/iplant/home/" + username + "/analyses",
+            "output_dir": current_folder.results_path,
             "notify": True
         }
 
