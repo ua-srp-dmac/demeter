@@ -17,8 +17,22 @@ from django.contrib import admin
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 
-from .api import app_login, app_logout, is_user_logged_in, file_list, file_transfer, get_user_folders
-from .api import bowtie2_analysis, analysis_list, star_analysis, bowtie2_paired, star_paired
+from app.api.api import (
+    file_list,
+    file_transfer,
+    get_user_folders,
+    analysis_list
+)
+
+from app.api.auth import (
+    app_login,
+    app_logout,
+    is_user_logged_in,
+    keycloak 
+)
+
+from app.api.bowtie import bowtie2_analysis, bowtie2_paired
+from app.api.star import star_analysis, star_paired
 from .views import FrontendAppView
 
 urlpatterns = [
@@ -29,6 +43,7 @@ urlpatterns = [
 
     path('api/login/', app_login, name='app_login'),
     path('api/logout/', app_logout, name='app_logout'),
+    path('api/keycloak/', keycloak, name='keycloak'),
     path('api/auth/', is_user_logged_in, name='is_user_logged_in'),
     path('api/files/', file_list, name='file_list'),
     path('api/folders/', get_user_folders, name='get_user_folders'),
