@@ -31,8 +31,6 @@ def file_list(request):
             "path": path,
             "limit": 100,
             "offset": 0,
-            # "entity-type": "file",
-            # "info-type": "fastq"
         }
 
         try:
@@ -42,19 +40,6 @@ def file_list(request):
             r.raise_for_status()
 
             fileList = []
-
-            # {
-            #     'infoType': None,
-            #     'path': '/iplant/home/michellito/mm10',
-            #     'date-created': 1602268071000,
-            #     'permission': 'own',
-            #     'date-modified': 1602268071000,
-            #     'file-size': 0,
-            #     'badName': False,
-            #     'isFavorite': False,
-            #     'label': 'mm10',
-            #     'id': '23fd3186-0a5d-11eb-9303-90e2ba675364'
-            # }
 
             # {
             #     'infoType': 'fastq',
@@ -76,7 +61,6 @@ def file_list(request):
                 fileList.append({
                     "name": item['label'],
                     "last_updated": updated,
-                    # "size": size,
                     "type": "folder",
                     "path": item['path'],
                     "id": item['id']
@@ -107,7 +91,6 @@ def file_list(request):
             return JsonResponse(response, safe=False)
 
         except Exception as e:
-            print (str(e))
             pass
 
     return HttpResponse(status=400)
@@ -152,7 +135,6 @@ def analysis_list(request):
             url = "https://de.cyverse.org/terrain/analyses?" + query_str
             auth_headers = {"Authorization": "Bearer " + account.api_token}
             r = requests.get(url, headers=auth_headers)
-            print(r)
             r.raise_for_status()
 
             analysisList = []
@@ -160,7 +142,6 @@ def analysis_list(request):
             for item in r.json()['analyses']:
                 
                 start_date = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(float(item['startdate'])/1000.0))
-
                 end_date = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(float(item['enddate'])/1000.0))
                 
                 analysisList.append({
@@ -175,7 +156,6 @@ def analysis_list(request):
             return JsonResponse(analysisList, safe=False)
 
         except Exception as e:
-            print (str(e))
             pass
 
     return HttpResponse(status=400)

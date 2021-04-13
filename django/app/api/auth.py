@@ -70,8 +70,6 @@ def app_login(request):
             token = r.json()['access_token']
             time = int(r.json()['expires_in'])
         except Exception as e:
-            print(type(e))
-            print(str(e))
             return HttpResponse('Error logging into CyVerse. Make sure you are using your CyVerse credentials.', status=400)
 
         ## Authenticated by cyverse after this point

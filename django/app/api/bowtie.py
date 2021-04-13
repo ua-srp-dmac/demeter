@@ -70,23 +70,22 @@ def bowtie2_analysis(request):
                 "notify": True,
             }
 
-            print(request_body)
-
             if genome == 'mouse':
                 request_body['config'] = mouse_config
             elif genome == 'human':
                 request_body['config'] = human_config
 
             try:
-                print('submitting to cyverse!')
                 auth_headers = {"Authorization": "Bearer " + cyverse_account.api_token}
-                r = requests.post("https://de.cyverse.org/terrain/analyses", headers=auth_headers, json=request_body)
-                print (r.content)
+                r = requests.post(
+                    "https://de.cyverse.org/terrain/analyses",
+                    headers=auth_headers,
+                    json=request_body
+                )
                 r.raise_for_status()
                 # return JsonResponse(r.json())
 
             except:
-                print ("testing here")
                 pass
 
     return HttpResponse(status=200)
@@ -107,15 +106,12 @@ def bowtie2_paired(request):
         current_folder = cyverse_account.default_folder
 
         form_data = json.loads(request.body.decode())
-        print(form_data)
 
         group1 = form_data['pair_1']
         group2 = form_data['pair_2']
         
         sorted_group1 = sorted(group1, key=lambda k: k['position']) 
         sorted_group2 = sorted(group2, key=lambda k: k['position']) 
-        print(sorted_group1)
-        print(sorted_group2)
 
         fastq = []
         paired = []
@@ -167,19 +163,18 @@ def bowtie2_paired(request):
         elif genome == 'human':
             request_body['config'] = human_config
 
-        print(request_body)
-
         try:
-            print('submitting to cyverse!')
             acc = CyVerseAccount.objects.get(user__username=username)
             auth_headers = {"Authorization": "Bearer " + acc.api_token}
-            r = requests.post("https://de.cyverse.org/terrain/analyses", headers=auth_headers, json=request_body)
-            print (r.content)
+            r = requests.post(
+                "https://de.cyverse.org/terrain/analyses",
+                headers=auth_headers,
+                json=request_body
+            )
             r.raise_for_status()
             # return JsonResponse(r.json())
 
         except:
-            print ("testing here")
             pass
 
     return HttpResponse(status=200)
