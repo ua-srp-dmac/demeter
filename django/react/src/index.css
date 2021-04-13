@@ -29,8 +29,17 @@ code {
   overflow-x: auto; /* or auto */
 }
 
+
+.p-t-10 {
+  padding-top: 10px;
+}
+
 .p-t-15 {
   padding-top: 15px;
+}
+
+.p-b-15 {
+  padding-bottom: 15px;
 }
 
 .p-t-25 {
@@ -128,4 +137,8 @@ code {
 
 .fake-link {
   cursor: pointer;
+}
+
+.text-center {
+  text-align:center;
 }

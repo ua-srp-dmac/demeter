@@ -74,7 +74,7 @@ export default class Review extends Component {
                       Group {index}
                       <Label size='tiny'
                               className="floated-right">
-                        {this.props.parentState['group_' + index].length} files
+                        {this.props.parentState['group_' + index].length} {this.props.parentState['group_' + index].length === 1 ? 'file' : 'files' }
                       </Label>
                     </Card.Header>
                   </Card.Content>

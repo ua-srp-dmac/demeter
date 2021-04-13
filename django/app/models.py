@@ -1,6 +1,26 @@
 from django.conf import settings
 from django.db import models
 
+class CyVerseFolder(models.Model):
+
+    # full path to data folder in CyVerse
+    path = models.TextField(blank=True)
+
+    # full path to folder where analysis results should be deposited
+    results_path = models.TextField(blank=True)
+
+    # friendly name for folder
+    friendly_name = models.CharField(max_length=100)
+
+    class Meta:
+        verbose_name = 'CyVerse Folder'
+
+    def __unicode__(self):
+        return u'%s' % self.friendly_name
+
+    def __str__(self):
+        return self.friendly_name
+
 class CyVerseAccount(models.Model):
 
     # Fields
@@ -13,9 +33,16 @@ class CyVerseAccount(models.Model):
         on_delete=models.CASCADE, related_name="cyverse_account", 
     )
 
+    default_folder = models.ForeignKey(CyVerseFolder, on_delete=models.CASCADE, related_name="default_folder", blank=True, null=True)
+    folders = models.ManyToManyField(CyVerseFolder, blank=True)
+
     class Meta:
         ordering = ('-pk',)
         verbose_name = 'CyVerse Account'
 
     def __unicode__(self):
         return u'%s' % self.pk
+    
+    def __str__(self):
+        return self.user.username
+

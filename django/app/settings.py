@@ -32,7 +32,8 @@ ALLOWED_HOSTS = [
     '10.128.207.6',
     'olympus.pharmacy.arizona.edu',
     'dmac.pharmacy.arizona.edu',
-    'demeter.pharmacy.arizona.edu'
+    'demeter.pharmacy.arizona.edu',
+    'f02f27e5bb96.ngrok.io'
 ]
 
 
@@ -133,6 +134,12 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+# Base url to serve media files
+MEDIA_URL = '/media/'
+
+# Path where media is stored
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 REACT_APP_DIR = os.path.join(BASE_DIR, 'react')
 

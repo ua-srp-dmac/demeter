@@ -13,7 +13,8 @@ export default class FileList extends Component {
       analyses: null,
     };
 
-    this.getAnalyses = this.getAnalyses.bind(this)
+    this.getAnalyses = this.getAnalyses.bind(this);
+    this.transferFiles = this.transferFiles.bind(this);
 
   };
 
@@ -33,6 +34,17 @@ export default class FileList extends Component {
         console.log(error);
     });
   }
+
+  transferFiles() {
+    axios.get('/api/file-transfer/', {})
+    .then(result => {
+      console.log('Done!')
+    }) 
+    .catch((error) => {
+        console.log(error);
+    });
+  }
+
 
   renderLoading() {
     return (
