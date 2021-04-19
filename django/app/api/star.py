@@ -1,10 +1,13 @@
 import json
 import requests
 import time
+import jwt
+import datetime
 
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.conf import settings
 
 from app.models import CyVerseAccount
 
@@ -37,6 +40,12 @@ def star_analysis(request):
             sjdbOverhang = group['sjdbOverhang']
             split_path = fastq[0].split('/')
             file_name = split_path[-1].split('.')[0]
+
+            jwt_key = jwt.encode({
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=7),
+                'username': username,
+                'cyverse_account_id': cyverse_account.id, 
+            }, settings.JWT_SECRET)
         
             # app parameters
             human_config = {
@@ -45,7 +54,8 @@ def star_analysis(request):
                # sjdbOverhang
                "42841516-90cc-11eb-87c2-008cfa5ae621_90bc2558-1493-11eb-82d6-008cfa5ae621": sjdbOverhang,
                "4284e77a-90cc-11eb-87c2-008cfa5ae621_faf2ed12-90cb-11eb-ba25-008cfa5ae621": current_folder.friendly_name,
-               "4284e77a-90cc-11eb-87c2-008cfa5ae621_faf33c5e-90cb-11eb-ba25-008cfa5ae621": file_name + '_ReadsPerGene.tab'
+               "4284e77a-90cc-11eb-87c2-008cfa5ae621_faf33c5e-90cb-11eb-ba25-008cfa5ae621": file_name + '_ReadsPerGene.tab',
+               "4284e77a-90cc-11eb-87c2-008cfa5ae621_21f3d1be-a144-11eb-8a1d-008cfa5ae621": jwt_key,
             }
 
             index_folder = None
