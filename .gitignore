@@ -8,6 +8,7 @@ __pycache__
 .DS_Store
 .vscode
 
+django/app/settings/local.py
 django/static/
 django/media/
 django/react/.cache

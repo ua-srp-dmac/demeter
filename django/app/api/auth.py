@@ -9,6 +9,8 @@ from django.utils import timezone
 from datetime import timedelta
 
 from app.models import CyVerseAccount
+from django.contrib.auth.models import User
+
 
 
 def keycloak(request):

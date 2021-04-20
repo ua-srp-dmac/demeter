@@ -2,6 +2,7 @@ import json
 import requests
 import time
 import os
+import jwt
 from urllib.parse import urlencode, quote
 
 from django.http import HttpResponse, JsonResponse
@@ -171,15 +172,39 @@ def file_transfer(request):
 
         rename = request.POST.get('rename', None)
         save_path = request.POST.get('path', None)
-        transfer_file = request.FILES[rename]
+        token = request.POST.get('token', None)
 
-        complete_path = os.path.join(settings.MEDIA_ROOT, save_path, 'Ares/Data')
+        if not token:
+            return HttpResponse('Not authorized.', content_type='text/plain', status=403)
 
-        fs = FileSystemStorage(location=complete_path) 
-        filename = fs.save(rename, transfer_file)
-        file_url = fs.url(filename)
+        if not rename or not save_path:
+            return HttpResponse('Missing parameters.', content_type='text/plain', status=400)
 
-        return HttpResponse(transfer_file.size, content_type='text/plain', status=200)
+        try:
+            jwt_obj = jwt.decode(token, settings.JWT_SECRET, algorithms=["HS256"])
+        
+        except jwt.ExpiredSignatureError:
+            return HttpResponse('This token has expired.', content_type='text/plain', status=409)
+        
+        if 'username' in jwt_obj and 'cyverse_account_id' in jwt_obj:
+            
+            cyverse_account = CyVerseAccount.objects.get(user__username=jwt_obj['username'])
+            
+            if cyverse_account.id == jwt_obj['cyverse_account_id']:
+                transfer_file = request.FILES[rename]
+                complete_path = os.path.join(settings.MEDIA_ROOT, save_path, 'Ares/Data')
+
+                fs = FileSystemStorage(location=complete_path) 
+                filename = fs.save(rename, transfer_file)
+                file_url = fs.url(filename)
+
+                return HttpResponse(transfer_file.size, content_type='text/plain', status=200)
+            else:
+                return HttpResponse('Not authorized.', content_type='text/plain', status=403)
+
+        else:
+            return HttpResponse('This token cannot be used with this API endpoint.', content_type='text/plain', status=409)
+
 
     
 
