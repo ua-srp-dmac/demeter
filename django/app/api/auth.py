@@ -17,13 +17,8 @@ def keycloak(request):
     """ Returns request headers.
     """
     
-    print(request.META)
-    # print(request.headers)
-
-    # string = json.dumps(request.META)
-    # json_headers = json.loads(string)
-
-    return JsonResponse({'response': json.dumps(request.META)})
+    string = json.dumps(str(request.META))
+    return JsonResponse(string, safe=False)
 
 
 def is_user_logged_in(request):
