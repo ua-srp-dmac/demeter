@@ -17,14 +17,16 @@ def keycloak(request):
     """ Returns request headers.
     """
     
-    string = json.dumps(str(request.META))
-    return JsonResponse(string, safe=False)
+    string = request.META.get('OIDC_preferred_username', None)
+
+    return HttpResponse(string, status=200)
 
 
 def is_user_logged_in(request):
     """ Checks if user is logged into Django AND has a valid Terrain API Token.
     """
     # check user is logged into Django
+
     if request.user.is_authenticated:
         try:
             # check that user has non-expired Terrain API token, else log out.
