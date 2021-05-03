@@ -134,47 +134,55 @@ def analysis_list(request):
     """ Returns the user's analyses and their statuses.
     """
 
-    if request.user.is_authenticated:
+    username = request.META.get('OIDC_preferred_username', None)
+    path = request.GET.get('path', None)
+    
+    token = None
 
+    # set account and token
+    if username:
+        token = request.META.get('OIDC_access_token', None)
+    elif request.user.is_authenticated:
         username = request.user.username
+        account = CyVerseAccount.objects.get(user__username=username)
+        token = account.api_token
+    else:
+        return HttpResponse(status=403)
 
-        query_params = {
-            "filter": json.dumps([
-                { "field": "app_name", "value": "demeter" }
-            ]),
-        }
+    query_params = {
+        "filter": json.dumps([
+            { "field": "app_name", "value": "demeter" }
+        ]),
+    }
 
-        query_str = urlencode(query_params, encoding='utf-8', quote_via=quote)
+    query_str = urlencode(query_params, encoding='utf-8', quote_via=quote)
 
-        try:
-            account = CyVerseAccount.objects.get(user__username=username)
-            url = "https://de.cyverse.org/terrain/analyses?" + query_str
-            auth_headers = {"Authorization": "Bearer " + account.api_token}
-            r = requests.get(url, headers=auth_headers)
-            r.raise_for_status()
+    try:
+        url = "https://de.cyverse.org/terrain/analyses?" + query_str
+        auth_headers = {"Authorization": "Bearer " + token}
+        r = requests.get(url, headers=auth_headers)
+        r.raise_for_status()
 
-            analysisList = []
+        analysisList = []
 
-            for item in r.json()['analyses']:
-                
-                start_date = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(float(item['startdate'])/1000.0))
-                end_date = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(float(item['enddate'])/1000.0))
-                
-                analysisList.append({
-                    "name": item['name'],
-                    "app_name": item['app_name'],
-                    "results_folder": item['resultfolderid'],
-                    "start_date": start_date,
-                    "end_date": end_date,
-                    "status": item['status']
-                })
+        for item in r.json()['analyses']:
+            
+            start_date = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(float(item['startdate'])/1000.0))
+            end_date = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(float(item['enddate'])/1000.0))
+            
+            analysisList.append({
+                "name": item['name'],
+                "app_name": item['app_name'],
+                "results_folder": item['resultfolderid'],
+                "start_date": start_date,
+                "end_date": end_date,
+                "status": item['status']
+            })
 
-            return JsonResponse(analysisList, safe=False)
+        return JsonResponse(analysisList, safe=False)
 
-        except Exception as e:
-            pass
-
-    return HttpResponse(status=400)
+    except Exception as e:
+        pass
     
             
 @csrf_exempt
