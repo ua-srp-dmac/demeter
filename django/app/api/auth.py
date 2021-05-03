@@ -100,7 +100,7 @@ def app_logout(request):
     username = request.META.get('OIDC_preferred_username', None)
 
     if username:
-        response = redirect('https://demeter.pharmacy.arizona.edu/redirect_uri?logout=https://demeter.pharmacy.arizona.edu')
+        response = redirect('/redirect_uri?logout=https://demeter.pharmacy.arizona.edu')
         return response
     
     logout(request)
