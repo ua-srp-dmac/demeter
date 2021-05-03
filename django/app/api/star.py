@@ -16,7 +16,7 @@ def star_analysis(request):
     """ Submits an analysis to the DE.
     """
 
-    if request.method == "POST" and request.user.is_authenticated:
+    if request.method == "POST":
         
         # RNAseq pipeline app ID
         app_id = 'd6dc40a8-0837-11eb-9cfa-008cfa5ae621'
