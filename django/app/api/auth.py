@@ -5,12 +5,12 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib.auth import login, logout
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
+from django.shortcuts import redirect
 
 from datetime import timedelta
 
 from app.models import CyVerseAccount
 from django.contrib.auth.models import User
-
 
 
 def keycloak(request):
@@ -26,6 +26,11 @@ def is_user_logged_in(request):
     """ Checks if user is logged into Django AND has a valid Terrain API Token.
     """
     # check user is logged into Django
+
+    username = request.META.get('OIDC_preferred_username', None)
+
+    if username:
+        return HttpResponse(status=200)
 
     if request.user.is_authenticated:
         try:
@@ -92,5 +97,11 @@ def app_logout(request):
     Logs out of Django.
     """
 
+    username = request.META.get('OIDC_preferred_username', None)
+
+    if username:
+        response = redirect('https://demeter.pharmacy.arizona.edu/redirect_uri?logout=https://demeter.pharmacy.arizona.edu')
+        return response
+    
     logout(request)
     return HttpResponse(status=200)
