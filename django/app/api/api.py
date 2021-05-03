@@ -111,18 +111,23 @@ def get_user_folders(request):
     """ Returns the path the current user's default CyVerse folder.
     """
 
-    if request.user.is_authenticated:
+    username = request.META.get('OIDC_preferred_username', None)
+    account = None
 
+    # set account and token
+    if username:
+        account = CyVerseAccount.objects.get(user__username=username)
+    elif request.user.is_authenticated:
         username = request.user.username
         account = CyVerseAccount.objects.get(user__username=username)
+    else:
+        return HttpResponse(status=403)
 
-        response = {
-            'default_folder': account.default_folder.path,
-        }
+    response = {
+        'default_folder': account.default_folder.path,
+    }
 
-        return JsonResponse(response, safe=False)
-
-    return HttpResponse(status=403)
+    return JsonResponse(response, safe=False)
 
 
 def analysis_list(request):
