@@ -18,83 +18,93 @@ def file_list(request):
     """ Returns the fastq files in the user's home directory (for now).
     TODO: Dynamically show files specific to the user's Group affiliations.
     """
+    
+    username = request.META.get('OIDC_preferred_username', None)
+    path = request.GET.get('path', None)
+    
+    token = None
+    account = None
 
-    if request.user.is_authenticated:
-
-        username = request.user.username
-        path = request.GET.get('path', None)
+    # set account and token
+    if username:
         account = CyVerseAccount.objects.get(user__username=username)
+        token = request.META.get('OIDC_access_token', None)
+    elif request.user.is_authenticated:
+        username = request.user.username
+        account = CyVerseAccount.objects.get(user__username=username)
+        token = account.api_token
+    else:
+        return HttpResponse(status=400)
         
-        if not path:
-            path = account.default_folder.path
+    if not path:
+        path = account.default_folder.path
+    
+    query_params = {
+        "path": path,
+        "limit": 100,
+        "offset": 0,
+    }
+
+    try:
+        url = "https://de.cyverse.org/terrain/secured/filesystem/paged-directory"
+        auth_headers = {"Authorization": "Bearer " + token}
+        r = requests.get(url, headers=auth_headers, params=query_params)
+        r.raise_for_status()
+
+        fileList = []
+
+        # {
+        #     'infoType': 'fastq',
+        #     'path': '/iplant/home/michellito/ERR008015.fastq',
+        #     'date-created': 1599070087000,
+        #     'permission': 'own',
+        #     'date-modified': 1599070087000,
+        #     'file-size': 2394058,
+        #     'badName': False,
+        #     'isFavorite': False,
+        #     'label': 'ERR008015.fastq',
+        #     'id': '4139e402-ed47-11ea-9281-90e2ba675364'
+        # }
+
+        for item in r.json()['folders']:
+
+            updated = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(item['date-modified']/1000.0))
+
+            fileList.append({
+                "name": item['label'],
+                "last_updated": updated,
+                "type": "folder",
+                "path": item['path'],
+                "id": item['id']
+            })
         
-        query_params = {
-            "path": path,
-            "limit": 100,
-            "offset": 0,
-        }
-
-        try:
-            url = "https://de.cyverse.org/terrain/secured/filesystem/paged-directory"
-            auth_headers = {"Authorization": "Bearer " + account.api_token}
-            r = requests.get(url, headers=auth_headers, params=query_params)
-            r.raise_for_status()
-
-            fileList = []
-
-            # {
-            #     'infoType': 'fastq',
-            #     'path': '/iplant/home/michellito/ERR008015.fastq',
-            #     'date-created': 1599070087000,
-            #     'permission': 'own',
-            #     'date-modified': 1599070087000,
-            #     'file-size': 2394058,
-            #     'badName': False,
-            #     'isFavorite': False,
-            #     'label': 'ERR008015.fastq',
-            #     'id': '4139e402-ed47-11ea-9281-90e2ba675364'
-            # }
-
-            for item in r.json()['folders']:
-
+        for item in r.json()['files']:
+            
+            # only display .fastq or .fastq.gz files
+            if (item['label'].endswith('.fastq') or item['label'].endswith('.fastq.gz')):
+                
                 updated = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(item['date-modified']/1000.0))
+                size = format_size(item['file-size'])
 
                 fileList.append({
                     "name": item['label'],
                     "last_updated": updated,
-                    "type": "folder",
+                    "size": size,
+                    "type": "file",
                     "path": item['path'],
                     "id": item['id']
                 })
-            
-            for item in r.json()['files']:
-                
-                # only display .fastq or .fastq.gz files
-                if (item['label'].endswith('.fastq') or item['label'].endswith('.fastq.gz')):
-                    
-                    updated = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(item['date-modified']/1000.0))
-                    size = format_size(item['file-size'])
+        
+        response = {
+            'fileList': fileList,
+            'currentPath': path
+        }
 
-                    fileList.append({
-                        "name": item['label'],
-                        "last_updated": updated,
-                        "size": size,
-                        "type": "file",
-                        "path": item['path'],
-                        "id": item['id']
-                    })
-            
-            response = {
-                'fileList': fileList,
-                'currentPath': path
-            }
+        return JsonResponse(response, safe=False)
 
-            return JsonResponse(response, safe=False)
+    except Exception as e:
+        pass
 
-        except Exception as e:
-            pass
-
-    return HttpResponse(status=400)
 
 
 def get_user_folders(request):
