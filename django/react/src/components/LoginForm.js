@@ -32,7 +32,7 @@ export default class LoginForm extends Component {
     })
     .then(result => {
         this.setState({ error: null, loading: false, loggedIn: true });
-        this.props.updateAuth(true);
+        this.props.updateAuth(result.data);
     })
     .catch((error) => {
         this.setState({error: error.response.data, loading: false });

@@ -27,8 +27,8 @@ class App extends Component {
   async componentDidMount() {
     axios.get('/api/auth/')
       .then(result => {
-        this.setState({loggedIn: true, loading:false});
-        console.log('logged in')
+        this.setState({loggedIn: result.data, loading:false});
+        console.log(result)
       })
       .catch((error) => {
         this.setState({loggedIn: false, loading:false});
@@ -46,11 +46,7 @@ class App extends Component {
   }
 
   updateAuth(authenticated) {
-    if (authenticated) {
-      this.setState({loggedIn: true});
-    } else {
-      this.setState({loggedIn: false});
-    }
+    this.setState({loggedIn: authenticated});
   }
 
   logout() {
@@ -75,7 +71,8 @@ class App extends Component {
                 <h1>demeter</h1>
               </Menu.Item>
               <Menu.Item as='a' href="/"><h4>Home</h4></Menu.Item>
-              {this.state.loggedIn && <Menu.Item as='a' onClick={this.logout}><h4>Logout</h4></Menu.Item>}
+              {this.state.loggedIn === 'django' && <Menu.Item as='a' onClick={this.logout}><h4>Logout</h4></Menu.Item>}
+              {this.state.loggedIn === 'KC' && <Menu.Item as='a' href="https://demeter.pharmacy.arizona.edu/redirect_uri?logout=https://demeter.pharmacy.arizona.edu"><h4>Logout</h4></Menu.Item>}
             </Container>
           </Menu>
         </header>

@@ -30,14 +30,14 @@ def is_user_logged_in(request):
     username = request.META.get('OIDC_preferred_username', None)
 
     if username:
-        return HttpResponse(status=200)
+        return HttpResponse('KC', status=200)
 
     if request.user.is_authenticated:
         try:
             # check that user has non-expired Terrain API token, else log out.
             account = CyVerseAccount.objects.get(user=request.user)
             if account.api_token and (account.api_token_expiration > timezone.now()):
-                return HttpResponse(status=200)
+                return HttpResponse('django', status=200)
             else:
                 logout(request)
         except:
@@ -87,7 +87,7 @@ def app_login(request):
         account.save()
             
         login(request, user, backend='app.auth_backend.PasswordlessAuthBackend')   
-        return HttpResponse(status=200)
+        return HttpResponse('django', status=200)
         
     return HttpResponse(status=400)
 
@@ -97,11 +97,6 @@ def app_logout(request):
     Logs out of Django.
     """
 
-    username = request.META.get('OIDC_preferred_username', None)
-
-    if username:
-        response = redirect('/redirect_uri?logout=https://demeter.pharmacy.arizona.edu')
-        return response
-    
-    logout(request)
-    return HttpResponse(status=200)
+    if request.user.is_authenticated:
+        logout(request)
+        return HttpResponse(status=200)
