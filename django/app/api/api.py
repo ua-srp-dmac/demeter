@@ -34,7 +34,7 @@ def file_list(request):
         account = CyVerseAccount.objects.get(user__username=username)
         token = account.api_token
     else:
-        return HttpResponse(status=400)
+        return HttpResponse(status=403)
         
     if not path:
         path = account.default_folder.path

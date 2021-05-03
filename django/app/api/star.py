@@ -22,9 +22,23 @@ def star_analysis(request):
         app_id = 'd6dc40a8-0837-11eb-9cfa-008cfa5ae621'
         system_id = 'de'
 
-        username = request.user.username
-        cyverse_account = CyVerseAccount.objects.get(user__username=username)
-        current_folder = cyverse_account.default_folder
+        username = request.META.get('OIDC_preferred_username', None)
+        
+        token = None
+        account = None
+
+        # set account and token
+        if username:
+            account = CyVerseAccount.objects.get(user__username=username)
+            token = request.META.get('OIDC_access_token', None)
+        elif request.user.is_authenticated:
+            username = request.user.username
+            account = CyVerseAccount.objects.get(user__username=username)
+            token = account.api_token
+        else:
+            return HttpResponse(status=403)
+
+        current_folder = account.default_folder
 
         form_data = json.loads(request.body.decode())
         groups = form_data['groups']
@@ -44,7 +58,7 @@ def star_analysis(request):
             jwt_key = jwt.encode({
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=7),
                 'username': username,
-                'cyverse_account_id': cyverse_account.id, 
+                'cyverse_account_id': account.id, 
             }, settings.JWT_SECRET)
         
             # app parameters
@@ -102,7 +116,7 @@ def star_analysis(request):
             request_body['config'] = human_config
 
             try:
-                auth_headers = {"Authorization": "Bearer " + cyverse_account.api_token}
+                auth_headers = {"Authorization": "Bearer " + token}
                 r = requests.post(
                     "https://de.cyverse.org/terrain/analyses",
                     headers=auth_headers,
