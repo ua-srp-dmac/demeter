@@ -12,7 +12,7 @@ def bowtie2_analysis(request):
     """ Submits an analysis to the DE.
     """
 
-    if request.method == "POST" and request.user.is_authenticated:
+    if request.method == "POST":
         
         # DNAseq pipeline app ID
         app_id = '10cabb5a-0757-11eb-8b4c-008cfa5ae621'
@@ -21,9 +21,24 @@ def bowtie2_analysis(request):
         # app_id = '4f9b03f0-f2d3-11ea-9df7-008cfa5ae621'
         system_id = 'de'
 
-        username = request.user.username
-        cyverse_account = CyVerseAccount.objects.get(user__username=username)
-        current_folder = cyverse_account.default_folder
+
+        username = request.META.get('OIDC_preferred_username', None)
+        
+        token = None
+        account = None
+
+        # set account and token
+        if username:
+            account = CyVerseAccount.objects.get(user__username=username)
+            token = request.META.get('OIDC_access_token', None)
+        elif request.user.is_authenticated:
+            username = request.user.username
+            account = CyVerseAccount.objects.get(user__username=username)
+            token = account.api_token
+        else:
+            return HttpResponse(status=403)
+
+        current_folder = account.default_folder
 
         form_data = json.loads(request.body.decode())
         groups = form_data['groups']
@@ -76,7 +91,7 @@ def bowtie2_analysis(request):
                 request_body['config'] = human_config
 
             try:
-                auth_headers = {"Authorization": "Bearer " + cyverse_account.api_token}
+                auth_headers = {"Authorization": "Bearer " + token}
                 r = requests.post(
                     "https://de.cyverse.org/terrain/analyses",
                     headers=auth_headers,
@@ -95,15 +110,29 @@ def bowtie2_paired(request):
     """ Submits an analysis to the DE.
     """
 
-    if request.method == "POST" and request.user.is_authenticated:
+    if request.method == "POST":
         
         # DNAseq pipeline app ID
         app_id = '10cabb5a-0757-11eb-8b4c-008cfa5ae621'
         system_id = 'de'
 
-        username = request.user.username
-        cyverse_account = CyVerseAccount.objects.get(user__username=username)
-        current_folder = cyverse_account.default_folder
+        username = request.META.get('OIDC_preferred_username', None)
+        
+        token = None
+        account = None
+
+        # set account and token
+        if username:
+            account = CyVerseAccount.objects.get(user__username=username)
+            token = request.META.get('OIDC_access_token', None)
+        elif request.user.is_authenticated:
+            username = request.user.username
+            account = CyVerseAccount.objects.get(user__username=username)
+            token = account.api_token
+        else:
+            return HttpResponse(status=403)
+
+        current_folder = account.default_folder
 
         form_data = json.loads(request.body.decode())
 
@@ -164,8 +193,7 @@ def bowtie2_paired(request):
             request_body['config'] = human_config
 
         try:
-            acc = CyVerseAccount.objects.get(user__username=username)
-            auth_headers = {"Authorization": "Bearer " + acc.api_token}
+            auth_headers = {"Authorization": "Bearer " + token}
             r = requests.post(
                 "https://de.cyverse.org/terrain/analyses",
                 headers=auth_headers,

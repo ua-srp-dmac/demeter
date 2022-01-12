@@ -5,6 +5,7 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib.auth import login, logout
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
+from django.shortcuts import redirect
 
 from datetime import timedelta
 
@@ -12,34 +13,47 @@ from app.models import CyVerseAccount
 from django.contrib.auth.models import User
 
 
-
 def keycloak(request):
     """ Returns request headers.
     """
     
-    print(request.META)
-    # print(request.headers)
+    string = request.META.get('OIDC_preferred_username', None)
 
-    # string = json.dumps(request.META)
-    # json_headers = json.loads(string)
-
-    return JsonResponse({'response': json.dumps(request.META)})
+    return HttpResponse(string, status=200)
 
 
 def is_user_logged_in(request):
     """ Checks if user is logged into Django AND has a valid Terrain API Token.
     """
-    # check user is logged into Django
+    # get keycloak username from request, if any
+    username = request.META.get('OIDC_preferred_username', None)
+
+    # if user logged in
     if request.user.is_authenticated:
-        try:
-            # check that user has non-expired Terrain API token, else log out.
-            account = CyVerseAccount.objects.get(user=request.user)
-            if account.api_token and (account.api_token_expiration > timezone.now()):
-                return HttpResponse(status=200)
-            else:
+        # if username present, user is logged in via keycloak
+        if username:
+            return HttpResponse('KC', status=200)
+        # otherwise, check CyVerse account token expiration
+        else:
+            try:
+                # check that user has non-expired Terrain API token, else log out.
+                account = CyVerseAccount.objects.get(user=request.user)
+                if account.api_token and (account.api_token_expiration > timezone.now()):
+                    return HttpResponse('django', status=200)
+                else:
+                    logout(request)
+            except:
                 logout(request)
-        except:
-            logout(request)
+    # if user not logged in
+    else:
+        if username:
+            # log in user if keycloak username matches user from database 
+            try:
+                user = User.objects.get(username=username)
+                login(request, user, backend='app.auth_backend.PasswordlessAuthBackend')   
+                return HttpResponse('KC', status=200)
+            except:
+                return HttpResponse(status=403)
 
     return HttpResponse(status=403)
 
@@ -85,7 +99,7 @@ def app_login(request):
         account.save()
             
         login(request, user, backend='app.auth_backend.PasswordlessAuthBackend')   
-        return HttpResponse(status=200)
+        return HttpResponse('django', status=200)
         
     return HttpResponse(status=400)
 
@@ -95,5 +109,6 @@ def app_logout(request):
     Logs out of Django.
     """
 
-    logout(request)
-    return HttpResponse(status=200)
+    if request.user.is_authenticated:
+        logout(request)
+        return HttpResponse(status=200)
